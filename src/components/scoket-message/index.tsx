@@ -12,10 +12,7 @@ function Content(message: IWSMessage | undefined) {
       return (
         <div className="flex items-end gap-2 flex-nowrap w-4/5 ml-2">
           <MessageSquareMoreIcon className="w-5 h-5" />
-          <div className="truncate">
-            现在的时间是：sssssssss
-            {message.content}
-          </div>
+          <div className="truncate">现在的时间是：{message.content}</div>
         </div>
       );
   }

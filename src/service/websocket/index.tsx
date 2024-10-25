@@ -2,11 +2,26 @@ import { IWSMessage } from "@/types/websocket";
 
 let lockReconnect = false;
 
-export function contectWebSocket() {
+function contectWebSocket() {
   const url = new URL("ws://localhost:4000/ws");
   url.searchParams.append("token", localStorage.getItem("token") || "");
   const socket = new WebSocket(url);
   return { socket, url };
+}
+
+function onMessage(
+  socket: WebSocket,
+  setMessage: React.Dispatch<React.SetStateAction<IWSMessage>>
+) {
+  socket.onmessage = function (event) {
+    try {
+      const message = JSON.parse(event.data);
+      setMessage(message);
+      console.log("Received message:", message);
+    } catch (e) {
+      console.log("Received non-JSON data:", e);
+    }
+  };
 }
 
 export async function createWebSocket(
@@ -24,7 +39,7 @@ export async function createWebSocket(
       );
     }, 2000);
   };
-
+  // onMessage(socket, setMessage);
   socket.onmessage = function (event) {
     try {
       const message = JSON.parse(event.data);
@@ -56,8 +71,9 @@ export async function createWebSocket(
     // 没连接上会一直重连，设置延迟避免请求过多
     if (!timer) {
       timer = setInterval(function () {
-        console.log("1.尝试重连...");
+        console.log("1.尝试重连...", url);
         socket = new WebSocket(url);
+        onMessage(socket, setMessage);
 
         socket.onopen = function () {
           console.log("连接成功");
@@ -65,6 +81,10 @@ export async function createWebSocket(
           clearInterval(timer as unknown as number);
           timer = null;
           socket.send(JSON.stringify({ type: "subscribe", topic: "news" }));
+          setMessage({
+            type: "message",
+            content: "连接成功",
+          });
         };
 
         socket.onclose = function () {
