@@ -3,8 +3,13 @@ import { FC } from "react";
 
 const AppLogo: FC<{ className?: string }> = ({ className }) => {
   return (
-    <div className={clsx("flex items-center gap-2 text-2xl", className)}>
-      <div className="font-comfortaa font-semibold">
+    <div
+      className={clsx(
+        "flex items-center gap-2 text-2xl font-semibold",
+        className
+      )}
+    >
+      <div className="font-comfortaa ">
         Ises
         <span className="text-theme_blue">.</span>
       </div>

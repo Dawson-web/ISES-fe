@@ -34,10 +34,11 @@ export async function createWebSocket(
       socket.send(
         JSON.stringify({
           type: "message",
-          token: localStorage.getItem("token") || "",
+          content: "ping 通讯测试",
+          id: "16312840702276485000",
         })
       );
-    }, 2000);
+    }, 8000);
   };
   // onMessage(socket, setMessage);
   socket.onmessage = function (event) {

@@ -1,6 +1,6 @@
 import { IWSMessage } from "@/types/websocket";
 import clsx from "clsx";
-import { MessageSquareMoreIcon } from "lucide-react";
+import { MessageSquareMoreIcon, Settings } from "lucide-react";
 import { FC, useMemo, useState } from "react";
 
 let time: NodeJS.Timeout | null = null;
@@ -8,11 +8,20 @@ let time: NodeJS.Timeout | null = null;
 function Content(message: IWSMessage | undefined) {
   // TODO: 根据消息类型返回不同的内容
   switch (message?.type) {
-    case "text":
+    case "message":
       return (
         <div className="flex items-end gap-2 flex-nowrap w-4/5 ml-2">
           <MessageSquareMoreIcon className="w-5 h-5" />
-          <div className="truncate">现在的时间是：{message.content}</div>
+          <div className="truncate">
+            {message.username}：{message.content}
+          </div>
+        </div>
+      );
+    case "system":
+      return (
+        <div className="flex items-end gap-2 flex-nowrap w-4/5 ml-2">
+          <Settings className="w-5 h-5" />
+          <div className="truncate">系统信息：{message.content}</div>
         </div>
       );
   }

@@ -178,15 +178,13 @@ const NavMenu: FC<Props> = ({
               " sm:flex flex-col justify-start   overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark"
             )}
           >
-            <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600" />
-            {avatar_show && (
-              <UserAvatar
-                src={avatar_src}
-                size="medium"
-                className="mx-auto px-10 mt-[40px]"
-              />
-            )}
-
+            <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold" />
+            <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
+              {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
+              <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold">
+                Dawson
+              </div>
+            </div>
             {options.map((item: OptionData) => {
               return (
                 <Link

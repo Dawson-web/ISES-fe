@@ -18,6 +18,7 @@ export default function Layout() {
   const [message, setMessage] = useState<IWSMessage>({
     type: "tetx",
     content: "欢迎来到 ISES",
+    username: "",
   });
 
   const [userFormData, setUserFormData] = useState<IUserFormData>(
