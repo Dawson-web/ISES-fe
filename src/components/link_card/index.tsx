@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React from "react";
 
 export default function LinkCard(props: any) {
-  const { link, url, descr, name } = props;
+  const { link, url, descr, name, onClick } = props;
   const [isHovered, setIsHovered] = React.useState(false);
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -17,11 +17,12 @@ export default function LinkCard(props: any) {
       className="mx-auto w-[90%] sm:w-[45%] min-w-[320px]  p-4 rounded-lg shadow-md bg-white dark:bg-theme_dark border-transparent hover:border-theme_blue border-2 hover:shadow-sm "
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={onClick}
     >
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
+        // href={link}
+        // target="_blank"
+        // rel="noopener noreferrer"
         className="flex  items-center justify-around"
       >
         <aside
@@ -40,7 +41,7 @@ export default function LinkCard(props: any) {
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>
           <div className="text-sm">{descr || "这个人很懒未留简介"}</div>
         </main>
-      </a>
+      </div>
     </div>
   );
 }
