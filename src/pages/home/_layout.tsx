@@ -9,6 +9,7 @@ import { themeConfig } from "@/config";
 import { createWebSocket } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";
 import { IWSMessage } from "@/types/websocket";
+import { setUid } from "@/api/token";
 
 let isInited = false;
 
@@ -34,6 +35,7 @@ export default function Layout() {
       getUserInfo()
         .then((res) => {
           setUserFormData(res.data.data);
+          setUid(res.data.data.id);
         })
         .catch(() => {
           navigate("/login");

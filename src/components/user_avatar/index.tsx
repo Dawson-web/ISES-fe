@@ -5,6 +5,7 @@ import { apiConfig } from "../../config";
 import { FC } from "react";
 import { uploadAvatar } from "../../service/user";
 import { toast } from "sonner";
+import { getValidUid } from "@/api/token";
 
 interface Props {
   src?: string;
@@ -20,6 +21,7 @@ const UserAvatar: FC<Props> = ({ src, size, className }) => {
     input.click();
     input.onchange = async (e: any) => {
       const file = e.target.files[0];
+      console.log(file.fieldname, file);
       const formData = new FormData();
       formData.append("avatar", file);
       await uploadAvatar(formData)
