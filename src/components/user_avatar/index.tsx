@@ -5,7 +5,6 @@ import { apiConfig } from "../../config";
 import { FC } from "react";
 import { uploadAvatar } from "../../service/user";
 import { toast } from "sonner";
-import { getValidUid } from "@/api/token";
 
 interface Props {
   src?: string;

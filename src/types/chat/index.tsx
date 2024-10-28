@@ -10,10 +10,10 @@ export interface IGetChatListRequest {
 }
 
 export interface IGetChatMessageResponse {
-  id: string;
+  id?: string;
   userInfoId: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   content: string;
 }
 

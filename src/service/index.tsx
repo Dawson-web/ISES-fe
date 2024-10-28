@@ -1,7 +1,12 @@
 import { $axios } from "../api";
 import { ApiOk } from "../api/types";
 import { apiConfig } from "../config";
-import { ILoginFileds, IRegisterFileds, ISeekBackFileds } from "../types";
+import {
+  ILoginFileds,
+  ILoginResponse,
+  IRegisterFileds,
+  ISeekBackFileds,
+} from "../types";
 import { getCookie } from "../utils/cookie";
 
 export const getCaptcha = () => {
@@ -11,7 +16,7 @@ export const getCaptcha = () => {
 export const login = async (form: ILoginFileds, code: string) => {
   console.log("Captcha验证码：", code);
   getCookie("captcha");
-  return await $axios.post<ApiOk<string>>("/login", {
+  return await $axios.post<ApiOk<ILoginResponse>>("/login", {
     email: form.email,
     password: form.password,
   });

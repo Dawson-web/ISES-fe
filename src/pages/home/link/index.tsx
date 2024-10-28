@@ -47,7 +47,13 @@ export default function Page() {
           </div>
         );
       })}
-      {open && <ChatRoom className="" chatId={chatId} setOpen={setOpen} />}
+      {open && (
+        <ChatRoom
+          className="w-full h-[60%]"
+          chatId={chatId}
+          setOpen={setOpen}
+        />
+      )}
     </div>
   );
 }

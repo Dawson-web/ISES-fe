@@ -3,6 +3,11 @@ export interface ILoginFileds {
   password: string;
 }
 
+export interface ILoginResponse {
+  token: string;
+  userInfoId: string;
+}
+
 export interface IRegisterFileds {
   email: string;
   password: string;

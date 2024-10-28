@@ -83,6 +83,7 @@ export async function createWebSocket(
           timer = null;
           socket.send(JSON.stringify({ type: "subscribe", topic: "news" }));
           setMessage({
+            username: "",
             type: "message",
             content: "连接成功",
           });

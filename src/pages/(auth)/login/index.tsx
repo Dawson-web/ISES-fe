@@ -7,7 +7,7 @@ import CaptchaCode from "../../../components/captcha_code";
 import { ILoginFileds } from "../../../types";
 import { login } from "../../../service";
 import { toast } from "sonner";
-import { setToken } from "../../../api/token";
+import { setToken, setUid } from "../../../api/token";
 
 export default function Page() {
   const errorTimes = useRef(0);
@@ -37,7 +37,8 @@ export default function Page() {
         onSubmit={form.onSubmit(async (v) => {
           try {
             await login(v, code.current).then((res) => {
-              setToken(res.data.data);
+              setToken(res.data.data.token);
+              setUid(res.data.data.userInfoId);
             });
             navigate("/home");
             toast.success("登录成功");

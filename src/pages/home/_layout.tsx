@@ -31,16 +31,14 @@ export default function Layout() {
   useEffect(() => {
     if (!isInited) {
       createWebSocket(setMessage);
-
       getUserInfo()
         .then((res) => {
+          isInited = true;
           setUserFormData(res.data.data);
-          setUid(res.data.data.id);
         })
         .catch(() => {
           navigate("/login");
         });
-      isInited = true;
     }
   }, []);
 

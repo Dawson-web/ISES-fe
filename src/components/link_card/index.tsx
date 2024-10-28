@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React from "react";
 
 export default function LinkCard(props: any) {
-  const { link, url, descr, name, onClick } = props;
+  const { url, descr, name, onClick } = props;
   const [isHovered, setIsHovered] = React.useState(false);
   const handleMouseEnter = () => {
     setIsHovered(true);
