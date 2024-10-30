@@ -33,9 +33,7 @@ function onMessage(
 }
 
 export function createWebSocket(
-  setMessage: React.Dispatch<
-    React.SetStateAction<IWSMessage | IGetChatMessageResponse[]>
-  >,
+  setMessage: React.Dispatch<React.SetStateAction<IWSMessage>>,
   type: string
 ) {
   let timer: null | NodeJS.Timer = null;
@@ -121,8 +119,8 @@ export function createChatsocket(
   setMessage: React.Dispatch<React.SetStateAction<IGetChatMessageResponse[]>>,
   type: string
 ) {
-  let timer: null | NodeJS.Timer = null;
-  let { socket, url } = contectWebSocket(type);
+  // let timer: null | NodeJS.Timer = null;
+  const { socket } = contectWebSocket(type);
   // socket.onopen = () => {
   //   setInterval(() => {
   //     socket.send(

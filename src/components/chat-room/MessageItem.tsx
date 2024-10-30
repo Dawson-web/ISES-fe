@@ -1,3 +1,4 @@
+import { getValidUid } from "@/api/token";
 import { IGetChatMessageResponse } from "@/types/chat";
 import clsx from "clsx";
 import { FC } from "react";
@@ -21,7 +22,14 @@ const MessageItem: FC<Props> = ({ message, className, avatarSrc }) => {
           className={clsx("relative w-[40px] h-[40px] rounded-full")}
         />
       </div>
-      <span className="bg-gray-200 p-2 rounded-lg  max-w-[50%] break-words ">
+      <span
+        className={clsx(
+          " p-2 rounded-lg  max-w-[50%] break-words ",
+          getValidUid() === message.userInfoId
+            ? "bg-theme_blue text-white"
+            : "bg-theme_gray text-black dark:text-white dark:bg-gray-600"
+        )}
+      >
         {message.content}
       </span>
     </div>

@@ -6,7 +6,7 @@ import MessageList from "./MessageList";
 import { getChatMessage, sendChatMessage } from "@/service/chat";
 import { getValidUid } from "@/api/token";
 import { IGetChatMessageResponse } from "@/types/chat";
-import { createChatsocket, createWebSocket } from "@/service/websocket";
+import { createChatsocket } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
 
 interface Props {
@@ -34,14 +34,14 @@ const ChatRoom: FC<Props> = ({ className, chatId, setOpen, chatUser }) => {
   const { isSuccess, data, isFetching } = useQuery({
     queryKey: ["chatList", chatId], // 将 chatId 包括在 queryKey 中，以便当 chatId 改变时，查询会被重新执行
     queryFn: () => getChatMessage(chatId || "242108044931321300"),
-    onSuccess: (data) => {
-      if (!socket) {
-        // socket = createWebSocket(setMessages, "chat");
-      }
-    },
-    onError: (error) => {
-      console.error("Failed to fetch chat messages", error);
-    },
+    // onSuccess: (data) => {
+    //   if (!socket) {
+    //     // socket = createWebSocket(setMessages, "chat");
+    //   }
+    // },
+    // onError: (error) => {
+    //   console.error("Failed to fetch chat messages", error);
+    // },
   });
 
   // 在 useEffect 中监听 isSuccess 和 isFetching 的变化
@@ -86,6 +86,7 @@ const ChatRoom: FC<Props> = ({ className, chatId, setOpen, chatUser }) => {
                 ...prev,
                 { content, userInfoId: getValidUid() as string },
               ]);
+              setContent("");
             }
           }}
           className="w-full h-full p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
