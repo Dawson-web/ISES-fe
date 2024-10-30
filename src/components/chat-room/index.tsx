@@ -6,6 +6,8 @@ import MessageList from "./MessageList";
 import { getChatMessage, sendChatMessage } from "@/service/chat";
 import { getValidUid } from "@/api/token";
 import { IGetChatMessageResponse } from "@/types/chat";
+import { createChatsocket, createWebSocket } from "@/service/websocket";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   className?: string;
@@ -13,7 +15,7 @@ interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-let initial = false;
+let socket: WebSocket | null = null;
 
 const ChatRoom: FC<Props> = ({ className, chatId, setOpen }) => {
   const [messages, setMessages] = useState<IGetChatMessageResponse[]>([]);
@@ -26,34 +28,51 @@ const ChatRoom: FC<Props> = ({ className, chatId, setOpen }) => {
     };
     await sendChatMessage(data);
   };
+  const { isSuccess, data, isFetching } = useQuery({
+    queryKey: ["chatList", chatId], // 将 chatId 包括在 queryKey 中，以便当 chatId 改变时，查询会被重新执行
+    queryFn: () => getChatMessage(chatId || "242108044931321300"),
+    onSuccess: (data) => {
+      // setMessages(data.data.data); // 更新消息状态
+      if (!socket) {
+        // socket = createWebSocket(setMessages, "chat");
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to fetch chat messages", error);
+    },
+  });
+
+  // 在 useEffect 中监听 isSuccess 和 isFetching 的变化
   useEffect(() => {
-    if (!initial) {
-      getChatMessage(chatId || "242108044931321300").then((res) => {
-        setMessages(res.data.data);
-      });
-      initial = true;
+    if (isSuccess && !isFetching) {
+      setMessages(data.data.data);
+      socket = createChatsocket(setMessages, "chat");
     }
-  }, []);
+  }, [isSuccess, isFetching]);
+
   return (
     <Card
       className={clsx(
-        "flex-grow flex flex-col  justify-start dark:bg-theme_dark dark:text-white p-0",
+        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0",
         className
       )}
     >
-      <div className="border-b-2 border-gray-200 dark:border-gray-600  flex items-center justify-end p-2 h-[10%]">
+      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-end p-2 h-[10%]">
         <Undo2
-          className="text-gray-600 dark:text-white "
+          className="text-gray-600 dark:text-white"
           onClick={() => {
             setOpen(false);
-            initial = false; // 重置初始状态
           }}
         />
       </div>
-      <MessageList
-        messages={messages}
-        className="border-b-2 border-gray-200 dark:border-gray-600 h-[65%] overflow-y-scroll "
-      />
+      {isSuccess ? (
+        <MessageList
+          messages={messages}
+          className="border-b-2 border-gray-200 dark:border-gray-600 h-[65%] overflow-y-scroll"
+        />
+      ) : (
+        <div>Loading...</div> // 显示加载中的提示
+      )}
       <div className="flex flex-col h-[25%]">
         <textarea
           value={content}

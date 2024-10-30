@@ -4,22 +4,16 @@ import { themeConfig } from "../../../config";
 import { useEffect, useState } from "react";
 import { getChatList } from "@/service/chat";
 import { getValidUid } from "@/api/token";
-import { IGetChatListResponse } from "@/types/chat";
-
-let isInited = false;
+import { useQuery } from "@tanstack/react-query";
 
 export default function Page() {
   const [chatId, setChatId] = useState("");
   const [open, setOpen] = useState(false);
-  const [chatList, setChatList] = useState<IGetChatListResponse[]>([]);
-  useEffect(() => {
-    if (!isInited) {
-      getChatList({ userInfoId: getValidUid() as string }).then((res) => {
-        setChatList(res.data.data);
-        isInited = true;
-      });
-    }
-  }, []);
+  const { isSuccess, data } = useQuery({
+    queryKey: ["chatList"],
+    queryFn: () => getChatList({ userInfoId: getValidUid() as string }),
+  });
+
   return (
     <div className="w-full flex flex-wrap gap-4">
       {themeConfig.friend_link.map((item) => (
@@ -35,18 +29,19 @@ export default function Page() {
           }}
         />
       ))}
-      {chatList.map((chat) => {
-        return (
-          <div
-            onClick={() => {
-              setChatId("242108044931321300");
-              setOpen(true);
-            }}
-          >
-            {chat.id}
-          </div>
-        );
-      })}
+      {isSuccess &&
+        data.data.data.map((chat) => {
+          return (
+            <div
+              onClick={() => {
+                setChatId("242108044931321300");
+                setOpen(true);
+              }}
+            >
+              {chat.id}
+            </div>
+          );
+        })}
       {open && (
         <ChatRoom
           className="w-full h-[60%]"

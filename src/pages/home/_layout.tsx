@@ -9,9 +9,9 @@ import { themeConfig } from "@/config";
 import { createWebSocket } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";
 import { IWSMessage } from "@/types/websocket";
-import { setUid } from "@/api/token";
 
 let isInited = false;
+export let scoket: WebSocket | null = null;
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -30,13 +30,14 @@ export default function Layout() {
 
   useEffect(() => {
     if (!isInited) {
-      createWebSocket(setMessage);
       getUserInfo()
         .then((res) => {
           isInited = true;
           setUserFormData(res.data.data);
+          scoket = createWebSocket(setMessage, "system");
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           navigate("/login");
         });
     }
@@ -52,6 +53,7 @@ export default function Layout() {
     const timer = setTimeout(() => {
       setIsLoadings(false);
     }, 1000);
+
     return () => clearTimeout(timer);
   }, [location]);
 

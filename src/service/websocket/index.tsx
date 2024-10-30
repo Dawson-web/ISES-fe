@@ -1,12 +1,20 @@
+import { IGetChatMessageResponse } from "@/types/chat";
 import { IWSMessage } from "@/types/websocket";
 
 let lockReconnect = false;
 
-function contectWebSocket() {
+function contectWebSocket(type: string) {
   const url = new URL("ws://localhost:4000/ws");
+  url.searchParams.append("type", type);
   url.searchParams.append("token", localStorage.getItem("token") || "");
+  console.log("url", url.toString());
   const socket = new WebSocket(url);
   return { socket, url };
+}
+
+export function websocketClose(socket: WebSocket) {
+  socket.close();
+  console.log("websocketClose", socket);
 }
 
 function onMessage(
@@ -24,16 +32,19 @@ function onMessage(
   };
 }
 
-export async function createWebSocket(
-  setMessage: React.Dispatch<React.SetStateAction<IWSMessage>>
+export function createWebSocket(
+  setMessage: React.Dispatch<
+    React.SetStateAction<IWSMessage | IGetChatMessageResponse[]>
+  >,
+  type: string
 ) {
   let timer: null | NodeJS.Timer = null;
-  let { socket, url } = contectWebSocket();
+  let { socket, url } = contectWebSocket(type);
   socket.onopen = () => {
     setInterval(() => {
       socket.send(
         JSON.stringify({
-          type: "message",
+          type: "chat",
           content: "ping 通讯测试",
           id: "16312840702276485000",
         })
@@ -53,8 +64,8 @@ export async function createWebSocket(
 
   // 监听关闭事件
   socket.onclose = () => {
-    console.log("WebSocket connection closed");
-    websocketReconnect();
+    console.log("WebSocket connection closed:");
+    // websocketReconnect();
   };
 
   // 监听错误事件
@@ -102,6 +113,101 @@ export async function createWebSocket(
       }, 3000);
     }
   }
+
+  return socket;
+}
+
+export function createChatsocket(
+  setMessage: React.Dispatch<React.SetStateAction<IGetChatMessageResponse[]>>,
+  type: string
+) {
+  let timer: null | NodeJS.Timer = null;
+  let { socket, url } = contectWebSocket(type);
+  socket.onopen = () => {
+    setInterval(() => {
+      socket.send(
+        JSON.stringify({
+          type: "chat",
+          content: "ping 通讯测试",
+          id: "16312840702276485000",
+        })
+      );
+    }, 8000);
+  };
+  // onMessage(socket, setMessage);
+  socket.onmessage = function (event) {
+    try {
+      const message = JSON.parse(event.data);
+      console.log("收到聊天信息");
+      setMessage((prve) => [
+        ...prve,
+        {
+          id: "3634758906878117400",
+          userInfoId: "8229755509034536000",
+          content: "lll\nss",
+          createdAt: "2024-10-28T11:45:05.000Z",
+          updatedAt: "2024-10-28T11:27:06.000Z",
+          chatListId: "242108044931321300",
+          ChatListId: "242108044931321300",
+        },
+      ]);
+      console.log("Received message:", message);
+    } catch (e) {
+      console.log("Received non-JSON data:", e);
+    }
+  };
+
+  // 监听关闭事件
+  socket.onclose = () => {
+    console.log("WebSocket connection closed:");
+    // websocketReconnect();
+  };
+
+  // 监听错误事件
+  socket.onerror = (error) => {
+    console.error("WebSocket error observed:", error);
+    // websocketReconnect();
+  };
+
+  // function websocketReconnect() {
+  //   if (lockReconnect) {
+  //     // 是否已经执行重连
+  //     return;
+  //   }
+  //   console.log("尝试重连...");
+  //   // 没连接上会一直重连，设置延迟避免请求过多
+  //   if (!timer) {
+  //     timer = setInterval(function () {
+  //       console.log("1.尝试重连...", url);
+  //       socket = new WebSocket(url);
+  //       onMessage(socket, setMessage);
+
+  //       socket.onopen = function () {
+  //         console.log("连接成功");
+  //         lockReconnect = true;
+  //         clearInterval(timer as unknown as number);
+  //         timer = null;
+  //         socket.send(JSON.stringify({ type: "subscribe", topic: "news" }));
+  //         setMessage({
+  //           username: "",
+  //           type: "message",
+  //           content: "连接成功",
+  //         });
+  //       };
+
+  //       socket.onclose = function () {
+  //         console.log("连接关闭，准备重连");
+  //         lockReconnect = false;
+  //         websocketReconnect();
+  //       };
+
+  //       socket.onerror = function (error) {
+  //         console.error("连接出错:", error);
+  //         lockReconnect = false;
+  //       };
+  //     }, 3000);
+  //   }
+  // }
 
   return socket;
 }
