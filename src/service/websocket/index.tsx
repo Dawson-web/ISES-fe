@@ -123,34 +123,23 @@ export function createChatsocket(
 ) {
   let timer: null | NodeJS.Timer = null;
   let { socket, url } = contectWebSocket(type);
-  socket.onopen = () => {
-    setInterval(() => {
-      socket.send(
-        JSON.stringify({
-          type: "chat",
-          content: "ping 通讯测试",
-          id: "16312840702276485000",
-        })
-      );
-    }, 8000);
-  };
+  // socket.onopen = () => {
+  //   setInterval(() => {
+  //     socket.send(
+  //       JSON.stringify({
+  //         type: "chat",
+  //         content: "ping 通讯测试",
+  //         id: "16312840702276485000",
+  //       })
+  //     );
+  //   }, 8000);
+  // };
   // onMessage(socket, setMessage);
   socket.onmessage = function (event) {
     try {
       const message = JSON.parse(event.data);
-      console.log("收到聊天信息");
-      setMessage((prve) => [
-        ...prve,
-        {
-          id: "3634758906878117400",
-          userInfoId: "8229755509034536000",
-          content: "lll\nss",
-          createdAt: "2024-10-28T11:45:05.000Z",
-          updatedAt: "2024-10-28T11:27:06.000Z",
-          chatListId: "242108044931321300",
-          ChatListId: "242108044931321300",
-        },
-      ]);
+      console.log("收到聊天信息", message);
+      setMessage((prve) => [...prve, message]);
       console.log("Received message:", message);
     } catch (e) {
       console.log("Received non-JSON data:", e);

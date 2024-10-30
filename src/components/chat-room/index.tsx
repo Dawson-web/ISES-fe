@@ -12,27 +12,29 @@ import { useQuery } from "@tanstack/react-query";
 interface Props {
   className?: string;
   chatId: string;
+  chatUser: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 let socket: WebSocket | null = null;
 
-const ChatRoom: FC<Props> = ({ className, chatId, setOpen }) => {
+const ChatRoom: FC<Props> = ({ className, chatId, setOpen, chatUser }) => {
   const [messages, setMessages] = useState<IGetChatMessageResponse[]>([]);
   const [content, setContent] = useState<string>("");
   const handleSend = async () => {
     const data = {
       content,
       userInfoId: getValidUid() as string,
-      chatListId: "242108044931321300",
+      chatListId: chatId,
+      chatUser,
     };
+    socket?.send(JSON.stringify(data));
     await sendChatMessage(data);
   };
   const { isSuccess, data, isFetching } = useQuery({
     queryKey: ["chatList", chatId], // 将 chatId 包括在 queryKey 中，以便当 chatId 改变时，查询会被重新执行
     queryFn: () => getChatMessage(chatId || "242108044931321300"),
     onSuccess: (data) => {
-      // setMessages(data.data.data); // 更新消息状态
       if (!socket) {
         // socket = createWebSocket(setMessages, "chat");
       }

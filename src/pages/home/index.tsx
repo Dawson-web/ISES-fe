@@ -46,6 +46,7 @@ export default function Page() {
         </div>
       </div>
       <Pagination
+        id="ces"
         total={totalPages}
         value={page}
         onChange={onChange}

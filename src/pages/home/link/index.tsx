@@ -1,13 +1,14 @@
 import ChatRoom from "@/components/chat-room";
 import LinkCard from "../../../components/link_card";
 import { themeConfig } from "../../../config";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getChatList } from "@/service/chat";
 import { getValidUid } from "@/api/token";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Page() {
   const [chatId, setChatId] = useState("");
+  const [chatUser, setChatUser] = useState("");
   const [open, setOpen] = useState(false);
   const { isSuccess, data } = useQuery({
     queryKey: ["chatList"],
@@ -34,11 +35,14 @@ export default function Page() {
           return (
             <div
               onClick={() => {
-                setChatId("242108044931321300");
+                setChatId(chat.id);
+                setChatUser(
+                  getValidUid() == chat.user1 ? chat.user2 : chat.user1
+                );
                 setOpen(true);
               }}
             >
-              {chat.id}
+              {chat.id}-{chat.user1}
             </div>
           );
         })}
@@ -46,6 +50,7 @@ export default function Page() {
         <ChatRoom
           className="w-full h-[60%]"
           chatId={chatId}
+          chatUser={chatUser}
           setOpen={setOpen}
         />
       )}
