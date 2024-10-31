@@ -138,6 +138,7 @@ interface Props {
   avatar_show?: boolean;
   className?: string;
   avatar_src?: string;
+  userName?: string;
 }
 
 const NavMenu: FC<Props> = ({
@@ -146,6 +147,7 @@ const NavMenu: FC<Props> = ({
   avatar_show,
   className,
   avatar_src,
+  userName,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [option, setOption] = useState<string>("主页");
@@ -181,8 +183,8 @@ const NavMenu: FC<Props> = ({
             <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold" />
             <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
               {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
-              <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold">
-                Dawson
+              <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold truncate w-[80px] text-center">
+                {userName}
               </div>
             </div>
             {options.map((item: OptionData) => {

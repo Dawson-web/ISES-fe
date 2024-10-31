@@ -9,7 +9,6 @@ interface Props {
   avatarSrc?: string;
 }
 const MessageItem: FC<Props> = ({ message, className, avatarSrc }) => {
-  console.log(avatarSrc);
   return (
     <div className={clsx("flex  gap-2", className)}>
       <div className={clsx("relative w-[40px] h-[40px] ")} onClick={() => {}}>

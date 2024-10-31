@@ -51,7 +51,7 @@ const UserAvatar: FC<Props> = ({ src, size, className }) => {
             "https://www.betula.space/images/avatar.png"
           }
           alt="avatar"
-          className={clsx("relative w-[60px] h-[60px] rounded-full", {
+          className={clsx("relative w-[60px] h-[60px] rounded-full ", {
             "w-[40px] h-[40px]": size === "small",
             "w-[60px] h-[60px]": size === "medium",
             "w-[80px] h-[80px]": size === "large",

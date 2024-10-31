@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React from "react";
 
 export default function LinkCard(props: any) {
-  const { url, descr, name, onClick } = props;
+  const { url, descr, name, onClick, online } = props;
   const [isHovered, setIsHovered] = React.useState(false);
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -33,9 +33,14 @@ export default function LinkCard(props: any) {
           <img
             src={url || "https://www.betula.space/images/avatar.png"}
             alt="avatar"
-            className="rounded-full"
+            className="rounded-full w-full h-full object-cover"
           />
-          <div className="bg-green-500 border-white border-4 rounded-full w-[20px] h-[20px] absolute bottom-[0px] right-[0px]"></div>
+          <div
+            className={clsx(
+              " border-white border-4 rounded-full w-[20px] h-[20px] absolute bottom-[0px] right-[0px]",
+              online ? "bg-green-500" : "bg-red-500"
+            )}
+          ></div>
         </aside>
         <main className="w-[70%] text-center text-gray-600 font-medium p-2 flex flex-col items-start">
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>

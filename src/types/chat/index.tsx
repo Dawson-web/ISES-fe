@@ -4,6 +4,12 @@ export interface IGetChatListResponse {
   user2: string;
   createdAt: string;
   updatedAt: string;
+  username: string;
+  userInfoId: string;
+  introduce: string | null;
+  school: string | null;
+  avatar: string | null;
+  online?: number;
 }
 export interface IGetChatListRequest {
   userInfoId: string;
