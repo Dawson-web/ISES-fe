@@ -47,7 +47,7 @@ export default function Layout() {
 
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen   pt-[40px] sm:[pt-0]"
+              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen"
             )}
           >
             <ScoketMessage

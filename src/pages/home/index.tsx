@@ -4,6 +4,7 @@ import { IArticleDetail, IPaginationRequest } from "@/types/article";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Pagination } from "@mantine/core";
+import News from "@/components/news";
 
 export default function Page() {
   const [articles, setArticles] = useState<IArticleDetail[]>([]);
@@ -31,6 +32,7 @@ export default function Page() {
   if (!articles.length) return null;
   return (
     <>
+      <News className="bg-[url('../../../public/cover.png')] sm:h-[30vh] h-[150px] w-full  bg-no-repeat bg-cover mb-4 " />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full ">
         <div className="w-full flex flex-col gap-2 justity-between ">
           {articles.slice(0, articles.length / 2).map((article) => {

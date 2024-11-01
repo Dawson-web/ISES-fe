@@ -10,9 +10,10 @@ interface Props {
   src?: string;
   size: "small" | "medium" | "large";
   className?: string;
+  disabled?: boolean;
 }
 
-const UserAvatar: FC<Props> = ({ src, size, className }) => {
+const UserAvatar: FC<Props> = ({ src, size, className, disabled = false }) => {
   const avatarUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -42,7 +43,7 @@ const UserAvatar: FC<Props> = ({ src, size, className }) => {
           "w-[80px] h-[80px]": size === "large",
         })}
         onClick={() => {
-          avatarUpload();
+          if (!disabled) avatarUpload();
         }}
       >
         <img
