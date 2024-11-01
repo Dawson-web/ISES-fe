@@ -38,9 +38,9 @@ export const Logout = () => {
           <div className="flex  flex-nowrap justify-between mt-4 ">
             <p className=" font-semibold">是否确认退出当前账号？</p>
             <Button
-              onClick={() => {
+              onClick={async () => {
                 close();
-                logout();
+                await logout();
                 navigate("/login");
                 toast.success("退出成功");
               }}

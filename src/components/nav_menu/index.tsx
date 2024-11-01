@@ -150,7 +150,23 @@ const NavMenu: FC<Props> = ({
   userName,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [option, setOption] = useState<string>("主页");
+  const location = window.location.pathname;
+  let defaultOption = "主页";
+  switch (location) {
+    case "/home":
+      defaultOption = "主页";
+      break;
+    case "/home/post":
+      defaultOption = "发布";
+      break;
+    case "/home/components":
+      defaultOption = "组件";
+      break;
+    case "/home/link":
+      defaultOption = "友链";
+      break;
+  }
+  const [option, setOption] = useState<string>(defaultOption);
 
   function menuOption(options: string) {
     setOption(options);
@@ -159,9 +175,8 @@ const NavMenu: FC<Props> = ({
   return (
     <div
       className={clsx(
-        "sm:w-[200px] sm:h-screen h-auto sm:relative fixed z-50 w-full shadow-md dark:bg-theme_dark",
         {
-          "flex flex-col justify-start h-screen ": open,
+          "flex flex-col justify-start  h-full ": open,
         },
         className
       )}
@@ -170,14 +185,14 @@ const NavMenu: FC<Props> = ({
       <NavOpen open={open} setOpen={setOpen} />
       <aside
         className={clsx("bg-white dark:bg-theme_dark ", {
-          "fixed  z-40 mt-[40px] h-screen w-full": open,
+          "fixed z-40 mt-[40px] h-screen w-full": open,
           "sm:block hidden": !open,
         })}
       >
         <NavigationMenu>
           <NavigationMenuList
             className={clsx(
-              " sm:flex flex-col justify-start   overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark"
+              "h-screen sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark"
             )}
           >
             <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold" />

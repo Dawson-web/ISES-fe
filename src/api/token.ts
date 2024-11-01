@@ -1,3 +1,5 @@
+import { logOut } from "@/service/user";
+
 export function setToken(token: string) {
   localStorage.setItem("token", token);
 }
@@ -21,6 +23,9 @@ export function getValidRole() {
   return role;
 }
 
-export function logout() {
-  localStorage.removeItem("token");
+export async function logout() {
+  await logOut().then(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("uid");
+  });
 }

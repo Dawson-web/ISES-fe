@@ -13,3 +13,7 @@ export const uploadAvatar = async (formData: FormData) => {
     },
   });
 };
+
+export const logOut = async () => {
+  return await $axios.post<ApiOk<null>>("/user/logout");
+};

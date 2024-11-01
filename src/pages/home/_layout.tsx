@@ -1,10 +1,8 @@
 import clsx from "clsx";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { IUserFormData } from "@/types/user";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getUserInfo } from "@/service/user";
 import NavMenu from "@/components/nav_menu";
-import Loading from "@/components/loading";
 import { themeConfig } from "@/config";
 import { createWebSocket, websocketClose } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";
@@ -27,24 +25,29 @@ export default function Layout() {
       return getUserInfo();
     },
   });
+  // 关闭websocket
+  useEffect(() => {
+    if (socket) websocketClose(socket);
+  }, []);
   if (isError) {
     navigate("/login");
     websocketClose(socket as WebSocket);
   } else {
     return (
       isSuccess && (
-        <div className={clsx("flex flex-col  sm:flex-row  w-full sm:h-full ")}>
+        <div className={clsx("flex flex-col  sm:flex-row  w-full  ")}>
           <NavMenu
             options={themeConfig.menu.options}
             darkMode={themeConfig.menu.darkMode}
             avatar_show={themeConfig.menu.avatar_show}
             avatar_src={data.data.data.avatar}
             userName={data.data.data.username}
+            className="sm:w-[200px] sm:h-screen  sm:relative  z-50 w-full dark:bg-theme_dark h-full "
           />
 
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen h-screen overflow-y-auto pt-[40px] sm:[pt-0]"
+              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen   pt-[40px] sm:[pt-0]"
             )}
           >
             <ScoketMessage

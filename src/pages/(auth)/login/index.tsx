@@ -1,6 +1,6 @@
 import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import AppLogo from "../../../components/app-logo";
 import { Link, useNavigate } from "react-router-dom";
 import CaptchaCode from "../../../components/captcha_code";
@@ -8,6 +8,7 @@ import { ILoginFileds } from "../../../types";
 import { login } from "../../../service";
 import { toast } from "sonner";
 import { setToken, setUid } from "../../../api/token";
+import { getUserInfo } from "@/service/user";
 
 export default function Page() {
   const errorTimes = useRef(0);
@@ -27,6 +28,14 @@ export default function Page() {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "请输入正确的邮箱"),
     },
   });
+  // 暂不启用，因为本机后端会挂掉
+  // useEffect(() => {
+  //   getUserInfo().then((res) => {
+  //     if (res.status === 200) {
+  //       navigate("/home");
+  //     }
+  //   });
+  // }, []);
   return (
     <div className=" flex flex-col items-center gap-8">
       <div className="flex items-center gap-2">
