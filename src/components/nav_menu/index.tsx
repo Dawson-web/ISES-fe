@@ -1,116 +1,3 @@
-// "use client";
-
-// import {
-//   NavigationMenu,
-//   NavigationMenuItem,
-//   NavigationMenuLink,
-//   NavigationMenuList,
-// } from "@radix-ui/react-navigation-menu";
-// import { FC, useState } from "react";
-// import { DarkMode } from "./DarkMode";
-// import { NavOpen } from "./NavOpen";
-// import UserAvatar from "../user_avatar";
-// import clsx from "clsx";
-// import { Link } from "react-router-dom";
-// import { Logout } from "./Logout";
-
-// interface OptionData {
-//   name: string;
-//   herf: string;
-//   icon: JSX.Element;
-// }
-
-// interface Props {
-//   options: OptionData[];
-//   darkMode: boolean;
-//   avatar_show?: boolean;
-//   className?: string;
-//   avatar_src?: string;
-// }
-
-// const NavMenu: FC<Props> = ({
-//   options,
-//   darkMode,
-//   avatar_show,
-//   className,
-//   avatar_src,
-// }) => {
-//   const [open, setOpen] = useState<boolean>(false);
-//   const [option, setOption] = useState<string>("主页");
-
-//   function menuOption(options: string) {
-//     setOption(options);
-//     setTimeout(() => setOpen(false), 1000);
-//   }
-//   return (
-//     <div
-//       className={clsx(
-//         "sm:w-[200px] sm:h-screen h-auto relative ",
-//         {
-//           "flex flex-col justify-start h-screen": open,
-//         },
-//         className
-//       )}
-//     >
-//       {/* 移动端控制菜单打开按钮 */}
-//       <NavOpen open={open} setOpen={setOpen} className={clsx("z-50")} />
-//       <aside
-//         className={clsx("bg-white dark:bg-theme_dark ", {
-//           "absolute w-screen z-40 mt-[40px] h-screen ": open,
-//           "sm:block hidden": !open,
-//         })}
-//       >
-//         <NavigationMenu>
-//           <NavigationMenuList
-//             className={clsx(
-//               " sm:flex flex-col justify-start   overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark"
-//             )}
-//           >
-//             {avatar_show && (
-//               <UserAvatar
-//                 src={avatar_src}
-//                 size="medium"
-//                 className="mx-auto px-10"
-//               />
-//             )}
-//             {options.map((item: OptionData) => {
-//               return (
-//                 <NavigationMenuItem
-//                   onClick={() => menuOption(item.name)}
-//                   key={item.herf}
-//                 >
-//                   <Link to={item.herf}>
-//                     <NavigationMenuLink
-//                       className={clsx(
-//                         " px-10 gap-8  group  h-14  flex items-end  bg-background dark:bg-theme_dark dark:text-gray-600 text-md font-semibold 	 ",
-//                         {
-//                           "transition-[transform] duration-300 translate-x-6  border-l-4 border-l-theme_blue":
-//                             option == item.name,
-//                           "transition-[transform] translate-x-0":
-//                             option !== item.name,
-//                         }
-//                       )}
-//                     >
-//                       {item.icon}
-//                       {item.name}
-//                     </NavigationMenuLink>
-//                   </Link>
-//                 </NavigationMenuItem>
-//               );
-//             })}
-//             {darkMode && <DarkMode />}
-//             <Logout />
-//           </NavigationMenuList>
-//         </NavigationMenu>
-//       </aside>
-//     </div>
-//   );
-// };
-
-// export default NavMenu;
-
-"use client";
-
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -125,6 +12,10 @@ import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { Logout } from "./Logout";
 import AppLogo from "../app-logo";
+import { LayoutModel } from "./LayoutModel";
+import { Settings } from "lucide-react";
+import { UnstyledButton } from "@mantine/core";
+import { Menu } from "@mantine/core";
 
 interface OptionData {
   name: string;
@@ -139,6 +30,8 @@ interface Props {
   className?: string;
   avatar_src?: string;
   userName?: string;
+  vercel: boolean;
+  setVercel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NavMenu: FC<Props> = ({
@@ -148,8 +41,10 @@ const NavMenu: FC<Props> = ({
   className,
   avatar_src,
   userName,
+  vercel,
+  setVercel,
 }) => {
-  const [open, setOpen] = useState<boolean>(false);
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const location = window.location.pathname;
   let defaultOption = "主页";
   switch (location) {
@@ -173,38 +68,36 @@ const NavMenu: FC<Props> = ({
 
   function menuOption(options: string) {
     setOption(options);
-    setTimeout(() => setOpen(false), 1000);
+    setTimeout(() => setMobileOpen(false), 1000);
   }
   return (
-    <div
-      className={clsx(
-        {
-          "flex flex-col justify-start  h-full ": open,
-        },
-        className
-      )}
-    >
+    <div className={clsx(className)}>
       {/* 移动端控制菜单打开按钮 */}
-      <NavOpen open={open} setOpen={setOpen} />
+      <NavOpen open={mobileOpen} setOpen={setMobileOpen} />
       <aside
         className={clsx("bg-white dark:bg-theme_dark ", {
-          "fixed z-40 mt-[40px] h-screen w-full": open,
-          "sm:block hidden": !open,
+          "fixed z-40 mt-[40px] h-screen w-full": mobileOpen,
+          "sm:block hidden ": !mobileOpen,
         })}
       >
         <NavigationMenu>
           <NavigationMenuList
-            className={clsx(
-              "h-screen sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark"
-            )}
+            className={clsx({
+              "sm:flex w-full": vercel,
+              "h-screen sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark":
+                !vercel,
+            })}
           >
-            <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold" />
-            <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
-              {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
-              <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold truncate w-[80px] text-center">
-                {userName}
+            <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold  mb-1  " />
+
+            {(!vercel || mobileOpen) && (
+              <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
+                {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
+                <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold truncate w-[80px] text-center">
+                  {userName}
+                </div>
               </div>
-            </div>
+            )}
             {options.map((item: OptionData) => {
               return (
                 <Link
@@ -215,12 +108,22 @@ const NavMenu: FC<Props> = ({
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       className={clsx(
-                        " px-10 gap-8  group sm:my-4 my-6  flex items-end  bg-background dark:bg-theme_dark dark:text-gray-600 text-md font-semibold 	 ",
+                        " group sm:my-4 my-6  flex items-en dark:bg-theme_dark dark:text-gray-600 text-md font-semibold 	 ",
+                        {
+                          "px-4 gap-4": vercel && !mobileOpen,
+                          "px-10 gap-8 ": !vercel || mobileOpen,
+                        },
                         {
                           "transition-[transform] duration-300 translate-x-6  border-l-4 border-l-theme_blue dark:text-theme_gray":
-                            option == item.name,
+                            option == item.name && !vercel,
                           "transition-[transform] translate-x-0":
-                            option !== item.name,
+                            option !== item.name && !vercel,
+                        },
+                        {
+                          "transition-[color] duration-300   text-theme_blue dark:text-theme_gray":
+                            option == item.name && vercel,
+                          "transition-[color] translate-x-0":
+                            option !== item.name && vercel,
                         }
                       )}
                     >
@@ -231,8 +134,58 @@ const NavMenu: FC<Props> = ({
                 </Link>
               );
             })}
-            {darkMode && <DarkMode />}
-            <Logout />
+            <NavigationMenuItem
+              className={clsx(
+                " group sm:my-4 my-6 flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                {
+                  "px-4 gap-4": vercel && !mobileOpen,
+                  "px-10 gap-8 ": !vercel || mobileOpen,
+                }
+              )}
+            >
+              <Logout />
+            </NavigationMenuItem>
+
+            <div
+              className={clsx(
+                "   flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                {
+                  "px-4 gap-4": vercel && !mobileOpen,
+                  "px-10 gap-8 ": !vercel || mobileOpen,
+                }
+              )}
+            >
+              <Menu width={200} shadow="md">
+                <Menu.Target>
+                  <UnstyledButton
+                    className={clsx(
+                      " group sm:my-4  flex dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                      {
+                        " gap-4": vercel && !mobileOpen,
+                        " gap-8 ": !vercel || mobileOpen,
+                      }
+                    )}
+                  >
+                    <Settings />
+                    设置
+                  </UnstyledButton>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Item>
+                    <AppLogo />
+                    <div className="w-full h-full flex flex-col gap-4 mt-4"></div>
+                  </Menu.Item>
+                  <Menu.Item>
+                    {!mobileOpen && (
+                      <LayoutModel vercel={vercel} setVercel={setVercel} />
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>{darkMode && <DarkMode />}</Menu.Item>{" "}
+                  <Menu.Item></Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </div>
           </NavigationMenuList>
         </NavigationMenu>
       </aside>

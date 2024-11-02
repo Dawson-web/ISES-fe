@@ -22,13 +22,6 @@ export default function ProfileCard() {
       createdAt: data?.data.data.createdAt || "",
       id: data?.data.data.id || "",
     },
-
-    // functions will be used to validate values at corresponding key
-    // validate: {
-    //   username: (value) => (value == "" ? "用户名不能为空" : null),
-    //   introduce: (value) => (value == "" ? "简介不能为空" : null),
-    //   school: (value) => (value == "" ? "学校不能为空" : null),
-    // },
   });
   const updateProfile = useMutation({
     mutationFn: (v: IUpdateUserForm) =>

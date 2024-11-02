@@ -1,19 +1,11 @@
 import { agreeChatRoom } from "@/service/chat";
 import { Button } from "@mantine/core";
 import clsx from "clsx";
-import React from "react";
 
 export default function LinkCard(props: any) {
   const { url, descr, name, onClick, online, connect, temporary, chatListId } =
     props;
-  const [isHovered, setIsHovered] = React.useState(false);
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
   async function handleAgreeChatRoom() {
     const data = {
       chatListId: chatListId,
@@ -21,21 +13,10 @@ export default function LinkCard(props: any) {
     await agreeChatRoom(data);
   }
   return (
-    <div
-      className="mx-auto w-[90%] sm:w-[45%] min-w-[320px]  p-4 rounded-lg shadow-md bg-white dark:bg-theme_dark border-transparent hover:border-theme_blue border-2 hover:shadow-sm "
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div
-        // href={link}
-        // target="_blank"
-        // rel="noopener noreferrer"
-        className="flex  items-center justify-around"
-      >
+    <div className="mx-auto w-[90%] sm:w-[45%] min-w-[320px]  p-4 rounded-lg shadow-md bg-white dark:bg-theme_dark border-transparent hover:border-theme_blue border-2 hover:shadow-sm ">
+      <div className="flex  items-center justify-around">
         <aside
-          className={clsx("w-[90px] h-[90px]  relative ", {
-            "animate-bounce 	": isHovered,
-          })}
+          className={clsx("w-[60px] h-[60px]  relative ")}
           onClick={onClick}
         >
           <img
@@ -54,7 +35,7 @@ export default function LinkCard(props: any) {
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>
           <div className="text-sm">{descr || "这个人很懒未留简介"}</div>
         </main>
-        {!connect && (
+        {connect && (
           <div className="text-sm font-semibold text-theme_blue flex flex-col items-center justify-between gap-4">
             <p> 临时通讯</p>
             {temporary && (

@@ -31,13 +31,14 @@ export default function Page() {
       toast.error(String(error));
     }
   };
+
   useEffect(() => {
     handleGetArticleRecommand();
   }, [page, search]);
   if (!articles.length) return null;
   return (
     <>
-      <News className="bg-[url('../../../public/cover.png')] sm:h-[30vh] h-[150px] w-full  bg-no-repeat bg-cover mb-4 " />
+      <News className="bg-[url('../../../public/cover.png')] sm:h-[30vh] h-[150px] w-full  bg-no-repeat bg-cover mb-4" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full ">
         <div className="w-full flex flex-col gap-2 justity-between ">
           {articles.slice(0, articles.length / 2).map((article) => {
@@ -76,11 +77,13 @@ export default function Page() {
         onChange={onChange}
         className="sm mt-8"
       />
-      <UserProfile
-        opened={opened}
-        close={close}
-        userInfoId={userSelect.current}
-      />
+      {opened && (
+        <UserProfile
+          opened={opened}
+          close={close}
+          userInfoId={userSelect.current}
+        />
+      )}
     </>
   );
 }
