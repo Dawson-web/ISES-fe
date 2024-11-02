@@ -40,6 +40,9 @@ export default function Page() {
               name={chat.username}
               desc={chat.introduce}
               online={chat.online as number}
+              connect={chat.connect}
+              chatListId={chat.id}
+              temporary={chat.user1 === getValidUid() ? false : true} //判断是否为临时会话,用户1为发起者
               onClick={() => {
                 setChatInfo({
                   chatId: chat.id,

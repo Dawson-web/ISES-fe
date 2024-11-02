@@ -19,6 +19,7 @@ export interface IUserFormData {
   createdAt: string;
   updatedAt: string;
   User: IAccountData;
+  online: boolean;
 }
 
 export interface IUpdateUserForm {

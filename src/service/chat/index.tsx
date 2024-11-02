@@ -1,19 +1,12 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
 import {
+  ICreateChatRoomRequest,
   IGetChatListRequest,
   IGetChatListResponse,
   IGetChatMessageResponse,
   ISendChatMessageRequest,
 } from "@/types/chat";
-
-// export const addArticle = async (data: IGetChatListRequest) => {
-//   return await $axios.post<ApiOk<IGetChatListResponse[]>>("/user/articles", {
-//     title: data.title,
-//     content: data.content,
-//     type: data.type,
-//   });
-// };
 
 export const getChatList = async (data: IGetChatListRequest) => {
   return await $axios.post<ApiOk<IGetChatListResponse[]>>(
@@ -30,4 +23,12 @@ export const getChatMessage = async (chatListId: string) => {
 
 export const sendChatMessage = async (data: ISendChatMessageRequest) => {
   return await $axios.post<ApiOk<null>>(`/user/chat/message`, data);
+};
+
+export const createChatRoom = async (data: ICreateChatRoomRequest) => {
+  return await $axios.post<ApiOk<unknown>>("/user/chat/create", data);
+};
+
+export const agreeChatRoom = async (data: { chatListId: string }) => {
+  return await $axios.post<ApiOk<unknown>>("/user/chat/agree", data);
 };

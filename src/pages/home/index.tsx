@@ -5,8 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Pagination } from "@mantine/core";
 import News from "@/components/news";
-import UserProfile from "@/components/profile/userProfile";
 import { useDisclosure } from "@mantine/hooks";
+import UserProfile from "@/components/profile/UserProfile";
 
 export default function Page() {
   const [articles, setArticles] = useState<IArticleDetail[]>([]);

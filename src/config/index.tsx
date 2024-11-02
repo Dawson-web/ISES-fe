@@ -1,15 +1,4 @@
-import {
-  Album,
-  Calendar,
-  Home,
-  Link,
-  Mail,
-  MapPinned,
-  PhoneCall,
-  PodcastIcon,
-  ScanEye,
-  User,
-} from "lucide-react";
+import { Home, Link, PodcastIcon, User } from "lucide-react";
 
 export const apiConfig = {
   // baseUrl: "http://47.93.254.190:3000",

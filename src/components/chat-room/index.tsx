@@ -1,7 +1,7 @@
 import { Button, Card } from "@mantine/core";
 import clsx from "clsx";
 import { Undo2 } from "lucide-react";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import { getChatMessage, sendChatMessage } from "@/service/chat";
 import { getValidUid } from "@/api/token";
