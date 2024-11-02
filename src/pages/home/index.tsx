@@ -1,10 +1,12 @@
 import ArticleItem from "@/components/article-item";
 import { getArticlePagination } from "@/service/article";
 import { IArticleDetail, IPaginationRequest } from "@/types/article";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Pagination } from "@mantine/core";
 import News from "@/components/news";
+import UserProfile from "@/components/profile/userProfile";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function Page() {
   const [articles, setArticles] = useState<IArticleDetail[]>([]);
@@ -12,6 +14,9 @@ export default function Page() {
   const [total, setTotal] = useState(0);
   const [search] = useState("");
   const totalPages = useMemo(() => Math.ceil(total / 6), [total]);
+  const [opened, { open, close }] = useDisclosure(false);
+  const userSelect = useRef("");
+
   const handleGetArticleRecommand = async () => {
     try {
       const reqParams: IPaginationRequest = {
@@ -36,14 +41,32 @@ export default function Page() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full ">
         <div className="w-full flex flex-col gap-2 justity-between ">
           {articles.slice(0, articles.length / 2).map((article) => {
-            return <ArticleItem article={article} />;
+            return (
+              <ArticleItem
+                article={article}
+                onClick={() => {
+                  console.log(article);
+                  userSelect.current = article.userInfoId;
+                  open();
+                }}
+              />
+            );
           })}
         </div>
         <div className="w-full flex flex-col gap-2 justify-between ">
           {articles
             .slice(articles.length / 2, articles.length)
             .map((article) => {
-              return <ArticleItem article={article} />;
+              return (
+                <ArticleItem
+                  article={article}
+                  onClick={() => {
+                    console.log(article);
+                    userSelect.current = article.userInfoId;
+                    open();
+                  }}
+                />
+              );
             })}
         </div>
       </div>
@@ -52,6 +75,11 @@ export default function Page() {
         value={page}
         onChange={onChange}
         className="sm mt-8"
+      />
+      <UserProfile
+        opened={opened}
+        close={close}
+        userInfoId={userSelect.current}
       />
     </>
   );

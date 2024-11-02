@@ -46,7 +46,6 @@ export default function Page() {
         onSubmit={form.onSubmit(async (v) => {
           try {
             await login(v, code.current).then((res) => {
-              console.log("token", res.data.data.token);
               setToken(res.data.data.token);
               setUid(res.data.data.userInfoId);
             });

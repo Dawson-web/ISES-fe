@@ -165,6 +165,9 @@ const NavMenu: FC<Props> = ({
     case "/home/link":
       defaultOption = "友链";
       break;
+    case "/home/profile":
+      defaultOption = "个人";
+      break;
   }
   const [option, setOption] = useState<string>(defaultOption);
 

@@ -21,6 +21,12 @@ export interface IUserFormData {
   User: IAccountData;
 }
 
+export interface IUpdateUserForm {
+  username: string;
+  introduce: string;
+  school: string;
+}
+
 export interface IFormContext {
   userFormData: IUserFormData;
   updateFormData: (key: string, data: unknown) => void;
