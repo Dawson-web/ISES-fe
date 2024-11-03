@@ -3,8 +3,17 @@ import { Button } from "@mantine/core";
 import clsx from "clsx";
 
 export default function LinkCard(props: any) {
-  const { url, descr, name, onClick, online, connect, temporary, chatListId } =
-    props;
+  const {
+    url,
+    descr,
+    name,
+    onClick,
+    online,
+    connect,
+    temporary,
+    chatListId,
+    className,
+  } = props;
 
   async function handleAgreeChatRoom() {
     const data = {
@@ -13,7 +22,7 @@ export default function LinkCard(props: any) {
     await agreeChatRoom(data);
   }
   return (
-    <div className="mx-auto w-[90%] sm:w-[45%] min-w-[320px]  p-4 rounded-lg shadow-md bg-white dark:bg-theme_dark border-transparent hover:border-theme_blue border-2 hover:shadow-sm ">
+    <div className={clsx(className)}>
       <div className="flex  items-center justify-around">
         <aside
           className={clsx("w-[60px] h-[60px]  relative ")}
@@ -35,9 +44,9 @@ export default function LinkCard(props: any) {
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>
           <div className="text-sm">{descr || "这个人很懒未留简介"}</div>
         </main>
-        {connect && (
-          <div className="text-sm font-semibold text-theme_blue flex flex-col items-center justify-between gap-4">
-            <p> 临时通讯</p>
+        {!connect ? (
+          <div className="text-sm font-semibold text-theme_blue flex flex-col items-center justify-between gap-4 w-[calc(30%-60px)] text-wrap  ">
+            <p> 临时</p>
             {temporary && (
               <Button
                 className="bg-theme_blue p-2"
@@ -47,6 +56,8 @@ export default function LinkCard(props: any) {
               </Button>
             )}
           </div>
+        ) : (
+          ""
         )}
       </div>
     </div>

@@ -55,7 +55,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
         className
       )}
     >
-      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between p-2 h-[10%] ">
+      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[10%] p-2 ">
         <span className="font-bold">{chatInfo.userName}</span>
         <Undo2
           className="text-gray-600 dark:text-white"
