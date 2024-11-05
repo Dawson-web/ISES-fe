@@ -8,8 +8,9 @@ import UserAvatar from "../user_avatar";
 
 interface Props {
   article: IArticleDetail;
+  onClick?: () => void;
 }
-const ArticleItem: FC<Props> = ({ article }) => {
+const ArticleItem: FC<Props> = ({ article, onClick }) => {
   const handleLike = async () => {
     try {
       await likeArticle(String(article.id));
@@ -18,9 +19,16 @@ const ArticleItem: FC<Props> = ({ article }) => {
     }
   };
   return (
-    <Card className="flex-grow flex flex-col gap-1 justify-evenly dark:bg-theme_dark dark:text-white">
+    <Card
+      className="flex-grow flex flex-col gap-1 justify-evenly dark:bg-theme_dark dark:text-white rounded-lg shadow-md"
+      onClick={onClick}
+    >
       <header className="flex items-end gap-2">
-        <UserAvatar size="small" src={article.UserInfo.avatar}></UserAvatar>
+        <UserAvatar
+          size="small"
+          src={article.UserInfo.avatar}
+          disabled={true}
+        ></UserAvatar>
         <div className="font-semibold text-sm">
           作者:{article.UserInfo.username}
         </div>

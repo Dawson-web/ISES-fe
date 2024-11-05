@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { NavigationMenuItem } from "@radix-ui/react-navigation-menu";
+import { useState, useEffect, FC } from "react";
 import clsx from "clsx";
 import { ToggleLeft, ToggleRight } from "lucide-react";
 
@@ -15,7 +14,11 @@ function darkFunction(dark: boolean) {
   }
 }
 
-export const DarkMode = () => {
+interface IProps {
+  className?: string;
+}
+
+export const DarkMode: FC<IProps> = ({ className }) => {
   const [dark, setDark] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -26,11 +29,7 @@ export const DarkMode = () => {
   }, [dark]); // Add dark to the dependency array
 
   return (
-    <NavigationMenuItem
-      className={clsx(
-        "px-10 gap-8 group sm:my-4 my-6 flex items-end bg-background dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer"
-      )}
-    >
+    <div className={clsx(className)}>
       <div
         className="text-nowrap flex gap-8"
         onClick={() => {
@@ -38,8 +37,8 @@ export const DarkMode = () => {
         }}
       >
         {!dark ? <ToggleRight /> : <ToggleLeft />}
-        暗色模式
+        暗色
       </div>
-    </NavigationMenuItem>
+    </div>
   );
 };

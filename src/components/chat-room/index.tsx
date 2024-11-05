@@ -1,4 +1,4 @@
-import { Card } from "@mantine/core";
+import { Button, Card } from "@mantine/core";
 import clsx from "clsx";
 import { Undo2 } from "lucide-react";
 import React, { FC, useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import { IGetChatMessageResponse } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
 import { IChatInfo } from "@/pages/home/link";
-
 interface Props {
   className?: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,7 +34,6 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
     queryKey: ["chatList", chatInfo.chatId], // 将 chatInfo.chatId 包括在 queryKey 中，以便当 chatInfo.chatId 改变时，查询会被重新执行
     queryFn: () => getChatMessage(chatInfo.chatId),
   });
-
   // 在 useEffect 中监听 isSuccess 和 isFetching 的变化
   useEffect(() => {
     if (isSuccess && !isFetching) {
@@ -53,11 +51,11 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
   return (
     <Card
       className={clsx(
-        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0",
+        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 rounded-xl ",
         className
       )}
     >
-      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between p-2 h-[10%] ">
+      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 p-2 ">
         <span className="font-bold">{chatInfo.userName}</span>
         <Undo2
           className="text-gray-600 dark:text-white"
@@ -70,12 +68,12 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
       {isSuccess ? (
         <MessageList
           messages={messages}
-          className="border-b-2 border-gray-200 dark:border-gray-600 h-[65%] overflow-y-scroll"
+          className="border-b-2 border-gray-200 dark:border-gray-600  flex-1 overflow-y-scroll"
         />
       ) : (
         <div>Loading...</div> // 显示加载中的提示
       )}
-      <div className="flex flex-col h-[25%]">
+      <div className="flex flex-col flex-shrink-0 h-[160px]">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -89,11 +87,22 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
               setContent("");
             }
           }}
+          placeholder=" 按 Enter 发送消息"
           className="w-full h-full p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
         />
-        <p className="p-3 text-sm text-right text-default-500">
-          按 Enter 发送消息
-        </p>
+        <Button
+          className="w-[100px] h-10 bg-blue-500 text-white font-bold self-end m-2 "
+          onClick={async () => {
+            await handleSend();
+            setMessages((prev) => [
+              ...prev,
+              { content, userInfoId: getValidUid() as string },
+            ]);
+            setContent("");
+          }}
+        >
+          发送
+        </Button>
       </div>
     </Card>
   );

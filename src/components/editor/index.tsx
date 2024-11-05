@@ -34,11 +34,11 @@ const IeseEditor = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4">
-      <div className="col-span-2 ">
+    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full">
+      <div className="flex-auto flex flex-col gap-4">
         <MenuBar editor={editor} />
 
-        <Card className="rounded-lg p-4 mt-2 dark:bg-theme_dark border border-gray-300 dark:border-gray-600 dark:text-white  overflow-hidden flex flex-col gap-4 h-full">
+        <Card className=" rounded-lg p-4 mt-2 dark:bg-theme_dark border border-gray-300 dark:border-gray-600 dark:text-white  overflow-hidden flex flex-col gap-4 flex-1">
           <div className="flex  gap-4 nowrap ">
             <div className="flex-1">
               <Badge className="text-[1rem] bg-theme_blue">标题</Badge>
@@ -58,13 +58,17 @@ const IeseEditor = () => {
               data={["日常", "分享", "感悟", "学习"]}
             />
           </div>
-          <Badge className="text-[1rem] bg-theme_blue mt-4">文章</Badge>
-          <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 ">
+          <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
+          <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full">
             <EditorContent editor={editor} />
           </Container>
         </Card>
       </div>
-      <SideTip article={article} editor={editor} />
+      <SideTip
+        article={article}
+        editor={editor}
+        className="flex-1 min-w-[300px]"
+      />
     </div>
   );
 };

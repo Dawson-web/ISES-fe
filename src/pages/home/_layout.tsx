@@ -25,6 +25,7 @@ export default function Layout() {
       return getUserInfo();
     },
   });
+  const [vercel, setVercel] = useState(false);
   // 关闭websocket
   useEffect(() => {
     if (socket) websocketClose(socket);
@@ -35,19 +36,34 @@ export default function Layout() {
   } else {
     return (
       isSuccess && (
-        <div className={clsx("flex flex-col  sm:flex-row  w-full  ")}>
+        <div
+          className={clsx("flex  w-full flex-col  ", {
+            "sm:flex-row": !vercel,
+            "sm:flex-col": vercel,
+          })}
+        >
           <NavMenu
             options={themeConfig.menu.options}
             darkMode={themeConfig.menu.darkMode}
             avatar_show={themeConfig.menu.avatar_show}
             avatar_src={data.data.data.avatar}
             userName={data.data.data.username}
-            className="sm:w-[200px] sm:h-screen  sm:relative  z-50 w-full dark:bg-theme_dark h-full "
+            vercel={vercel}
+            setVercel={setVercel}
+            className={clsx(
+              "   sm:relative  z-50  dark:bg-theme_dark  ",
+              {
+                "flex  justify-start   ": open,
+              },
+              {
+                "flex-col sm:h-screen w-[200px]": !vercel,
+                "flex-row flex-nowrap ": vercel,
+              }
+            )}
           />
-
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen   pt-[40px] sm:[pt-0]"
+              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen"
             )}
           >
             <ScoketMessage

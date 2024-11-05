@@ -19,6 +19,13 @@ export interface IUserFormData {
   createdAt: string;
   updatedAt: string;
   User: IAccountData;
+  online: boolean;
+}
+
+export interface IUpdateUserForm {
+  username: string;
+  introduce: string;
+  school: string;
 }
 
 export interface IFormContext {

@@ -5,6 +5,7 @@ import { IArticleFiled } from "@/types/article";
 import { toast } from "sonner";
 import { addArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
+import clsx from "clsx";
 
 const TipHeader: FC<PropsWithChildren> = ({ children }) => {
   return <div className="text-primary my-2 text-sm">{children}</div>;
@@ -21,9 +22,10 @@ const TipContainer: FC<PropsWithChildren> = ({ children }) => {
 interface SideTipProps {
   article: IArticleFiled;
   editor: Editor;
+  className?: string;
 }
 
-const SideTip: FC<SideTipProps> = ({ article, editor }) => {
+const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   function vertify() {
     article.content = editor.getHTML();
     console.log({ ...article, content: editor.getHTML() });
@@ -54,7 +56,12 @@ const SideTip: FC<SideTipProps> = ({ article, editor }) => {
   };
 
   return (
-    <Card className="rounded-lg dark:bg-theme_dark shadow-lg border border-gray-300 dark:border-gray-600">
+    <Card
+      className={clsx(
+        "rounded-lg dark:bg-theme_dark shadow-lg border border-gray-300 dark:border-gray-600",
+        className
+      )}
+    >
       <Button
         variant="gradient"
         gradient={{ from: "blue", to: "cyan", deg: 90 }}
