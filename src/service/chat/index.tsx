@@ -2,6 +2,7 @@ import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
 import {
   ICreateChatRoomRequest,
+  ICreateChatRoomResponse,
   IGetChatListRequest,
   IGetChatListResponse,
   IGetChatMessageResponse,
@@ -26,7 +27,10 @@ export const sendChatMessage = async (data: ISendChatMessageRequest) => {
 };
 
 export const createChatRoom = async (data: ICreateChatRoomRequest) => {
-  return await $axios.post<ApiOk<unknown>>("/user/chat/create", data);
+  return await $axios.post<ApiOk<ICreateChatRoomResponse>>(
+    "/user/chat/create",
+    data
+  );
 };
 
 export const agreeChatRoom = async (data: { chatListId: string }) => {

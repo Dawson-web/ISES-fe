@@ -12,6 +12,15 @@ export interface IGetChatListResponse {
   online?: number;
   connect: boolean;
 }
+
+export interface ICreateChatRoomResponse {
+  id: string;
+  user1: string;
+  user2: string;
+  createdAt: string;
+  username: string;
+  connect: boolean;
+}
 export interface IGetChatListRequest {
   userInfoId: string;
 }

@@ -55,7 +55,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
         className
       )}
     >
-      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[10%] p-2 ">
+      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 p-2 ">
         <span className="font-bold">{chatInfo.userName}</span>
         <Undo2
           className="text-gray-600 dark:text-white"
@@ -68,12 +68,12 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
       {isSuccess ? (
         <MessageList
           messages={messages}
-          className="border-b-2 border-gray-200 dark:border-gray-600 h-[65%] overflow-y-scroll"
+          className="border-b-2 border-gray-200 dark:border-gray-600  flex-1 overflow-y-scroll"
         />
       ) : (
         <div>Loading...</div> // 显示加载中的提示
       )}
-      <div className="flex flex-col h-[25%]">
+      <div className="flex flex-col flex-shrink-0 h-[160px]">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}

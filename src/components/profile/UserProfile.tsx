@@ -16,6 +16,7 @@ import clsx from "clsx";
 import { FC } from "react";
 import { toast } from "sonner";
 import AppLogo from "../app-logo";
+import { useNavigate } from "react-router-dom";
 // import classes from "./UserCardImage.module.css";
 
 interface IProps {
@@ -42,8 +43,8 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
       </Text>
     </div>
   );
-
-  const { isSuccess, isPending, data } = useQuery({
+  const navigate = useNavigate();
+  const { isSuccess, data } = useQuery({
     queryKey: [userInfoId],
     queryFn: () => {
       const params = { userInfoId };
@@ -56,7 +57,9 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
     const data = { user1, user2 };
     try {
       const res = await createChatRoom(data);
-      toast.success(res.data.message);
+      // toast.success(res.data.message);
+      console.log(res.data.data);
+      navigate(`/home/link?id=${res.data.data.id}`);
     } catch (e) {
       toast.error("创建失败");
     }

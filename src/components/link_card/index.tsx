@@ -5,7 +5,6 @@ import clsx from "clsx";
 export default function LinkCard(props: any) {
   const {
     url,
-    descr,
     name,
     onClick,
     online,
@@ -42,23 +41,23 @@ export default function LinkCard(props: any) {
         </aside>
         <main className="w-[70%] text-center text-gray-600 font-medium p-2 flex flex-col items-start">
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>
-          <div className="text-sm">{descr || "这个人很懒未留简介"}</div>
+          {/* <div className="text-sm">{descr || "这个人很懒未留简介"}</div> */}
+          {!connect ? (
+            <div className="text-sm font-semibold text-theme_blue flex flex-col items-center justify-between gap-4 text-wrap  ">
+              <p> 临时通讯</p>
+              {temporary && (
+                <Button
+                  className="bg-theme_blue p-2"
+                  onClick={handleAgreeChatRoom}
+                >
+                  同意申请
+                </Button>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
         </main>
-        {!connect ? (
-          <div className="text-sm font-semibold text-theme_blue flex flex-col items-center justify-between gap-4 w-[calc(30%-60px)] text-wrap  ">
-            <p> 临时</p>
-            {temporary && (
-              <Button
-                className="bg-theme_blue p-2"
-                onClick={handleAgreeChatRoom}
-              >
-                同意申请
-              </Button>
-            )}
-          </div>
-        ) : (
-          ""
-        )}
       </div>
     </div>
   );
