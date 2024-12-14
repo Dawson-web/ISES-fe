@@ -1,6 +1,7 @@
 import { FC } from "react";
 import clsx from "clsx";
 import { PanelLeft, PanelTop } from "lucide-react";
+import { setLayoutFunction } from "@/utils/layout";
 
 interface IProps {
   className?: string;
@@ -14,7 +15,10 @@ export const LayoutModel: FC<IProps> = ({ className, vercel, setVercel }) => {
       <div
         className="text-nowrap flex gap-8"
         onClick={() => {
-          setVercel((prev) => !prev); // Use callback to avoid stale closure
+          setVercel((prev) => {
+            setLayoutFunction(!prev);
+            return !prev;
+          }); // Use callback to avoid stale closure
         }}
       >
         {!vercel ? <PanelLeft /> : <PanelTop />}

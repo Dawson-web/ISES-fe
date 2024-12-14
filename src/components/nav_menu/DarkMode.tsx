@@ -1,18 +1,7 @@
 import { useState, useEffect, FC } from "react";
 import clsx from "clsx";
 import { ToggleLeft, ToggleRight } from "lucide-react";
-
-function darkFunction(dark: boolean) {
-  if (
-    dark ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
-}
+import darkFunction from "@/utils/dark";
 
 interface IProps {
   className?: string;
@@ -22,10 +11,9 @@ export const DarkMode: FC<IProps> = ({ className }) => {
   const [dark, setDark] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
   });
-
   useEffect(() => {
-    darkFunction(dark);
     localStorage.setItem("theme", dark ? "dark" : "light");
+    darkFunction(dark);
   }, [dark]); // Add dark to the dependency array
 
   return (

@@ -1,6 +1,7 @@
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
 import { Badge, Card, Container, Input, Select } from "@mantine/core";
@@ -20,6 +21,7 @@ export const useAritcleEditor = (content?: string) =>
         types: ["heading", "paragraph"],
       }),
       Highlight,
+      Image,
     ],
     content: content || defaultContent,
   }) as Editor;
@@ -34,7 +36,7 @@ const IeseEditor = () => {
   });
 
   return (
-    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full">
+    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full w-full" id="post">
       <div className="flex-auto flex flex-col gap-4">
         <MenuBar editor={editor} />
 
@@ -59,7 +61,7 @@ const IeseEditor = () => {
             />
           </div>
           <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
-          <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full">
+          <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full   ">
             <EditorContent editor={editor} />
           </Container>
         </Card>

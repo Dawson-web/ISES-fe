@@ -4,7 +4,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@radix-ui/react-navigation-menu";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { DarkMode } from "./DarkMode";
 import { NavOpen } from "./NavOpen";
 import UserAvatar from "../user_avatar";
@@ -16,6 +16,7 @@ import { LayoutModel } from "./LayoutModel";
 import { Settings } from "lucide-react";
 import { UnstyledButton } from "@mantine/core";
 import { Menu } from "@mantine/core";
+import darkFunction from "@/utils/dark";
 
 interface OptionData {
   name: string;
@@ -70,6 +71,10 @@ const NavMenu: FC<Props> = ({
     setOption(options);
     setTimeout(() => setMobileOpen(false), 1000);
   }
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") == "dark";
+    darkFunction(theme);
+  }, []);
   return (
     <div className={clsx(className)}>
       {/* 移动端控制菜单打开按钮 */}
@@ -171,7 +176,7 @@ const NavMenu: FC<Props> = ({
                   </UnstyledButton>
                 </Menu.Target>
 
-                <Menu.Dropdown>
+                <Menu.Dropdown className="">
                   <Menu.Item>
                     <AppLogo />
                     <div className="w-full h-full flex flex-col gap-4 mt-4"></div>
@@ -181,7 +186,7 @@ const NavMenu: FC<Props> = ({
                       <LayoutModel vercel={vercel} setVercel={setVercel} />
                     )}
                   </Menu.Item>
-                  <Menu.Item>{darkMode && <DarkMode />}</Menu.Item>{" "}
+                  <Menu.Item>{darkMode && <DarkMode />}</Menu.Item>
                   <Menu.Item></Menu.Item>
                 </Menu.Dropdown>
               </Menu>

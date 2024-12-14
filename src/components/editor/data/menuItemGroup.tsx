@@ -4,6 +4,7 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
+  Image,
   ItalicIcon,
   List,
   ListOrdered,
@@ -19,6 +20,9 @@ import {
 } from "lucide-react";
 import { Editor } from "@tiptap/react";
 import { ReactElement } from "react";
+import { toast } from "sonner";
+import { uploadImage } from "@/service/article";
+import { apiConfig } from "@/config";
 
 export interface IMenuItemButtonProps {
   Icon: ReactElement;
@@ -145,6 +149,39 @@ const getMenuItemGroups = (editor: Editor) => {
       tooltip: "分割线",
       Icon: <MinusIcon size={15} strokeWidth={3} />,
       onClick: () => editor.chain().focus().setHorizontalRule().run(),
+    },
+    {
+      tooltip: "上传文件",
+      Icon: <Image />,
+      onClick: () => {
+        const inputNode = document.createElement("input");
+        inputNode.setAttribute("type", "file");
+        inputNode.addEventListener("change", (event) => {
+          if (event.target) {
+            const files = (event.target as HTMLInputElement).files;
+            if (files) {
+              if (files[0].type.startsWith("image/")) {
+                const file = files[0];
+                const formData = new FormData();
+                formData.append("file", file);
+
+                uploadImage(formData).then((res) => {
+                  editor
+                    .chain()
+                    .focus()
+                    .setImage({
+                      src: apiConfig.baseUrl + res.data.data.path,
+                    })
+                    .run();
+                });
+              } else {
+                toast.error("只能上传图片文件");
+              }
+            }
+          }
+        });
+        inputNode.click();
+      },
     },
   ];
 

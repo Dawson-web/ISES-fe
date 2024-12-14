@@ -8,6 +8,7 @@ import { createWebSocket, websocketClose } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";
 import { IWSMessage } from "@/types/websocket";
 import { useQuery } from "@tanstack/react-query";
+import { layoutFunction } from "@/utils/layout";
 
 export let socket: WebSocket | null = null;
 
@@ -28,8 +29,10 @@ export default function Layout() {
   const [vercel, setVercel] = useState(false);
   // 关闭websocket
   useEffect(() => {
+    layoutFunction(setVercel);
     if (socket) websocketClose(socket);
   }, []);
+
   if (isError) {
     navigate("/login");
     websocketClose(socket as WebSocket);

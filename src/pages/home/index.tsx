@@ -62,7 +62,6 @@ export default function Page() {
                 <ArticleItem
                   article={article}
                   onClick={() => {
-                    console.log(article);
                     userSelect.current = article.userInfoId;
                     open();
                   }}

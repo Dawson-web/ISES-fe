@@ -39,7 +39,7 @@ export default function LinkCard(props: any) {
             )}
           ></div>
         </aside>
-        <main className="w-[70%] text-center text-gray-600 font-medium p-2 flex flex-col items-start">
+        <main className="w-[70%] text-center  font-medium p-2 flex flex-col items-start">
           <div className="text-lg font-bold">{name || "这个人很懒未留名"}</div>
           {/* <div className="text-sm">{descr || "这个人很懒未留简介"}</div> */}
           {!connect ? (

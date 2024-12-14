@@ -70,17 +70,17 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
       opened={opened}
       onClose={close}
       centered
-      className="dark:text-gray-600 dark:[&>div>section]:bg-theme_dark_sm dark:[&>div>section>header]:bg-theme_dark "
+      className="dark:text-gray-600 [&>div>section]:rounded-xl dark:[&>div>section]:bg-theme_dark_sm dark:[&>div>section>header]:bg-theme_dark [&>div>section>.mantine-Modal-body]:!p-0  "
       withCloseButton={false}
     >
-      <AppLogo />
+      <AppLogo className="absolute z-50 left-4 top-2" />
       <Card
         withBorder
         radius="md"
-        className="bg-white dark:bg-theme_dark dark:border-gray-600"
+        className="bg-white dark:bg-theme_dark dark:border-gray-600 border-0 "
       >
         <Card.Section
-          h={140}
+          h={160}
           style={{
             backgroundImage: "url('../../../public/cover.png')",
             backgroundSize: "cover",

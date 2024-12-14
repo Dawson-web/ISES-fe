@@ -51,7 +51,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
   return (
     <Card
       className={clsx(
-        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 rounded-xl ",
+        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
         className
       )}
     >

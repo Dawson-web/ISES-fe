@@ -27,3 +27,15 @@ export const likeArticle = async (articleId: string) => {
     `/user/articles/like?articleId=${articleId}`
   );
 };
+
+export const uploadImage = async (formData: FormData) => {
+  return await $axios.post<ApiOk<{ path: string }>>(
+    `/user/articles/upload`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};

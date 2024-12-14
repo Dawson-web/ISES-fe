@@ -48,10 +48,10 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-full flex gap-2 bg-white dark:bg-theme_dark overflow-y-auto h-[90vh] rounded-lg">
+    <div className="w-full flex  bg-white dark:bg-theme_dark overflow-y-auto h-full rounded-lg">
       <div
         className={clsx(
-          "flex flex-col sm:gap-0 gap-2 sm:shadow-lg w-full sm:w-[35%] h-full overflow-y-scroll",
+          "flex flex-col sm:gap-0 gap-2 sm:shadow-lg w-full sm:w-[35%] h-full overflow-y-scroll ",
           {
             "sm:flex hidden ": open,
           }
@@ -69,6 +69,7 @@ export default function Page() {
           />
         </div>
         {isSuccess &&
+          data.data.data &&
           data.data.data
             .filter((chat) => {
               return chat.username.includes(search);
@@ -94,9 +95,9 @@ export default function Page() {
                     setOpen(true);
                   }}
                   className={clsx(
-                    "mx-auto w-full p-2 sm:rounded-none rounded-lg shadow-md bg-gray-50 dark:bg-theme_dark border-transparent  border-l-4 h-[80px]  ",
+                    "mx-auto w-full p-2 dark:bg-theme_dark  dark:text-theme_gray border-transparent  h-[80px]   ",
                     {
-                      "!bg-theme_gray !border-l-blue-600":
+                      "!bg-theme_gray/10 dark:text-white":
                         chatInfo.chatId === chat.id && open,
                     }
                   )}
