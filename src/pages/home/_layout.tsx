@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserInfo } from "@/service/user";
-import NavMenu from "@/components/public/nav_menu";
+import NavMenu from "@/components/nav_menu";
 import { themeConfig } from "@/config";
 import { createWebSocket, websocketClose } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";

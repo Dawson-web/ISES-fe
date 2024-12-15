@@ -45,7 +45,6 @@ export default function Page() {
             <ArticleItem
               article={article}
               onClick={() => {
-                console.log(article);
                 userSelect.current = article.userInfoId;
                 open();
               }}
@@ -57,6 +56,7 @@ export default function Page() {
         total={totalPages}
         value={page}
         onChange={onChange}
+        onClick={() => window.scrollTo(0, 0)}
         className="sm mt-8"
       />
       {opened && (

@@ -11,16 +11,16 @@ interface IProps {
 
 export const LayoutModel: FC<IProps> = ({ className, vercel, setVercel }) => {
   return (
-    <div className={clsx(className)}>
-      <div
-        className="text-nowrap flex gap-8"
-        onClick={() => {
-          setVercel((prev) => {
-            setLayoutFunction(!prev);
-            return !prev;
-          }); // Use callback to avoid stale closure
-        }}
-      >
+    <div
+      className={clsx(className)}
+      onClick={() => {
+        setVercel((prev) => {
+          setLayoutFunction(!prev);
+          return !prev;
+        }); // Use callback to avoid stale closure
+      }}
+    >
+      <div className="text-nowrap flex gap-8">
         {!vercel ? <PanelLeft /> : <PanelTop />}
         {!vercel ? "水平" : "竖直"}
       </div>

@@ -1,25 +1,19 @@
 import { logout } from "@/api/token";
 import clsx from "clsx";
-import { LogOutIcon } from "lucide-react";
-import { useDisclosure } from "@mantine/hooks";
 import { Dialog, Button, Badge } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { FC } from "react";
 interface IProps {
   className?: string;
+  opened: boolean;
+  close: () => void;
 }
-export const Logout: FC<IProps> = ({ className }) => {
-  const [opened, { toggle, close }] = useDisclosure(false);
+export const Logout: FC<IProps> = ({ className, opened, close }) => {
   const navigate = useNavigate();
 
   return (
-    <div onClick={toggle} className={clsx(className)}>
-      <div className="text-nowrap flex gap-8">
-        <LogOutIcon />
-        登出
-      </div>
-
+    <div className={clsx(className)}>
       <Dialog
         opened={opened}
         withCloseButton

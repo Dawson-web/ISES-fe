@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { AlignLeft, X } from "lucide-react";
+import AppLogo from "../app-logo";
 
 interface Fiedls {
   open: boolean;
@@ -28,9 +29,10 @@ export const NavOpen = (props: Fiedls) => {
         }
       )}
     >
+      <AppLogo className={clsx("ml-4 dark:text-gray-600", { hidden: open })} />
       <div
         className={clsx(
-          "flex absolute z-50 top-2 left-4 text-gray-600 hover:text-dark dark:text-gray-400 dark:hover:text-gray-200",
+          "flex absolute z-50 top-2 right-4 text-gray-600 hover:text-dark dark:text-gray-400 dark:hover:text-gray-200",
           {
             "transition-transform duration-500 rotate-90": open,
             "transition-transform duration-500 rotate-0": !open,

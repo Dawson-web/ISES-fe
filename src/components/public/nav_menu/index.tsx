@@ -4,6 +4,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@radix-ui/react-navigation-menu";
+import { LogOutIcon } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import { DarkMode } from "./DarkMode";
 import { NavOpen } from "./NavOpen";
@@ -17,6 +18,7 @@ import { Settings } from "lucide-react";
 import { UnstyledButton } from "@mantine/core";
 import { Menu } from "@mantine/core";
 import darkFunction from "@/utils/dark";
+import { useDisclosure } from "@mantine/hooks";
 
 interface OptionData {
   name: string;
@@ -66,32 +68,61 @@ const NavMenu: FC<Props> = ({
       break;
   }
   const [option, setOption] = useState<string>(defaultOption);
+  const [opened, { toggle, close }] = useDisclosure(false);
 
   function menuOption(options: string) {
     setOption(options);
     setTimeout(() => setMobileOpen(false), 1000);
   }
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") == "dark";
+    darkFunction(theme);
+  }, []);
+  // useEffect(() => {
+  //   const pathname = location.pathname;
+  //   switch (pathname) {
+  //     case "/home":
+  //       setOption("主页");
+  //       break;
+  //     case "/home/post":
+  //       setOption("发布");
+  //       break;
+  //     case "/home/components":
+  //       setOption("组件");
+  //       break;
+  //     case "/home/chat":
+  //       setOption("友链");
+  //       break;
+  //     case "/home/profile":
+  //       setOption("个人");
+  //       break;
+  //   }
+  // }, [location]);
 
   return (
     <div className={clsx(className)}>
       {/* 移动端控制菜单打开按钮 */}
       <NavOpen open={mobileOpen} setOpen={setMobileOpen} />
       <aside
-        className={clsx("bg-white dark:bg-theme_dark ", {
-          "fixed z-40 mt-[40px] h-screen w-full": mobileOpen,
+        className={clsx("bg-white dark:bg-theme_dark w-full", {
+          "fixed z-40 mt-[40px] h-full ": mobileOpen,
           "sm:block hidden ": !mobileOpen,
         })}
       >
-        <NavigationMenu>
+        <NavigationMenu className="w-full">
           <NavigationMenuList
             className={clsx({
-              "sm:flex w-full": vercel,
-              "h-screen sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark":
+              "sm:flex w-full justify-center ": vercel,
+              "h-full sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark":
                 !vercel,
             })}
           >
-            <AppLogo className="ml-[40px]  text-[35px] dark:text-gray-600 font-bold  mb-1  " />
-
+            <AppLogo
+              className={clsx(
+                "ml-[40px]  text-[35px] dark:text-gray-600 font-bold  mb-1 ",
+                { "absolute left-0 h-full": vercel && !mobileOpen }
+              )}
+            />
             {(!vercel || mobileOpen) && (
               <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
                 {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
@@ -136,18 +167,20 @@ const NavMenu: FC<Props> = ({
                 </Link>
               );
             })}
-            <NavigationMenuItem
-              className={clsx(
-                " group sm:my-4 my-6 flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
-                {
-                  "px-4 gap-4": vercel && !mobileOpen,
-                  "px-10 gap-8 ": !vercel || mobileOpen,
-                }
-              )}
-            >
-              <Logout />
+            <NavigationMenuItem onClick={toggle}>
+              <NavigationMenuLink
+                className={clsx(
+                  " group sm:my-4 my-6 flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                  {
+                    "px-4 gap-4": vercel && !mobileOpen,
+                    "px-10 gap-8 ": !vercel || mobileOpen,
+                  }
+                )}
+              >
+                <LogOutIcon />
+                登出
+              </NavigationMenuLink>
             </NavigationMenuItem>
-
             <div
               className={clsx(
                 "   flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
@@ -168,29 +201,35 @@ const NavMenu: FC<Props> = ({
                       }
                     )}
                   >
-                    <Settings />
+                    <Settings className="hover:rotate-180" />
                     设置
                   </UnstyledButton>
                 </Menu.Target>
 
-                <Menu.Dropdown className="">
+                <Menu.Dropdown className="dark:bg-theme_dark_sm border-0 ">
                   <Menu.Item>
-                    <AppLogo />
+                    <AppLogo className="dark:text-gray-600" />
                     <div className="w-full h-full flex flex-col gap-4 mt-4"></div>
                   </Menu.Item>
                   <Menu.Item>
                     {!mobileOpen && (
-                      <LayoutModel vercel={vercel} setVercel={setVercel} />
+                      <LayoutModel
+                        vercel={vercel}
+                        setVercel={setVercel}
+                        className="dark:text-gray-600"
+                      />
                     )}
                   </Menu.Item>
-                  <Menu.Item>{darkMode && <DarkMode />}</Menu.Item>
-                  <Menu.Item></Menu.Item>
+                  <Menu.Item>
+                    {darkMode && <DarkMode className="dark:text-gray-600" />}
+                  </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             </div>
           </NavigationMenuList>
         </NavigationMenu>
       </aside>
+      <Logout opened={opened} close={close} />
     </div>
   );
 };

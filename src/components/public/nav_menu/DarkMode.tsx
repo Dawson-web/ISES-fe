@@ -17,13 +17,13 @@ export const DarkMode: FC<IProps> = ({ className }) => {
   }, [dark]); // Add dark to the dependency array
 
   return (
-    <div className={clsx(className)}>
-      <div
-        className="text-nowrap flex gap-8"
-        onClick={() => {
-          setDark((prevDark) => !prevDark); // Use callback to avoid stale closure
-        }}
-      >
+    <div
+      className={clsx(className)}
+      onClick={() => {
+        setDark((prevDark) => !prevDark); // Use callback to avoid stale closure
+      }}
+    >
+      <div className="text-nowrap flex gap-8 ">
         {!dark ? <ToggleRight /> : <ToggleLeft />}
         暗色
       </div>

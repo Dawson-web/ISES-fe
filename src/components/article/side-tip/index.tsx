@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { addArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
 const TipHeader: FC<PropsWithChildren> = ({ children }) => {
   return <div className="text-primary my-2 text-sm">{children}</div>;
@@ -26,9 +27,9 @@ interface SideTipProps {
 }
 
 const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
+  const navigate = useNavigate();
   function vertify() {
     article.content = editor.getHTML();
-    console.log({ ...article, content: editor.getHTML() });
     if (!article.title) {
       toast.error("请填写文章标题");
       return false;
@@ -47,7 +48,8 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   const handlePublish = async () => {
     if (vertify()) {
       try {
-        await addArticle({ ...article, content: editor.getHTML() });
+        const res = await addArticle({ ...article, content: editor.getHTML() });
+        navigate(`/home/article?id=${res.data.data.id}`);
         toast.success("发布成功");
       } catch (error) {
         toast.error(String(error));

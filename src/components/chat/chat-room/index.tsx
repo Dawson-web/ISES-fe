@@ -51,7 +51,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
   return (
     <Card
       className={clsx(
-        "flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
+        "h-full flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
         className
       )}
     >
@@ -68,12 +68,12 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
       {isSuccess ? (
         <MessageList
           messages={messages}
-          className="border-b-2 border-gray-200 dark:border-gray-600  flex-1 overflow-y-scroll"
+          className="border-b-2 border-gray-200 dark:border-gray-600   overflow-y-scroll "
         />
       ) : (
         <div>Loading...</div> // 显示加载中的提示
       )}
-      <div className="flex flex-col flex-shrink-0 h-[160px]">
+      <div className="flex flex-col flex-1 h-full">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
