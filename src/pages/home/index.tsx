@@ -39,36 +39,19 @@ export default function Page() {
   return (
     <>
       <News className="bg-[url('../../../public/cover.png')] sm:h-[30vh] h-[150px] w-full  bg-no-repeat bg-cover mb-4" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full ">
-        <div className="w-full flex flex-col gap-2 justity-between ">
-          {articles.slice(0, articles.length / 2).map((article) => {
-            return (
-              <ArticleItem
-                article={article}
-                onClick={() => {
-                  console.log(article);
-                  userSelect.current = article.userInfoId;
-                  open();
-                }}
-              />
-            );
-          })}
-        </div>
-        <div className="w-full flex flex-col gap-2 justify-between ">
-          {articles
-            .slice(articles.length / 2, articles.length)
-            .map((article) => {
-              return (
-                <ArticleItem
-                  article={article}
-                  onClick={() => {
-                    userSelect.current = article.userInfoId;
-                    open();
-                  }}
-                />
-              );
-            })}
-        </div>
+      <div className="w-full  gap-2 justity-between grid grid-cols-1 sm:grid-cols-2 ">
+        {articles.map((article) => {
+          return (
+            <ArticleItem
+              article={article}
+              onClick={() => {
+                console.log(article);
+                userSelect.current = article.userInfoId;
+                open();
+              }}
+            />
+          );
+        })}
       </div>
       <Pagination
         total={totalPages}

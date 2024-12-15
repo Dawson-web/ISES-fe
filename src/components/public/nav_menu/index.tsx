@@ -58,7 +58,7 @@ const NavMenu: FC<Props> = ({
     case "/home/components":
       defaultOption = "组件";
       break;
-    case "/home/link":
+    case "/home/chat":
       defaultOption = "友链";
       break;
     case "/home/profile":
@@ -71,10 +71,7 @@ const NavMenu: FC<Props> = ({
     setOption(options);
     setTimeout(() => setMobileOpen(false), 1000);
   }
-  useEffect(() => {
-    const theme = localStorage.getItem("theme") == "dark";
-    darkFunction(theme);
-  }, []);
+
   return (
     <div className={clsx(className)}>
       {/* 移动端控制菜单打开按钮 */}

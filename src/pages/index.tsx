@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
+import darkFunction from "@/utils/dark";
+import { useEffect } from "react";
 
 export default function Page() {
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") == "dark";
+    darkFunction(theme);
+  }, []);
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen ">
-        <div className="text-2xl sm:text-4xl font-bold flex gap-2 flex-col p-8 bg-gray-100 rounded-md min-w-[300px] ">
+      <div className="flex flex-col items-center justify-center h-screen dark:bg-theme_dark_sm  ">
+        <div className="text-2xl sm:text-4xl font-bold flex gap-2 flex-col p-8 bg-gray-100 dark:bg-theme_dark rounded-md min-w-[300px] ">
           <h1 className="text-theme_blue ">Ises.</h1>
-          <h1>即刻短文</h1>
+          <h1 className="dark:text-white">即刻短文</h1>
           <main className="text-lg sm:text-xl text-gray-500 mt-2 ">
             留下你的故事
             <br />
