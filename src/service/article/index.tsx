@@ -3,8 +3,10 @@ import { ApiOk } from "@/api/types";
 import {
   IAddArticleResponse,
   IArticleFiled,
+  IGetArticleDetailResponse,
   IGetArticlePaginationResponse,
   IPaginationRequest,
+  IPostCommentData,
 } from "@/types/article";
 
 export const addArticle = async (data: IArticleFiled) => {
@@ -41,7 +43,11 @@ export const uploadImage = async (formData: FormData) => {
 };
 
 export const getArticleDetail = async (articleId: string) => {
-  return await $axios.get<ApiOk<IArticleFiled>>(
+  return await $axios.get<ApiOk<IGetArticleDetailResponse>>(
     `/user/articles/detail/${articleId}`
   );
+};
+
+export const postComment = async (data: IPostCommentData) => {
+  return await $axios.post<ApiOk<unknown>>(`/user/comment`, data);
 };

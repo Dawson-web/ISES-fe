@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   article: IArticleDetail;
-  onClick?: () => void;
+  onClick: () => void;
 }
 const ArticleItem: FC<Props> = ({ article, onClick }) => {
   const navigate = useNavigate();

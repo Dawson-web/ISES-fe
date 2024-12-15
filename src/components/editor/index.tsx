@@ -11,7 +11,7 @@ import { useState } from "react";
 import { IArticleFiled } from "@/types/article";
 
 const defaultContent = `
-  <div>题目内容描述...<div>
+  <div>开始你的创作...<div>
 `;
 export const useAritcleEditor = (content?: string, editable: boolean = true) =>
   useEditor({
@@ -28,7 +28,7 @@ export const useAritcleEditor = (content?: string, editable: boolean = true) =>
   }) as Editor;
 
 const IeseEditor = () => {
-  const editor = useAritcleEditor(`<p>...ss..</p>`);
+  const editor = useAritcleEditor(``);
 
   const [article, setArticle] = useState<IArticleFiled>({
     title: "",
@@ -37,7 +37,7 @@ const IeseEditor = () => {
   });
 
   return (
-    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full w-full" id="post">
+    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full w-full " id="post">
       <div className="flex-auto flex flex-col gap-4">
         <MenuBar editor={editor} />
 
@@ -63,7 +63,7 @@ const IeseEditor = () => {
           </div>
           <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
           <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full   ">
-            <EditorContent editor={editor} />
+            <EditorContent editor={editor} placeholder="开始你的编辑吧！" />
           </Container>
         </Card>
       </div>

@@ -15,7 +15,7 @@ const ArticlePreview: FC<IProps> = ({ content, className }) => {
     <Card
       className={clsx(
         className,
-        "rounded-lg  dark:bg-theme_dark border border-gray-300 dark:border-gray-600 dark:text-white"
+        "rounded-lg  dark:bg-theme_dark border-2 border-gray-300 dark:border-gray-600 dark:text-white"
       )}
     >
       <EditorContent editor={editor} />
