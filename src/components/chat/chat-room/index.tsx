@@ -8,7 +8,7 @@ import { getValidUid } from "@/api/token";
 import { IGetChatMessageResponse } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
-import { IChatInfo } from "@/pages/home/link";
+import { IChatInfo } from "@/pages/home/chat";
 interface Props {
   className?: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;

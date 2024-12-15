@@ -1,10 +1,10 @@
-import ChatRoom from "@/components/chat-room";
+import ChatRoom from "@/components/chat/chat-room";
 
 import { useEffect, useState } from "react";
 import { getChatList } from "@/service/chat";
 import { getValidUid } from "@/api/token";
 import { useQuery } from "@tanstack/react-query";
-import LinkCard from "@/components/link_card";
+import FriendCard from "@/components/chat/friend_card";
 import { apiConfig } from "@/config";
 import clsx from "clsx";
 import { Card, Input } from "@mantine/core";
@@ -76,7 +76,7 @@ export default function Page() {
             })
             .map((chat) => {
               return (
-                <LinkCard
+                <FriendCard
                   url={`${apiConfig.baseUrl}${chat.avatar}`}
                   key={chat.id}
                   name={chat.username}

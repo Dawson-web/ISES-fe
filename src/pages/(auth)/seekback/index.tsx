@@ -11,7 +11,7 @@ import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { Bell, Check } from "lucide-react";
 import { Link } from "react-router-dom";
-import AppLogo from "../../../components/app-logo";
+import AppLogo from "../../../components/public/app-logo";
 import { seekback, sendEmailCode } from "../../../service";
 import { toast } from "sonner";
 import { ISeekBackFileds } from "../../../types";

@@ -1,9 +1,9 @@
 import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useRef } from "react";
-import AppLogo from "../../../components/app-logo";
+import AppLogo from "../../../components/public/app-logo";
 import { Link, useNavigate } from "react-router-dom";
-import CaptchaCode from "../../../components/captcha_code";
+import CaptchaCode from "../../../components/public/captcha_code";
 import { ILoginFileds } from "../../../types";
 import { login } from "../../../service";
 import { toast } from "sonner";

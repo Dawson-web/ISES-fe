@@ -6,14 +6,14 @@ import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
 import { Badge, Card, Container, Input, Select } from "@mantine/core";
 import "../../styles/editor.css";
-import SideTip from "../side-tip";
+import SideTip from "../article/side-tip";
 import { useState } from "react";
 import { IArticleFiled } from "@/types/article";
 
 const defaultContent = `
   <div>题目内容描述...<div>
 `;
-export const useAritcleEditor = (content?: string) =>
+export const useAritcleEditor = (content?: string, editable: boolean = true) =>
   useEditor({
     extensions: [
       StarterKit,
@@ -24,6 +24,7 @@ export const useAritcleEditor = (content?: string) =>
       Image,
     ],
     content: content || defaultContent,
+    editable: editable,
   }) as Editor;
 
 const IeseEditor = () => {

@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { FC } from "react";
 import { toast } from "sonner";
-import AppLogo from "../app-logo";
+import AppLogo from "../public/app-logo";
 import { useNavigate } from "react-router-dom";
 // import classes from "./UserCardImage.module.css";
 

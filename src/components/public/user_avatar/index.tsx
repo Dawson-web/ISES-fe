@@ -1,9 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import { apiConfig } from "../../config";
+import { apiConfig } from "@/config";
 import { FC } from "react";
-import { uploadAvatar } from "../../service/user";
+import { uploadAvatar } from "../../../service/user";
 import { toast } from "sonner";
 
 interface Props {

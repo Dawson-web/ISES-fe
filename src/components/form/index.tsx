@@ -7,7 +7,7 @@ import {
   Checkbox,
   FileInput,
 } from "@mantine/core";
-import AppLogo from "../app-logo";
+import AppLogo from "../public/app-logo";
 
 export default function Form(props: any) {
   const { form_config, form, fn } = props;

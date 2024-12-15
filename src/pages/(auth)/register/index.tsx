@@ -9,7 +9,7 @@ import {
 import { useForm } from "@mantine/form";
 
 import { useState } from "react";
-import AppLogo from "../../../components/app-logo";
+import AppLogo from "../../../components/public/app-logo";
 import { Bell, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { register, sendEmailCode } from "../../../service";

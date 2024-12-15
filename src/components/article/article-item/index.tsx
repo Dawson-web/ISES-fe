@@ -4,13 +4,15 @@ import { Badge, Card, Title } from "@mantine/core";
 import { ThumbsUp } from "lucide-react";
 import { FC } from "react";
 import { toast } from "sonner";
-import UserAvatar from "../user_avatar";
+import UserAvatar from "../../public/user_avatar";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   article: IArticleDetail;
   onClick?: () => void;
 }
 const ArticleItem: FC<Props> = ({ article, onClick }) => {
+  const navigate = useNavigate();
   const handleLike = async () => {
     try {
       await likeArticle(String(article.id));
@@ -19,9 +21,19 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
     }
   };
   return (
-    <Card className="flex-grow flex flex-col gap-1 justify-evenly dark:bg-theme_dark dark:text-white rounded-lg shadow-md">
+    <Card
+      className="flex-grow flex flex-col gap-1 justify-evenly dark:bg-theme_dark dark:text-white rounded-lg shadow-md"
+      onClick={() => {
+        navigate(`/home/article?id=${article.id}`);
+      }}
+    >
       <header className="flex items-end gap-2">
-        <div onClick={onClick}>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+        >
           <UserAvatar
             size="small"
             src={article.UserInfo.avatar}

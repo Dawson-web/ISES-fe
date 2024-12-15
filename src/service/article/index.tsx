@@ -39,3 +39,9 @@ export const uploadImage = async (formData: FormData) => {
     }
   );
 };
+
+export const getArticleDetail = async (articleId: string) => {
+  return await $axios.get<ApiOk<IArticleFiled>>(
+    `/user/articles/detail/${articleId}`
+  );
+};

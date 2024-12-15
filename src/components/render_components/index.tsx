@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { useState } from "react";
 import Form from "../form";
-import LinkCard from "../link_card";
-import ImgCard from "../img_card";
+import LinkCard from "../chat/friend_card";
+import ImgCard from "../public/img_card";
 import { useForm } from "@mantine/form";
 import { formConfig } from "../../config";
 

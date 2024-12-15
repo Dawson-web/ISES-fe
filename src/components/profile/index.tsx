@@ -3,7 +3,7 @@ import { Card, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TextInput, Button } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import UserAvatar from "../user_avatar";
+import UserAvatar from "../public/user_avatar";
 import { queryClient } from "@/main";
 import { IUpdateUserForm } from "@/types/user";
 

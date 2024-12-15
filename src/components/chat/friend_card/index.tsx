@@ -2,7 +2,7 @@ import { agreeChatRoom } from "@/service/chat";
 import { Button } from "@mantine/core";
 import clsx from "clsx";
 
-export default function LinkCard(props: any) {
+function FriendCard(props: any) {
   const {
     url,
     name,
@@ -62,3 +62,5 @@ export default function LinkCard(props: any) {
     </div>
   );
 }
+
+export default FriendCard;
