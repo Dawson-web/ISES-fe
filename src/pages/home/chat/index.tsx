@@ -114,7 +114,7 @@ export default function Page() {
       ) : (
         <Card
           className={clsx(
-            "hidden sm:flex flex-col flex-grow justify-start dark:bg-theme_dark dark:text-white p-0 rounded-xl w-full h-[90vh] "
+            "hidden sm:flex flex-col flex-grow justify-start dark:bg-theme_dark dark:text-white p-0 rounded-none w-full h-[90vh] border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600 "
           )}
         >
           <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 "></div>
