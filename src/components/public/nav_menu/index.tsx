@@ -26,7 +26,7 @@ interface OptionData {
   icon: JSX.Element;
 }
 
-interface Props {
+interface IProps {
   options: OptionData[];
   darkMode: boolean;
   avatar_show?: boolean;
@@ -37,7 +37,7 @@ interface Props {
   setVercel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NavMenu: FC<Props> = ({
+const NavMenu: FC<IProps> = ({
   options,
   darkMode,
   avatar_show,

@@ -3,7 +3,6 @@ import CommentCard from "./comment-card";
 import { FC, useState } from "react";
 import { postComment } from "@/service/article";
 import { IPostCommentData } from "@/types/article";
-import { getUserInfo } from "@/service/user";
 import { getValidUid } from "@/api/token";
 import { toast } from "sonner";
 
@@ -27,19 +26,27 @@ const CommentBox: FC<IProps> = ({ commentId, content }) => {
     };
     postComment(data).then(() => {
       setComments((prev) => {
-        return [
-          ...prev,
-          {
-            userInfoId: getValidUid() as string,
-            content: newComment,
-          },
-        ];
+        if (!prev)
+          return [
+            {
+              userInfoId: getValidUid() as string,
+              content: newComment,
+            },
+          ];
+        else
+          return [
+            ...prev,
+            {
+              userInfoId: getValidUid() as string,
+              content: newComment,
+            },
+          ];
       });
       toast.success("评论发布成功");
     });
     setNewComment("");
   }
-  console.log(comments[0]);
+  console.log(1234, comments);
   return (
     <Card className="border-2 dark:bg-theme_dark dark:border-gray-600 mt-8 rounded-lg">
       <div className="flex gap-2">
@@ -65,15 +72,21 @@ const CommentBox: FC<IProps> = ({ commentId, content }) => {
         </Button>
       </div>
       <div className="flex flex-col gap-4 mt-2">
-        {comments.map((comment) => {
-          return (
-            <CommentCard
-              comment={comment}
-              key={comment.userInfoId}
-              className="w-full"
-            />
-          );
-        })}
+        {!comments && (
+          <div className="w-full h-[100px] text-center font-bold text-xl translate-y-[40%] ">
+            暂无评论
+          </div>
+        )}
+        {comments &&
+          comments.map((comment) => {
+            return (
+              <CommentCard
+                comment={comment}
+                key={comment.userInfoId}
+                className="w-full"
+              />
+            );
+          })}
       </div>
     </Card>
   );

@@ -1,4 +1,4 @@
-import { Avatar, Group, Text, TextInput } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { FC } from "react";
 import { IComment } from ".";
 import { apiConfig } from "@/config";

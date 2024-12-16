@@ -4,13 +4,13 @@ import clsx from "clsx";
 import { AlignLeft, X } from "lucide-react";
 import AppLogo from "../app-logo";
 
-interface Fiedls {
+interface IProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
 }
 
-export const NavOpen = (props: Fiedls) => {
+export const NavOpen = (props: IProps) => {
   const { open, setOpen } = props; // Assuming the component prop is a string that represents the component to render
   const mediaQuery = window.matchMedia("(min-width: 640px)");
   window.addEventListener("resize", () => {
