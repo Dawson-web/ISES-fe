@@ -9,6 +9,7 @@ import "../../styles/editor.css";
 import SideTip from "../article/side-tip";
 import { useEffect, useRef, useState } from "react";
 import { IArticleFiled } from "@/types/article";
+import ImageResize from "tiptap-extension-resize-image";
 
 const defaultContent = `
   <div>开始你的创作...<div>
@@ -25,6 +26,7 @@ export const useAritcleEditor = (content?: string, editable: boolean = true) =>
         inline: true,
         allowBase64: true,
       }),
+      ImageResize.configure({}),
     ],
     content: content || defaultContent,
     editable: editable,

@@ -40,7 +40,7 @@ export default function Layout() {
     return (
       isSuccess && (
         <div
-          className={clsx("flex  w-full flex-col  ", {
+          className={clsx("flex w-full flex-col h-full  ", {
             "sm:flex-row": !vercel,
             "sm:flex-col": vercel,
           })}
@@ -54,9 +54,9 @@ export default function Layout() {
             vercel={vercel}
             setVercel={setVercel}
             className={clsx(
-              "   sm:relative  z-50  dark:bg-theme_dark  ",
+              "sm:relative z-50 dark:bg-theme_dark  ",
               {
-                "flex  justify-start   ": open,
+                "flex justify-start": open,
               },
               {
                 "flex-col sm:h-screen w-[200px]": !vercel,
@@ -66,7 +66,7 @@ export default function Layout() {
           />
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen"
+              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen h-full"
             )}
           >
             <ScoketMessage

@@ -5,10 +5,12 @@ import { postComment } from "@/service/article";
 import { IPostCommentData } from "@/types/article";
 import { getValidUid } from "@/api/token";
 import { toast } from "sonner";
+import clsx from "clsx";
 
 interface IProps {
   commentId: string;
   content: string;
+  className?: string;
 }
 
 export interface IComment {
@@ -16,7 +18,7 @@ export interface IComment {
   content: string;
 }
 
-const CommentBox: FC<IProps> = ({ commentId, content }) => {
+const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
   const [comments, setComments] = useState<IComment[]>(JSON.parse(content));
   const [newComment, setNewComment] = useState<string>("");
   function handlePostComment() {
@@ -46,9 +48,13 @@ const CommentBox: FC<IProps> = ({ commentId, content }) => {
     });
     setNewComment("");
   }
-  console.log(1234, comments);
   return (
-    <Card className="border-2 dark:bg-theme_dark dark:border-gray-600 mt-8 rounded-lg">
+    <Card
+      className={clsx(
+        className,
+        "border-2 dark:bg-theme_dark dark:border-gray-600 mt-8 rounded-lg"
+      )}
+    >
       <div className="flex gap-2">
         <Input
           placeholder="Write a comment..."

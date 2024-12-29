@@ -14,11 +14,15 @@ const theme = createTheme({
     fontFamily: "Roboto, sans-serif",
   },
 });
+// const themeColor = localStorage.getItem("theme") == "dark";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={theme}>
+      <MantineProvider
+        theme={theme}
+        // defaultColorScheme={themeColor ? "dark" : "light"}
+      >
         <Toaster />
         <Routes />
       </MantineProvider>

@@ -107,6 +107,7 @@ export default function Page() {
       </div>
       {open ? (
         <ChatRoom
+          key={chatInfo.chatId}
           className={clsx("w-full h-[90vh]")}
           chatInfo={chatInfo}
           setOpen={setOpen}

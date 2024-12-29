@@ -74,10 +74,7 @@ const NavMenu: FC<IProps> = ({
     setOption(options);
     setTimeout(() => setMobileOpen(false), 1000);
   }
-  useEffect(() => {
-    const theme = localStorage.getItem("theme") == "dark";
-    darkFunction(theme);
-  }, []);
+
   // useEffect(() => {
   //   const pathname = location.pathname;
   //   switch (pathname) {
