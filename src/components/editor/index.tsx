@@ -1,15 +1,22 @@
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react";
 import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
 import { Badge, Card, Container, Input, Select } from "@mantine/core";
 import "../../styles/editor.css";
 import SideTip from "../article/side-tip";
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { IArticleFiled } from "@/types/article";
 import ImageResize from "tiptap-extension-resize-image";
+import clsx from "clsx";
+import ClickMenu from "./FloatMenu";
+import FloatMenu from "./FloatMenu";
+
+interface IProps {
+  className?: string;
+}
 
 const defaultContent = `
   <div>开始你的创作...<div>
@@ -32,9 +39,11 @@ export const useAritcleEditor = (content?: string, editable: boolean = true) =>
     editable: editable,
   }) as Editor;
 
-const IeseEditor = () => {
+const IeseEditor: FC<IProps> = ({ className }) => {
   const editor = useAritcleEditor(``);
   const editorRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [article, setArticle] = useState<IArticleFiled>({
     title: "",
     content: editor?.getHTML() as string,
@@ -79,8 +88,35 @@ const IeseEditor = () => {
     };
   }, [editor]);
 
+  useEffect(() => {
+    const clickMenu = document.getElementById("click-menu");
+    clickMenu?.style.setProperty("left", `${position.x}px`);
+    clickMenu?.style.setProperty("top", `${position.y}px`);
+  }, [position]);
+
+  // useEffect(() => {
+  //   const Edit = document.getElementById("edit");
+  //   console.log("Edit", Edit);
+  //   Edit.onselect = (e) => {
+  //     const selection = window.getSelection();
+  //     if (selection) {
+  //       const range = selection.getRangeAt(0);
+  //       const rect = range.getBoundingClientRect();
+  //       setPosition({ x: rect.left, y: rect.top });
+  //       setOpen(true);
+  //     }
+  //     console.log("onselect", e);
+  //   };
+  // });
+
   return (
-    <div className="flex flex-wrap gap-y-4 md:gap-x-4 h-full w-full " id="post">
+    <div
+      className={clsx(
+        className,
+        "flex flex-wrap gap-y-4 md:gap-x-4 h-full w-full  "
+      )}
+      id="post"
+    >
       <div className="flex-auto flex flex-col gap-4">
         <MenuBar editor={editor} />
 
@@ -107,10 +143,12 @@ const IeseEditor = () => {
           <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
           <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full   ">
             <EditorContent
+              id="edit"
               editor={editor}
               placeholder="开始你的编辑吧！"
               ref={editorRef}
             />
+            {editor && <FloatMenu editor={editor} id="click-menu" />}
           </Container>
         </Card>
       </div>

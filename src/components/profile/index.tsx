@@ -6,8 +6,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import UserAvatar from "../public/user_avatar";
 import { queryClient } from "@/main";
 import { IUpdateUserForm } from "@/types/user";
+import { FC } from "react";
+import clsx from "clsx";
 
-export default function ProfileCard() {
+interface IProps {
+  className?: string;
+}
+
+const ProfileCard: FC<IProps> = ({ className }) => {
   const { isSuccess, isError, data } = useQuery({
     queryKey: ["profile"],
     queryFn: () => getUserInfo(),
@@ -37,12 +43,16 @@ export default function ProfileCard() {
   if (isError) return <div>Error</div>;
   if (isSuccess)
     return (
-      <Card className="w-full h-full rounded-lg dark:bg-theme_dark">
+      <Card
+        className={clsx(
+          className,
+          "w-full h-full rounded-lg dark:bg-theme_dark "
+        )}
+      >
         <Card.Section className="p-4">
           <UserAvatar src={data.data.data.avatar} size="medium" />
           <form
             onSubmit={form.onSubmit((v) => {
-              console.log("submit", v);
               const form = {
                 username: v.username || data.data.data.username,
                 introduce: v.introduce || data.data.data.introduce,
@@ -110,4 +120,5 @@ export default function ProfileCard() {
         </Card.Section>
       </Card>
     );
-}
+};
+export default ProfileCard;

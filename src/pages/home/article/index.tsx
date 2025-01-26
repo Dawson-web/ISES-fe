@@ -1,7 +1,7 @@
 import ArticlePreview from "@/components/article/article-preview";
 import CommentBox from "@/components/article/comment";
 import { getArticleDetail } from "@/service/article";
-import { Tooltip } from "@mantine/core";
+import { Card, Tooltip } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { Undo2 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -20,7 +20,7 @@ export default function Page() {
   return (
     <div className="w-full h-full">
       {isSuccess && (
-        <>
+        <Card className="dark:bg-theme_dark flex flex-col gap-4">
           <Tooltip label="返回">
             <Undo2
               className="text-gray-600 dark:text-white"
@@ -34,14 +34,13 @@ export default function Page() {
               content={data.data.data.content}
               className="w-full h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full "
             />
-            <div>11</div>
           </div>
           <CommentBox
             commentId={data.data.data.commentId}
             content={data.data.data.Comment.content}
             className=""
           />
-        </>
+        </Card>
       )}
     </div>
   );

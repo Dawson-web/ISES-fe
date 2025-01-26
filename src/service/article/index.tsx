@@ -5,6 +5,8 @@ import {
   IArticleFiled,
   IGetArticleDetailResponse,
   IGetArticlePaginationResponse,
+  IGetCollectsRequest,
+  IGetCollectsResponse,
   IPaginationRequest,
   IPostCommentData,
 } from "@/types/article";
@@ -21,6 +23,15 @@ export const getArticlePagination = async (params?: IPaginationRequest) => {
   return await $axios.get<ApiOk<IGetArticlePaginationResponse>>(
     "/user/articles",
     { params }
+  );
+};
+
+export const getCollects = async (params: IGetCollectsRequest) => {
+  return await $axios.post<ApiOk<IGetCollectsResponse>>(
+    `/user/articles/getcollects`,
+    {
+      ...params,
+    }
   );
 };
 

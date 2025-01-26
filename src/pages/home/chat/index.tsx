@@ -26,16 +26,16 @@ export default function Page() {
     online: 0,
   });
   const [search, setSearch] = useState("");
-  const [params] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const { isSuccess, data } = useQuery({
     queryKey: ["chatList"],
     queryFn: () => getChatList({ userInfoId: getValidUid() as string }),
   });
   useEffect(() => {
-    if (params.get("id") && isSuccess) {
+    if (searchParams.get("id") && isSuccess) {
       const chat = data.data.data.find(
-        (chat) => chat.id === params.get("id")
+        (chat) => chat.id === searchParams.get("id")
       ) as IGetChatListResponse;
       setChatInfo({
         chatId: chat.id,
@@ -48,7 +48,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-full flex  bg-white dark:bg-theme_dark overflow-y-auto h-full rounded-lg">
+    <div className="w-full flex  bg-white dark:bg-theme_dark overflow-y-auto h-full rounded-lg flex-1">
       <div
         className={clsx(
           "flex flex-col sm:gap-0 gap-2 sm:shadow-lg w-full sm:w-[35%] h-full overflow-y-scroll ",
@@ -92,6 +92,7 @@ export default function Page() {
                       userName: chat.username,
                       online: chat.online as number,
                     });
+                    searchParams.set("id", chat.id);
                     setOpen(true);
                   }}
                   className={clsx(
@@ -108,14 +109,14 @@ export default function Page() {
       {open ? (
         <ChatRoom
           key={chatInfo.chatId}
-          className={clsx("w-full h-[90vh]")}
+          className={clsx("w-full ")}
           chatInfo={chatInfo}
           setOpen={setOpen}
         />
       ) : (
         <Card
           className={clsx(
-            "hidden sm:flex flex-col flex-grow justify-start dark:bg-theme_dark dark:text-white p-0 rounded-none w-full h-[90vh] border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600 "
+            "hidden sm:flex flex-col flex-grow justify-start dark:bg-theme_dark dark:text-white p-0 rounded-none w-full  border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600 "
           )}
         >
           <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 "></div>

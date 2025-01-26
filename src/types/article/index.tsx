@@ -72,3 +72,11 @@ export interface IPostCommentData {
   content: string;
   commentId: string;
 }
+
+export interface IGetCollectsRequest {
+  articleId?: string;
+}
+export interface IGetCollectsResponse {
+  collects: IArticleDetail[];
+  count: number;
+}

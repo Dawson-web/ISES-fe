@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { uploadImage } from "@/service/article";
 import { apiConfig } from "@/config";
 
-export interface IMenuItemButtonProps {
+export interface IClickMenuItemButtonProps {
   Icon: ReactElement;
   tooltip: string;
   onClick: () => void;
@@ -36,9 +36,9 @@ export interface IMenuItemButtonProps {
   };
 }
 
-type TEditorGroup = Array<IMenuItemButtonProps>;
+type TEditorGroup = Array<IClickMenuItemButtonProps>;
 
-const getMenuItemGroups = (editor: Editor) => {
+const getFloatMenuItemGroups = (editor: Editor) => {
   const editorItemsGroup1: TEditorGroup = [
     {
       tooltip: "加粗",
@@ -185,41 +185,7 @@ const getMenuItemGroups = (editor: Editor) => {
     },
   ];
 
-  const editorItemsGroup4: TEditorGroup = [
-    {
-      tooltip: "强制换行",
-      Icon: <WrapTextIcon size={15} strokeWidth={3} />,
-      onClick: () => editor.chain().focus().setHardBreak().run(),
-    },
-    {
-      tooltip: "清除样式",
-      Icon: <RemoveFormatting size={15} strokeWidth={3} />,
-      onClick: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
-    },
-  ];
-
-  const editorItemsGroup5: TEditorGroup = [
-    {
-      tooltip: "撤销",
-      Icon: <Undo2Icon size={15} strokeWidth={3} />,
-      onClick: () => editor.chain().focus().undo().run(),
-      disabled: !editor.can().chain().focus().undo().run(),
-    },
-    {
-      tooltip: "恢复",
-      Icon: <Redo2Icon size={15} strokeWidth={3} />,
-      onClick: () => editor.chain().focus().redo().run(),
-      disabled: !editor.can().chain().focus().redo().run(),
-    },
-  ];
-
-  return [
-    editorItemsGroup1,
-    editorItemsGroup2,
-    editorItemsGroup3,
-    editorItemsGroup4,
-    editorItemsGroup5,
-  ];
+  return [editorItemsGroup1, editorItemsGroup2, editorItemsGroup3];
 };
 
-export default getMenuItemGroups;
+export default getFloatMenuItemGroups;

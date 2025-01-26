@@ -58,8 +58,7 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
     try {
       const res = await createChatRoom(data);
       // toast.success(res.data.message);
-      console.log(res.data.data);
-      navigate(`/home/link?id=${res.data.data.id}`);
+      navigate(`/home/chat?id=${res.data.data.id}`);
     } catch (e) {
       toast.error("创建失败");
     }

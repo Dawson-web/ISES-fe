@@ -9,7 +9,7 @@ import { IGetChatMessageResponse } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
 import { IChatInfo } from "@/pages/home/chat";
-interface Props {
+interface IProps {
   className?: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   chatInfo: IChatInfo;
@@ -17,7 +17,7 @@ interface Props {
 
 let socket: WebSocket | null = null;
 
-const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
+const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   const [messages, setMessages] = useState<IGetChatMessageResponse[]>([]);
   const [content, setContent] = useState<string>("");
   const handleSend = async () => {
@@ -51,7 +51,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
   return (
     <Card
       className={clsx(
-        "h-full flex-grow flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
+        " flex-grow sm:flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
         className
       )}
     >
@@ -73,7 +73,7 @@ const ChatRoom: FC<Props> = ({ className, setOpen, chatInfo }) => {
       ) : (
         <div>Loading...</div> // 显示加载中的提示
       )}
-      <div className="flex flex-col flex-1 h-full">
+      <div className="flex flex-col flex-shrink-0 h-[160px] ">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
