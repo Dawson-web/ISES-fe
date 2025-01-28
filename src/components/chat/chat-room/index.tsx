@@ -51,14 +51,14 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   return (
     <Card
       className={clsx(
-        " flex-grow sm:flex flex-col justify-start dark:bg-theme_dark dark:text-white p-0 !rounded-none border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600",
+        " flex-grow sm:flex flex-col justify-start  dark: p-0 !rounded-none ",
         className
       )}
     >
-      <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 p-2 ">
+      <div className="flex items-center justify-between h-[60px] flex-shrink-0 p-2 ">
         <span className="font-bold">{chatInfo.userName}</span>
         <Undo2
-          className="text-gray-600 dark:text-white"
+          className="text-gray-600 dark:"
           onClick={() => {
             setOpen(false);
             websocketClose(socket as WebSocket);
@@ -66,10 +66,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
         />
       </div>
       {isSuccess ? (
-        <MessageList
-          messages={messages}
-          className="border-b-2 border-gray-200 dark:border-gray-600   overflow-y-scroll "
-        />
+        <MessageList messages={messages} className="  overflow-y-scroll " />
       ) : (
         <div>Loading...</div> // 显示加载中的提示
       )}
@@ -91,7 +88,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           className="w-full h-full p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
         />
         <Button
-          className="w-[100px] h-10 bg-blue-500 text-white font-bold self-end m-2 "
+          className="w-[100px] h-10 bg-blue-500  font-bold self-end m-2 "
           onClick={async () => {
             await handleSend();
             setMessages((prev) => [

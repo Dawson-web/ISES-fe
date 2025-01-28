@@ -32,7 +32,7 @@ const FloatMenu: FC<IEditorClickMenuProps> = ({ editor, className, id }) => {
                 key={itemProps.tooltip + i}
                 editor={editor}
                 className={
-                  "bg-theme_gray hover:bg-gray-700  rounded-md flex justify-center items-center p-1 hover:text-white"
+                  "bg-theme_gray hover:bg-gray-700  rounded-md flex justify-center items-center p-1 hover:"
                 }
               />
             ))}

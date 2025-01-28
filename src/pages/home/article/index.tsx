@@ -20,10 +20,10 @@ export default function Page() {
   return (
     <div className="w-full h-full">
       {isSuccess && (
-        <Card className="dark:bg-theme_dark flex flex-col gap-4">
+        <Card className=" flex flex-col gap-4">
           <Tooltip label="返回">
             <Undo2
-              className="text-gray-600 dark:text-white"
+              className="text-gray-600 dark:"
               onClick={() => {
                 navigate("/home");
               }}

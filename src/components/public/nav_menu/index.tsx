@@ -15,10 +15,15 @@ import { Logout } from "./Logout";
 import AppLogo from "../app-logo";
 import { LayoutModel } from "./LayoutModel";
 import { Settings } from "lucide-react";
-import { UnstyledButton } from "@mantine/core";
+import {
+  Card,
+  Text,
+  UnstyledButton,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { Menu } from "@mantine/core";
-import darkFunction from "@/utils/dark";
 import { useDisclosure } from "@mantine/hooks";
+import darkFunction from "@/utils/dark";
 
 interface OptionData {
   name: string;
@@ -74,13 +79,7 @@ const NavMenu: FC<IProps> = ({
     setOption(options);
     setTimeout(() => setMobileOpen(false), 1000);
   }
-  const [dark, setDark] = useState<boolean>(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-  useEffect(() => {
-    localStorage.setItem("theme", dark ? "dark" : "light");
-    darkFunction(dark);
-  }, [dark]); // Add dark to the dependency array
+
   // useEffect(() => {
   //   const pathname = location.pathname;
   //   switch (pathname) {
@@ -103,11 +102,11 @@ const NavMenu: FC<IProps> = ({
   // }, [location]);
 
   return (
-    <div className={clsx(className)}>
+    <Card className={clsx("p-0")}>
       {/* 移动端控制菜单打开按钮 */}
       <NavOpen open={mobileOpen} setOpen={setMobileOpen} />
       <aside
-        className={clsx("bg-white dark:bg-theme_dark w-full", {
+        className={clsx(" w-full bg-white", {
           "fixed z-40 mt-[40px] h-full ": mobileOpen,
           "sm:block hidden ": !mobileOpen,
         })}
@@ -116,7 +115,7 @@ const NavMenu: FC<IProps> = ({
           <NavigationMenuList
             className={clsx({
               "sm:flex w-full justify-center ": vercel,
-              "h-full sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  bg-white dark:bg-theme_dark":
+              "h-full sm:flex flex-col justify-start overflow-hidden pt-[20px] sm:pt-[30px]  ":
                 !vercel,
             })}
           >
@@ -129,9 +128,9 @@ const NavMenu: FC<IProps> = ({
             {(!vercel || mobileOpen) && (
               <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
                 {avatar_show && <UserAvatar src={avatar_src} size="medium" />}
-                <div className="bg-theme_blue dark:bg-theme_blue text-white text-sm px-2 py-1 rounded-md font-bold truncate w-[80px] text-center">
+                <Text className="dark:text-gray-600  text-sm px-2 py-1 rounded-md font-bold truncate w-[80px] text-center">
                   {userName}
-                </div>
+                </Text>
               </div>
             )}
             {options.map((item: OptionData) => {
@@ -144,7 +143,7 @@ const NavMenu: FC<IProps> = ({
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       className={clsx(
-                        " group sm:my-4 my-6  flex items-en dark:bg-theme_dark dark:text-gray-600 text-md font-semibold 	 ",
+                        " group sm:my-4 my-6  flex items-en  dark:text-gray-600 text-md font-semibold 	 ",
                         {
                           "px-4 gap-4": vercel && !mobileOpen,
                           "px-10 gap-8 ": !vercel || mobileOpen,
@@ -173,7 +172,7 @@ const NavMenu: FC<IProps> = ({
             <NavigationMenuItem onClick={toggle}>
               <NavigationMenuLink
                 className={clsx(
-                  " group sm:my-4 my-6 flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                  " group sm:my-4 my-6 flex flex-co  dark:text-gray-600 text-md font-semibold cursor-pointer",
                   {
                     "px-4 gap-4": vercel && !mobileOpen,
                     "px-10 gap-8 ": !vercel || mobileOpen,
@@ -186,7 +185,7 @@ const NavMenu: FC<IProps> = ({
             </NavigationMenuItem>
             <div
               className={clsx(
-                "   flex flex-co dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                "   flex flex-co  dark:text-gray-600 text-md font-semibold cursor-pointer",
                 {
                   "px-4 gap-4": vercel && !mobileOpen,
                   "px-10 gap-8 ": !vercel || mobileOpen,
@@ -197,7 +196,7 @@ const NavMenu: FC<IProps> = ({
                 <Menu.Target>
                   <UnstyledButton
                     className={clsx(
-                      " group sm:my-4  flex dark:bg-theme_dark dark:text-gray-600 text-md font-semibold cursor-pointer",
+                      " group sm:my-4  flex  dark:text-gray-600 text-md font-semibold cursor-pointer",
                       {
                         " gap-4": vercel && !mobileOpen,
                         " gap-8 ": !vercel || mobileOpen,
@@ -209,11 +208,12 @@ const NavMenu: FC<IProps> = ({
                   </UnstyledButton>
                 </Menu.Target>
 
-                <Menu.Dropdown className="dark:bg-theme_dark_sm border-0 ">
+                <Menu.Dropdown className="_sm border-2 ">
                   <Menu.Item>
                     <AppLogo className="dark:text-gray-600" />
-                    <div className="w-full h-full flex flex-col gap-4 mt-4"></div>
                   </Menu.Item>
+                  <Menu.Divider />
+
                   <Menu.Item>
                     {!mobileOpen && (
                       <LayoutModel
@@ -233,7 +233,7 @@ const NavMenu: FC<IProps> = ({
         </NavigationMenu>
       </aside>
       <Logout opened={opened} close={close} />
-    </div>
+    </Card>
   );
 };
 

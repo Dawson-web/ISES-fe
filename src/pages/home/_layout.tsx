@@ -7,8 +7,8 @@ import { createWebSocket, websocketClose } from "@/service/websocket";
 import ScoketMessage from "@/components/scoket-message";
 import { IWSMessage } from "@/types/websocket";
 import { useQuery } from "@tanstack/react-query";
-import { layoutFunction } from "@/utils/layout";
 import NavMenu from "@/components/public/nav_menu";
+import { layoutFunction } from "@/utils/layout";
 
 export let socket: WebSocket | null = null;
 
@@ -53,20 +53,20 @@ export default function Layout() {
             userName={data.data.data.username}
             vercel={vercel}
             setVercel={setVercel}
-            className={clsx(
-              "sm:relative z-50 dark:bg-theme_dark  ",
-              {
-                "flex justify-start": open,
-              },
-              {
-                "flex-col sm:h-screen w-[200px]": !vercel,
-                "flex-row flex-nowrap ": vercel,
-              }
-            )}
+            // className={clsx(
+            //   "sm:relative z-50  ",
+            //   {
+            //     "flex justify-start": open,
+            //   },
+            //   {
+            //     "flex-col sm:h-screen w-[200px]": !vercel,
+            //     "flex-row flex-nowrap ": vercel,
+            //   }
+            // )}
           />
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center  bg-gray-200 dark:bg-theme_dark_sm min-h-screen h-full"
+              "flex-1 p-[1rem]  flex flex-col items-center m min-h-screen h-full"
             )}
           >
             <ScoketMessage

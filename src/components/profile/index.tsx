@@ -43,12 +43,7 @@ const ProfileCard: FC<IProps> = ({ className }) => {
   if (isError) return <div>Error</div>;
   if (isSuccess)
     return (
-      <Card
-        className={clsx(
-          className,
-          "w-full h-full rounded-lg dark:bg-theme_dark "
-        )}
-      >
+      <Card className={clsx(className, "w-full h-full rounded-lg  ")}>
         <Card.Section className="p-4">
           <UserAvatar src={data.data.data.avatar} size="medium" />
           <form
@@ -113,7 +108,7 @@ const ProfileCard: FC<IProps> = ({ className }) => {
                 {...form.getInputProps("introduce")}
               />
             </div>
-            <Button type="submit" mt="sm" className="bg-theme_blue float-right">
+            <Button type="submit" mt="sm" className=" float-right">
               保存
             </Button>
           </form>

@@ -49,12 +49,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
     setNewComment("");
   }
   return (
-    <Card
-      className={clsx(
-        className,
-        "border-2 dark:bg-theme_dark dark:border-gray-600 mt-8 rounded-lg"
-      )}
-    >
+    <Card className={clsx(className, " mt-8 rounded-lg")}>
       <div className="flex gap-2">
         <Input
           placeholder="Write a comment..."

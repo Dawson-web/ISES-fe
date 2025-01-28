@@ -5,6 +5,7 @@ import MessageItem from "./MessageItem";
 import { IGetChatMessageResponse } from "@/types/chat";
 import { getValidUid } from "@/api/token";
 import { apiConfig } from "@/config";
+import { Card } from "@mantine/core";
 
 interface Props {
   messages: IGetChatMessageResponse[];
@@ -21,9 +22,12 @@ const MessageList: FC<Props> = ({ messages, className }) => {
   }, [messages]);
 
   return (
-    <div
+    <Card
       ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined}
-      className={clsx("flex flex-col gap-2 p-4 overflow-y-auto", className)}
+      className={clsx(
+        "flex flex-col gap-2 p-4 overflow-y-auto rounded-none border-x-0",
+        className
+      )}
       style={{ maxHeight: "65vh" }} // 可以根据需要调整最大高度
     >
       {messages &&
@@ -39,7 +43,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
         ))}
       <div ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined} />
       {/* 这个元素用于滚动到底部 */}
-    </div>
+    </Card>
   );
 };
 

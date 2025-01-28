@@ -9,7 +9,7 @@ const AppLogo: FC<{ className?: string }> = ({ className }) => {
         className
       )}
     >
-      <div className="font-comfortaa ">
+      <div className="font-comfortaa  dark:text-gray-600">
         Ises
         <span className="text-theme_blue">.</span>
       </div>

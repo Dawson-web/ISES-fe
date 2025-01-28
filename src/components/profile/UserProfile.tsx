@@ -73,11 +73,7 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
       withCloseButton={false}
     >
       <AppLogo className="absolute z-50 left-4 top-2" />
-      <Card
-        withBorder
-        radius="md"
-        className="bg-white dark:bg-theme_dark dark:border-gray-600 border-0 "
-      >
+      <Card withBorder radius="md" className=" dark:border-gray-600 border-0 ">
         <Card.Section
           h={160}
           style={{
@@ -141,7 +137,7 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
                 mt="xl"
                 size="md"
                 variant="default"
-                className="bg-white dark:bg-theme_dark dark:text-white"
+                className=" dark:text-white"
               >
                 关注
               </Button>

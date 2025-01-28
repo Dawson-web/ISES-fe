@@ -48,7 +48,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-full flex  bg-white dark:bg-theme_dark overflow-y-auto h-full rounded-lg flex-1">
+    <Card className="w-full flex flex-row p-0 overflow-y-auto h-full rounded-lg flex-1">
       <div
         className={clsx(
           "flex flex-col sm:gap-0 gap-2 sm:shadow-lg w-full sm:w-[35%] h-full overflow-y-scroll ",
@@ -96,9 +96,9 @@ export default function Page() {
                     setOpen(true);
                   }}
                   className={clsx(
-                    "mx-auto w-full p-2 dark:bg-theme_dark  dark:text-theme_gray border-transparent  h-[80px]   ",
+                    "mx-auto w-full p-2   dark:text-theme_gray border-transparent  h-[80px]   ",
                     {
-                      "!bg-theme_gray/10 dark:text-white":
+                      "!bg-theme_gray/10 dark:":
                         chatInfo.chatId === chat.id && open,
                     }
                   )}
@@ -116,22 +116,22 @@ export default function Page() {
       ) : (
         <Card
           className={clsx(
-            "hidden sm:flex flex-col flex-grow justify-start dark:bg-theme_dark dark:text-white p-0 rounded-none w-full  border-l-0  sm:border-l-2 border-gray-200 dark:border-gray-600 "
+            "hidden sm:flex flex-col flex-grow justify-start  dark: p-0 rounded-none w-full border-0 "
           )}
         >
-          <div className="border-b-2 border-gray-200 dark:border-gray-600 flex items-center justify-between h-[60px] flex-shrink-0 "></div>
-          <div className="border-b-2 border-gray-200 dark:border-gray-600 flex-1  flex items-center justify-center text-gray-600">
+          <Card className=" flex items-center justify-between h-[60px] flex-shrink-0  rounded-none "></Card>
+          <Card className=" flex-1  flex items-center justify-center text-gray-600 rounded-none ">
             暂未选择聊天窗
-          </div>
+          </Card>
 
-          <div className="flex flex-col flex-shrink-0 h-[160px]">
+          <Card className="flex flex-col flex-shrink-0 h-[160px]">
             <textarea
               disabled
               className="w-full h-full p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
             />
-          </div>
+          </Card>
         </Card>
       )}
-    </div>
+    </Card>
   );
 }

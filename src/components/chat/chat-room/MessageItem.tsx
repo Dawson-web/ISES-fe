@@ -26,7 +26,7 @@ const MessageItem: FC<Props> = ({ message, className, avatarSrc }) => {
           " p-2 rounded-lg  max-w-[50%] break-words ",
           getValidUid() === message.userInfoId
             ? "bg-theme_blue text-white"
-            : "bg-theme_gray text-black dark:text-white dark:bg-gray-600"
+            : "bg-theme_gray text-black dark: dark:bg-gray-600"
         )}
       >
         {message.content}

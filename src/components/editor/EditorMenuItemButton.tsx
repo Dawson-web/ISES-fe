@@ -34,7 +34,7 @@ const MenuItemButton: FC<IMenuItemButtonProps> = ({
     <Tooltip label={tooltip}>
       <Button
         variant="light"
-        className={clsx([className, isActive ? "bg-emerald-500 " : ""])}
+        className={clsx([className, " ", isActive ? "bg-blue-600/50 " : ""])}
         onClick={onClick}
         key={tooltip}
         disabled={disabled}

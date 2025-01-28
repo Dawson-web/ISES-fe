@@ -1,6 +1,6 @@
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
-import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
@@ -11,7 +11,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import { IArticleFiled } from "@/types/article";
 import ImageResize from "tiptap-extension-resize-image";
 import clsx from "clsx";
-import ClickMenu from "./FloatMenu";
 import FloatMenu from "./FloatMenu";
 
 interface IProps {
@@ -42,8 +41,6 @@ export const useAritcleEditor = (content?: string, editable: boolean = true) =>
 const IeseEditor: FC<IProps> = ({ className }) => {
   const editor = useAritcleEditor(``);
   const editorRef = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [article, setArticle] = useState<IArticleFiled>({
     title: "",
     content: editor?.getHTML() as string,
@@ -88,12 +85,6 @@ const IeseEditor: FC<IProps> = ({ className }) => {
     };
   }, [editor]);
 
-  useEffect(() => {
-    const clickMenu = document.getElementById("click-menu");
-    clickMenu?.style.setProperty("left", `${position.x}px`);
-    clickMenu?.style.setProperty("top", `${position.y}px`);
-  }, [position]);
-
   // useEffect(() => {
   //   const Edit = document.getElementById("edit");
   //   console.log("Edit", Edit);
@@ -120,7 +111,7 @@ const IeseEditor: FC<IProps> = ({ className }) => {
       <div className="flex-auto flex flex-col gap-4">
         <MenuBar editor={editor} />
 
-        <Card className=" rounded-lg p-4 mt-2 dark:bg-theme_dark border border-gray-300 dark:border-gray-600 dark:text-white  overflow-hidden flex flex-col gap-4 flex-1">
+        <Card className=" rounded-lg p-4 mt-2 border   overflow-hidden flex flex-col gap-4 flex-1">
           <div className="flex  gap-4 nowrap ">
             <div className="flex-1">
               <Badge className="text-[1rem] bg-theme_blue">标题</Badge>
@@ -141,7 +132,7 @@ const IeseEditor: FC<IProps> = ({ className }) => {
             />
           </div>
           <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
-          <Container className="border border-gray-300 dark:border-gray-600 rounded-lg w-full mx-0 p-0 h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full   ">
+          <Container className="border rounded-lg w-full mx-0 p-0 h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full   ">
             <EditorContent
               id="edit"
               editor={editor}

@@ -50,9 +50,7 @@ const Loading = () => {
   return (
     <div className="h-screen ">
       <div className="flex flex-col items-center h-full justify-center mt-[-50px]">
-        <div className="animate-bounce  font-bold dark:text-white">
-          Loading...
-        </div>
+        <div className="animate-bounce  font-bold dark:">Loading...</div>
         <div
           ref={ref}
           className="relative w-[200px] h-[50px] cursor-pointer border-[2px] dark:border-gray-100 border-black rounded-md "
@@ -61,7 +59,7 @@ const Loading = () => {
             className="w-full h-full absolute bg-theme_blue rounded-sm "
             style={{ width: props.progress.interpolate((p) => `${p}%`) }}
           />
-          <animated.div className="absolute w-full h-full flex items-center justify-center text-white ">
+          <animated.div className="absolute w-full h-full flex items-center justify-center  ">
             (／‵Д′)／~ ╧╧
           </animated.div>
         </div>

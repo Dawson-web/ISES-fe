@@ -13,7 +13,7 @@ const CommentCard: FC<IProps> = ({ comment, className }) => {
   return (
     <div
       className={clsx(
-        "dark:text-white flex flex-row flex-nowrap gap-4 items-center p-4 border-b border-gray-200 dark:border-gray-700",
+        "dark: flex flex-row flex-nowrap gap-4 items-center p-4 border-b border-gray-200 dark:border-gray-700",
         className
       )}
     >

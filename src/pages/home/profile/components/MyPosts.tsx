@@ -1,5 +1,5 @@
-import { getCollects } from "@/service/article";
-import { IGetCollectsRequest } from "@/types/article";
+import { getArticlePagination, getCollects } from "@/service/article";
+import { IGetCollectsRequest, IPaginationRequest } from "@/types/article";
 import { useQuery } from "@tanstack/react-query";
 import { ActionIcon, Avatar, Badge, Card, Group, Text } from "@mantine/core";
 import avatarSplice from "@/utils/avatar";
@@ -47,21 +47,25 @@ function ArticleCardFooter({ article }) {
     </Card>
   );
 }
-const MyCollects = () => {
+const MyPosts = () => {
   const { isSuccess, data } = useQuery({
-    queryKey: ["collects"],
+    queryKey: ["mypost"],
     queryFn: () => {
-      const params: IGetCollectsRequest = {};
-      return getCollects(params);
+      const params: IPaginationRequest = {
+        page: 1,
+        pageSize: 9999,
+        title: "",
+      };
+      return getArticlePagination(params);
     },
   });
 
   return (
     <Card className=" w-full flex flex-col gap-4" radius={"md"}>
-      <span className="text-xl font-bold ">我的收藏</span>
+      <span className="text-xl font-bold ">我的发布</span>
       {isSuccess && (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {data.data.data.collects.map((article) => (
+          {data.data.data.articles.map((article) => (
             <ArticleCardFooter article={article} />
           ))}
         </div>
@@ -69,4 +73,4 @@ const MyCollects = () => {
     </Card>
   );
 };
-export default MyCollects;
+export default MyPosts;

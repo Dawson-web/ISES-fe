@@ -42,7 +42,7 @@ export default function RenderComponents() {
           <li
             onClick={() => setComponent("form")}
             className={clsx("px-2 py-1", {
-              "text-white bg-theme_blue rounded-lg ": component === "form",
+              " bg-theme_blue rounded-lg ": component === "form",
             })}
           >
             表单
@@ -50,7 +50,7 @@ export default function RenderComponents() {
           <li
             onClick={() => setComponent("img_card")}
             className={clsx("px-2 py-1", {
-              "text-white bg-theme_blue rounded-lg ": component === "img_card",
+              " bg-theme_blue rounded-lg ": component === "img_card",
             })}
           >
             图片卡片
@@ -58,7 +58,7 @@ export default function RenderComponents() {
           <li
             onClick={() => setComponent("link_card")}
             className={clsx("px-2 py-1", {
-              "text-white bg-theme_blue rounded-lg ": component === "link_card",
+              " bg-theme_blue rounded-lg ": component === "link_card",
             })}
           >
             友链卡片

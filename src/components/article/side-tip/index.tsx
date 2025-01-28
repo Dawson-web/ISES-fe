@@ -58,12 +58,7 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   };
 
   return (
-    <Card
-      className={clsx(
-        "rounded-lg dark:bg-theme_dark shadow-lg border border-gray-300 dark:border-gray-600",
-        className
-      )}
-    >
+    <Card className={clsx("rounded-lg  shadow-lg ", className)}>
       <Button
         variant="gradient"
         gradient={{ from: "blue", to: "cyan", deg: 90 }}
@@ -73,7 +68,7 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
       </Button>
       <Card.Section className="p-4">
         <Badge className="bg-theme_blue">提示</Badge>
-        <div className="dark:text-white">
+        <div className="dark:">
           <TipContainer>
             <TipHeader>书写流程</TipHeader>
             <TipContent>

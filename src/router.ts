@@ -12,6 +12,7 @@ export type Path =
   | `/home/post`
   | `/home/profile`
   | `/home/profile/components/MyCollects`
+  | `/home/profile/components/MyPosts`
   | `/login`
   | `/register`
   | `/seekback`

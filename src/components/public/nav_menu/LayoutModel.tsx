@@ -12,7 +12,7 @@ interface IProps {
 export const LayoutModel: FC<IProps> = ({ className, vercel, setVercel }) => {
   return (
     <div
-      className={clsx(className)}
+      className={clsx(className, "font-bold")}
       onClick={() => {
         setVercel((prev) => {
           setLayoutFunction(!prev);

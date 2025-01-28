@@ -1,7 +1,7 @@
 import { likeArticle } from "@/service/article";
 import { IArticleDetail } from "@/types/article";
 import { Badge, Card, Title, Tooltip } from "@mantine/core";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { Heart, HeartCrack, ThumbsDown, ThumbsUp } from "lucide-react";
 import { FC, useState } from "react";
 import { toast } from "sonner";
 import UserAvatar from "../../public/user_avatar";
@@ -50,7 +50,7 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
   };
 
   return (
-    <Card className="flex-grow flex flex-col gap-1 justify-evenly dark:bg-theme_dark dark:text-white rounded-lg shadow-md">
+    <Card className="flex-grow flex flex-col gap-1 justify-evenly  dark: rounded-lg shadow-md">
       <header
         className="flex items-end gap-2"
         onClick={(e) => {
@@ -91,10 +91,10 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
       <footer className="flex items-center justify-end p-2 gap-4    ">
         <div className="flex  items-center gap-2 ">
           {likesCount === article.likesCount ? (
-            <Tooltip label="点赞">
-              <ThumbsUp
+            <Tooltip label="收藏">
+              <Heart
                 size="1.2rem"
-                className="text-yellow-400 hover:text-yellow-500 hover:scale-110 transition-[transform] duration-300 ease-in-out"
+                className="text-rose-500 hover:text-rose-600 hover:scale-110 transition-[transform] duration-300 ease-in-out"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLike();
@@ -102,10 +102,10 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
               />
             </Tooltip>
           ) : (
-            <Tooltip label="取消点赞">
-              <ThumbsDown
+            <Tooltip label="取消收藏">
+              <HeartCrack
                 size="1.2rem"
-                className="text-yellow-400 hover:text-yellow-500 hover:scale-110 transition-[transform] duration-300 ease-in-out"
+                className="text-rose-500 hover:text-rose-600 hover:scale-110 transition-[transform] duration-300 ease-in-out"
                 onClick={(e) => {
                   e.stopPropagation();
                   cancelLike();

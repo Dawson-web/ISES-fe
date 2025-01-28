@@ -1,3 +1,4 @@
+import { Card } from "@mantine/core";
 import getMenuItemGroups from "./data/menuItemGroup";
 import MenuItemButton from "./EditorMenuItemButton";
 import { Editor } from "@tiptap/react";
@@ -16,7 +17,7 @@ const MenuBar: FC<IEditorMenuBarProps> = ({ editor }) => {
 
   const menuItemGroups = getMenuItemGroups(editor);
   return (
-    <div className="w-[100%] flex gap-2 flex-wrap bg-gray-00 p-2 rounded-md bg-white dark:bg-theme_dark border border-gray-300 dark:border-gray-700 justify-center">
+    <Card className="w-full flex flex-row gap-2 flex-wrap bg-gray-00 p-2 rounded-md  justify-center">
       {menuItemGroups.map((group) => {
         return (
           <>
@@ -25,15 +26,13 @@ const MenuBar: FC<IEditorMenuBarProps> = ({ editor }) => {
                 {...itemProps}
                 key={itemProps.tooltip + i}
                 editor={editor}
-                className={
-                  "bg-theme_blue hover:bg-blue-700 p-[0.5em] rounded-md text-white"
-                }
+                className={"p-[0.5em] rounded-md "}
               />
             ))}
           </>
         );
       })}
-    </div>
+    </Card>
   );
 };
 

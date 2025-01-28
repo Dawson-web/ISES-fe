@@ -54,7 +54,7 @@ export default function Page() {
             toast.error(String(error));
           }
         })}
-        className="relative flex w-[30vw] min-w-[320px] max-w-[400px]  flex-col gap-2 overflow-hidden rounded-md border-2  dark:border-0  dark:bg-theme_dark  p-4 shadow-md"
+        className="relative flex w-[30vw] min-w-[320px] max-w-[400px]  flex-col gap-2 overflow-hidden rounded-md border-2  dark:border-0   p-4 shadow-md"
       >
         <TextInput
           label="邮箱"

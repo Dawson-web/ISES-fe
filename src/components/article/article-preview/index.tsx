@@ -12,12 +12,7 @@ interface IProps {
 const ArticlePreview: FC<IProps> = ({ content, className }) => {
   const editor = useAritcleEditor(content, false);
   return (
-    <Card
-      className={clsx(
-        className,
-        "rounded-lg  dark:bg-theme_dark border-2 border-gray-300 dark:border-gray-600 dark:text-white"
-      )}
-    >
+    <Card className={clsx(className, "rounded-lg  p-0  dark:")}>
       <EditorContent editor={editor} />
     </Card>
   );
