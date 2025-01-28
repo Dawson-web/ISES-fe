@@ -54,7 +54,7 @@ const MyPosts = () => {
       const params: IPaginationRequest = {
         page: 1,
         pageSize: 9999,
-        title: "",
+        userInfoId: String(localStorage.getItem("uid")),
       };
       return getArticlePagination(params);
     },
@@ -62,10 +62,10 @@ const MyPosts = () => {
 
   return (
     <Card className=" w-full flex flex-col gap-4" radius={"md"}>
-      <span className="text-xl font-bold ">我的发布</span>
+      <span className="text-xl font-bold ">我的发布:</span>
       {isSuccess && (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {data.data.data.articles.map((article) => (
+          {data.data.data.articles.slice(0, 6).map((article) => (
             <ArticleCardFooter article={article} />
           ))}
         </div>

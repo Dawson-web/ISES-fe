@@ -43,7 +43,8 @@ export interface IGetArticlePaginationResponse {
 }
 
 export interface IPaginationRequest {
-  title: string;
+  title?: string;
+  userInfoId?: string;
   pageSize: number;
   page: number;
 }

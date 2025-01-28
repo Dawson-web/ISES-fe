@@ -12,7 +12,7 @@ import {
 } from "@/types/article";
 
 export const addArticle = async (data: IArticleFiled) => {
-  return await $axios.post<ApiOk<IAddArticleResponse>>("/user/articles", {
+  return await $axios.post<ApiOk<IAddArticleResponse>>("/articles", {
     title: data.title,
     content: data.content,
     type: data.type,
@@ -20,15 +20,14 @@ export const addArticle = async (data: IArticleFiled) => {
 };
 
 export const getArticlePagination = async (params?: IPaginationRequest) => {
-  return await $axios.get<ApiOk<IGetArticlePaginationResponse>>(
-    "/user/articles",
-    { params }
-  );
+  return await $axios.get<ApiOk<IGetArticlePaginationResponse>>("/articles", {
+    params,
+  });
 };
 
 export const getCollects = async (params: IGetCollectsRequest) => {
   return await $axios.post<ApiOk<IGetCollectsResponse>>(
-    `/user/articles/getcollects`,
+    `/articles/getcollects`,
     {
       ...params,
     }
@@ -37,13 +36,13 @@ export const getCollects = async (params: IGetCollectsRequest) => {
 
 export const likeArticle = async (articleId: string) => {
   return await $axios.post<ApiOk<unknown>>(
-    `/user/articles/like?articleId=${articleId}`
+    `/articles/like?articleId=${articleId}`
   );
 };
 
 export const uploadImage = async (formData: FormData) => {
   return await $axios.post<ApiOk<{ path: string }>>(
-    `/user/articles/upload`,
+    `/articles/upload`,
     formData,
     {
       headers: {
@@ -55,10 +54,10 @@ export const uploadImage = async (formData: FormData) => {
 
 export const getArticleDetail = async (articleId: string) => {
   return await $axios.get<ApiOk<IGetArticleDetailResponse>>(
-    `/user/articles/detail/${articleId}`
+    `/articles/detail/${articleId}`
   );
 };
 
 export const postComment = async (data: IPostCommentData) => {
-  return await $axios.post<ApiOk<unknown>>(`/user/comment`, data);
+  return await $axios.post<ApiOk<unknown>>(`/articles/comment`, data);
 };

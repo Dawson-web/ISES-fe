@@ -106,7 +106,7 @@ const NavMenu: FC<IProps> = ({
       {/* 移动端控制菜单打开按钮 */}
       <NavOpen open={mobileOpen} setOpen={setMobileOpen} />
       <aside
-        className={clsx(" w-full bg-white", {
+        className={clsx(" w-full backdrop-blur-md ", {
           "fixed z-40 mt-[40px] h-full ": mobileOpen,
           "sm:block hidden ": !mobileOpen,
         })}

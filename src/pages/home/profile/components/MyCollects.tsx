@@ -58,7 +58,7 @@ const MyCollects = () => {
 
   return (
     <Card className=" w-full flex flex-col gap-4" radius={"md"}>
-      <span className="text-xl font-bold ">我的收藏</span>
+      <span className="text-xl font-bold ">我的收藏:</span>
       {isSuccess && (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {data.data.data.collects.map((article) => (

@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { AlignLeft, X } from "lucide-react";
 import AppLogo from "../app-logo";
+import { Card } from "@mantine/core";
 
 interface IProps {
   open: boolean;
@@ -20,10 +21,10 @@ export const NavOpen = (props: IProps) => {
   });
 
   return (
-    <div
+    <Card
       id="nav"
       className={clsx(
-        " bg-white dark:bg-theme_dark sm:hidden h-[40px] z-50 w-screen  backdrop-blur-3xl ",
+        "  sm:hidden h-[40px] z-50 w-screen  backdrop-blur-3xl p-0",
         {
           "fixed  rounded-b-none bg-opacity-100": open,
         }
@@ -54,6 +55,6 @@ export const NavOpen = (props: IProps) => {
           onClick={() => setOpen(false)}
         />
       </div>
-    </div>
+    </Card>
   );
 };
