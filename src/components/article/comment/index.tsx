@@ -16,6 +16,7 @@ interface IProps {
 export interface IComment {
   userInfoId: string;
   content: string;
+  createdAt: string; // ISOString
 }
 
 const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
@@ -25,6 +26,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
     const data: IPostCommentData = {
       commentId,
       content: newComment,
+      createdAt: new Date().toISOString(),
     };
     postComment(data).then(() => {
       setComments((prev) => {
@@ -33,6 +35,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
             {
               userInfoId: getValidUid() as string,
               content: newComment,
+              createdAt: new Date().toISOString(),
             },
           ];
         else
@@ -41,6 +44,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
             {
               userInfoId: getValidUid() as string,
               content: newComment,
+              createdAt: new Date().toISOString(),
             },
           ];
       });
@@ -84,6 +88,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
               <CommentCard
                 comment={comment}
                 key={comment.userInfoId}
+                createdAt={comment.createdAt}
                 className="w-full"
               />
             );

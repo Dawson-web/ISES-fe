@@ -13,7 +13,7 @@ interface IEditorClickMenuProps {
 
 const FloatMenu: FC<IEditorClickMenuProps> = ({ editor, className, id }) => {
   if (!editor) {
-    return null;
+    return <>悬浮菜单Not Fount......</>;
   }
   const menuItemGroups = getFloatMenuItemGroups(editor);
 

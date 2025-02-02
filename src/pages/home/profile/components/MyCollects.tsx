@@ -11,13 +11,12 @@ function ArticleCardFooter({ article }) {
     <Card withBorder padding="lg" radius="md">
       <Card.Section mb="sm"></Card.Section>
 
-      <Badge w="fit-content" variant="light">
-        {article.type}
-      </Badge>
-
-      <Text fw={700} mt="xs">
-        {article.title}
-      </Text>
+      <div className="flex flex-nowrap justify-start items-center gap-2">
+        <Badge w="fit-content" variant="light">
+          {article.type}
+        </Badge>
+        <Text fw={700}>{article.title}</Text>
+      </div>
 
       <Group mt="lg">
         <Avatar
@@ -35,14 +34,14 @@ function ArticleCardFooter({ article }) {
         </div>
       </Group>
 
-      <Card.Section className="flex flex-row  justify-end items-center gap-2 mt-2">
+      <Card.Section className="flex flex-row  justify-end items-center gap-2  mr-0">
+        <ActionIcon variant="subtle" color="gray">
+          <Heart size={20} color="red" />
+        </ActionIcon>
         <Text fz="xs" c="dimmed">
           {article.likesCount}
           people liked this
         </Text>
-        <ActionIcon variant="subtle" color="gray">
-          <Heart size={20} color="red" />
-        </ActionIcon>
       </Card.Section>
     </Card>
   );

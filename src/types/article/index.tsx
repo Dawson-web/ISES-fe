@@ -6,6 +6,13 @@ export interface IArticleFiled {
   type: string | null;
 }
 
+export interface IUpdateArticleRequest {
+  title?: string;
+  content?: string;
+  type?: string;
+  articleId: string;
+}
+
 export interface IArticleDetail {
   id: number;
   title: string;
@@ -72,6 +79,7 @@ export interface IGetArticleDetailResponse {
 export interface IPostCommentData {
   content: string;
   commentId: string;
+  createdAt: string;
 }
 
 export interface IGetCollectsRequest {

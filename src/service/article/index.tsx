@@ -9,6 +9,7 @@ import {
   IGetCollectsResponse,
   IPaginationRequest,
   IPostCommentData,
+  IUpdateArticleRequest,
 } from "@/types/article";
 
 export const addArticle = async (data: IArticleFiled) => {
@@ -18,7 +19,14 @@ export const addArticle = async (data: IArticleFiled) => {
     type: data.type,
   });
 };
-
+export const updateArticle = async (data: IUpdateArticleRequest) => {
+  return await $axios.post<ApiOk<unknown>>("/articles/update", {
+    title: data?.title,
+    content: data.content,
+    articleId: data.articleId,
+    type: data?.type,
+  });
+};
 export const getArticlePagination = async (params?: IPaginationRequest) => {
   return await $axios.get<ApiOk<IGetArticlePaginationResponse>>("/articles", {
     params,

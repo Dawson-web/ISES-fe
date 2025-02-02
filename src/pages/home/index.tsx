@@ -39,7 +39,7 @@ export default function Page() {
   return (
     <>
       <News className="bg-[url('../../../public/cover.png')] sm:h-[30vh] h-[150px] w-full  bg-no-repeat bg-cover mb-4" />
-      <div className="w-full  gap-2 justity-between grid grid-cols-1 sm:grid-cols-2 ">
+      <div className="w-full  gap-2 justity-between grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 ">
         {articles.map((article) => {
           return (
             <ArticleItem

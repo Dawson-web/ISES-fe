@@ -41,6 +41,7 @@ export default function Page() {
         <AppLogo />
         <div className="font-comfortaa text-xl font-semibold">| 登录</div>
       </div>
+
       <form
         onSubmit={form.onSubmit(async (v) => {
           try {
@@ -54,7 +55,7 @@ export default function Page() {
             toast.error(String(error));
           }
         })}
-        className="relative flex w-[30vw] min-w-[320px] max-w-[400px]  flex-col gap-2 overflow-hidden rounded-md border-2  dark:border-0   p-4 shadow-md"
+        className="relative flex w-[30vw] min-w-[320px] max-w-[400px]  flex-col gap-2 overflow-hidden rounded-md   p-4 shadow-md"
       >
         <TextInput
           label="邮箱"

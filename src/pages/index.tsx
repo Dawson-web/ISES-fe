@@ -21,13 +21,15 @@ export default function Page() {
               to={"/login"}
               className="py-1 px-2  rounded-md  flex-1 text-center"
             >
-              <Button>登录</Button>
+              <Button className="w-full">登录</Button>
             </Link>
             <Link
               to={"/register"}
               className="py-1 px-2  rounded-md  flex-1 text-center"
             >
-              <Button>注册</Button>
+              <Button className="w-full" variant="light">
+                注册
+              </Button>
             </Link>
           </div>
           <footer className="text-xs sm:text-sm text-gray-500 mt-4 flex gap-1 justify-center flex-wrap  ">

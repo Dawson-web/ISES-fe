@@ -71,7 +71,7 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
       </header>
       <main className="flex gap-4 items-center mt-4 flex-wrap ">
         <Badge
-          className={clsx(`p-4 text-[16px]`, colorByType(article.type))}
+          className={clsx(`p-2 text-[14px]`, colorByType(article.type))}
           onClick={(e) => {
             // 阻止事件冒泡
             e.stopPropagation();
@@ -79,6 +79,7 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
         >
           {article.type}
         </Badge>
+
         <Title
           className="text-xl font-bold ml-1 max-h-[100px] overflow-hidden text-ellipsis whitespace-nowrap hover:text-theme_blue"
           onClick={() => {

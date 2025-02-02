@@ -7,6 +7,7 @@ export type Path =
   | `/`
   | `/home`
   | `/home/article`
+  | `/home/article/edit`
   | `/home/chat`
   | `/home/components`
   | `/home/post`
