@@ -8,6 +8,7 @@ import { ILoginFileds } from "../../../types";
 import { login } from "../../../service";
 import { toast } from "sonner";
 import { setToken, setUid } from "../../../api/token";
+import { toastMessage } from "@/components/toast";
 
 export default function Page() {
   const errorTimes = useRef(0);
@@ -50,9 +51,9 @@ export default function Page() {
               setUid(res.data.data.userInfoId);
             });
             navigate("/home");
-            toast.success("登录成功");
+            toastMessage.success("登录成功");
           } catch (error) {
-            toast.error(String(error));
+            toastMessage.error(String(error));
           }
         })}
         className="relative flex w-[30vw] min-w-[320px] max-w-[400px]  flex-col gap-2 overflow-hidden rounded-md   p-4 shadow-md"

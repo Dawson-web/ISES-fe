@@ -23,6 +23,7 @@ import { ReactElement } from "react";
 import { toast } from "sonner";
 import { uploadImage } from "@/service/article";
 import { apiConfig } from "@/config";
+import { toastMessage } from "@/components/toast";
 
 export interface IMenuItemButtonProps {
   Icon: ReactElement;
@@ -175,7 +176,7 @@ const getMenuItemGroups = (editor: Editor) => {
                     .run();
                 });
               } else {
-                toast.error("只能上传图片文件");
+                toastMessage.error("只能上传图片文件");
               }
             }
           }

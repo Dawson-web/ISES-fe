@@ -9,11 +9,14 @@ export type Path =
   | `/home/article`
   | `/home/article/edit`
   | `/home/chat`
+  | `/home/chat/components/AddFriend`
   | `/home/components`
   | `/home/post`
   | `/home/profile`
   | `/home/profile/components/MyCollects`
   | `/home/profile/components/MyPosts`
+  | `/home/profile/selfpost`
+  | `/home/video`
   | `/login`
   | `/register`
   | `/seekback`

@@ -7,9 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import FriendCard from "@/components/chat/friend_card";
 import { apiConfig } from "@/config";
 import clsx from "clsx";
-import { Card, Input } from "@mantine/core";
+import { Button, Card, Input } from "@mantine/core";
 import { useSearchParams } from "react-router-dom";
 import { IGetChatListResponse } from "@/types/chat";
+import { Plus } from "lucide-react";
+import AddFriend from "./components/AddFriend";
+import { useDisclosure } from "@mantine/hooks";
 
 export interface IChatInfo {
   chatId: string;
@@ -27,7 +30,9 @@ export default function Page() {
   });
   const [search, setSearch] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const [chatOpen, setChatOpen] = useState(false);
   const { isSuccess, data } = useQuery({
     queryKey: ["chatList"],
     queryFn: () => getChatList({ userInfoId: getValidUid() as string }),
@@ -43,7 +48,7 @@ export default function Page() {
         userName: chat.username,
         online: chat.online as number,
       });
-      setOpen(true);
+      setChatOpen(true);
     }
   }, []);
 
@@ -57,17 +62,22 @@ export default function Page() {
           }
         )}
       >
-        <div className="text-sm font-bold p-4 h-[60px] ">
+        <div className="text-sm font-bold p-4 h-[60px] flex items-center justify-between gap-2">
           {/* 好友列表 */}
           <Input
             placeholder="搜索好友(Enter)"
+            className="flex-1"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setSearch((e.target as HTMLInputElement).value);
               }
             }}
           />
+          <Button className="px-1 scale-90" onClick={opened ? close : open}>
+            <Plus />
+          </Button>
         </div>
+        <AddFriend opened={opened} close={close} />
         {isSuccess &&
           data.data.data &&
           data.data.data
@@ -93,7 +103,7 @@ export default function Page() {
                       online: chat.online as number,
                     });
                     searchParams.set("id", chat.id);
-                    setOpen(true);
+                    setChatOpen(true);
                   }}
                   className={clsx(
                     "mx-auto w-full p-2   dark:text-theme_gray border-transparent  h-[80px]   ",
@@ -106,12 +116,12 @@ export default function Page() {
               );
             })}
       </div>
-      {open ? (
+      {chatOpen ? (
         <ChatRoom
           key={chatInfo.chatId}
           className={clsx("w-full ")}
           chatInfo={chatInfo}
-          setOpen={setOpen}
+          setOpen={setChatOpen}
         />
       ) : (
         <Card

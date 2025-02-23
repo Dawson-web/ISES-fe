@@ -14,6 +14,7 @@ import avatarSplice from "@/utils/avatar";
 import { getDaysSincePublished } from "@/utils/date";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function ArticleCardFooter({ article }) {
   const navigate = useNavigate();
@@ -65,8 +66,7 @@ function ArticleCardFooter({ article }) {
     </Card>
   );
 }
-const MyPosts = () => {
-  const navigate = useNavigate();
+const SelfPosts = () => {
   const { isSuccess, data } = useQuery({
     queryKey: ["mypost"],
     queryFn: () => {
@@ -78,23 +78,35 @@ const MyPosts = () => {
       return getArticlePagination(params);
     },
   });
+  const [info, setInfo] = useState({
+    totalLikes: 0,
+    totalPosts: 0,
+  });
+  useEffect(() => {
+    let totalLikes = 0;
+    let totalPosts = 0;
+    data?.data.data.articles.map((article) => {
+      totalLikes += Number(article.likesCount);
+      totalPosts += 1;
+    });
+    setInfo({
+      totalLikes,
+      totalPosts,
+    });
+  }, [data]);
 
   return (
     <Card className=" w-full flex flex-col gap-4" radius={"md"}>
       <div className="flex justify-between items-center ">
         <span className="text-xl font-bold ">我的发布:</span>
-        <span
-          className="hover:opacity-80 cursor-pointer "
-          onClick={() => {
-            navigate("/home/profile/selfpost");
-          }}
-        >
-          查看更多
-        </span>
+      </div>
+      <div className="flex gap-4">
+        <Badge variant="gradient">点赞总数: {info.totalLikes}</Badge>
+        <Badge variant="gradient">发布总数: {info.totalPosts}</Badge>
       </div>
       {isSuccess && (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {data.data.data.articles.slice(0, 3).map((article) => (
+          {data.data.data.articles.map((article) => (
             <ArticleCardFooter article={article} />
           ))}
         </div>
@@ -102,4 +114,4 @@ const MyPosts = () => {
     </Card>
   );
 };
-export default MyPosts;
+export default SelfPosts;

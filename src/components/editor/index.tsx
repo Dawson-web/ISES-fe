@@ -12,6 +12,7 @@ import { IArticleFiled } from "@/types/article";
 import ImageResize from "tiptap-extension-resize-image";
 import clsx from "clsx";
 import FloatMenu from "./FloatMenu";
+import { readArticleFromDB } from "@/utils/articleIndexDB";
 
 interface IProps {
   className?: string;
@@ -39,6 +40,7 @@ export const useAritcleEditor = (content?: string, editable: boolean = true) =>
   }) as Editor;
 
 const IeseEditor: FC<IProps> = ({ className }) => {
+  const loaded = useRef(false);
   const editor = useAritcleEditor(``);
   const editorRef = useRef(null);
   const [article, setArticle] = useState<IArticleFiled>({
@@ -84,21 +86,14 @@ const IeseEditor: FC<IProps> = ({ className }) => {
       }
     };
   }, [editor]);
+  // 只在挂载时读取数据库
 
-  // useEffect(() => {
-  //   const Edit = document.getElementById("edit");
-  //   console.log("Edit", Edit);
-  //   Edit.onselect = (e) => {
-  //     const selection = window.getSelection();
-  //     if (selection) {
-  //       const range = selection.getRangeAt(0);
-  //       const rect = range.getBoundingClientRect();
-  //       setPosition({ x: rect.left, y: rect.top });
-  //       setOpen(true);
-  //     }
-  //     console.log("onselect", e);
-  //   };
-  // });
+  useEffect(() => {
+    if (!loaded.current) {
+      readArticleFromDB(setArticle);
+      loaded.current = true;
+    }
+  }, [loaded]);
 
   return (
     <div
@@ -118,6 +113,7 @@ const IeseEditor: FC<IProps> = ({ className }) => {
               <Input
                 className="text-center mt-1 min-w-[200px] "
                 placeholder="Title"
+                value={article.title}
                 onChange={(e) =>
                   setArticle({ ...article, title: e.target.value })
                 }
@@ -127,6 +123,7 @@ const IeseEditor: FC<IProps> = ({ className }) => {
               label="类型"
               placeholder="Pick value"
               defaultValue={"日常"}
+              value={article.type}
               onChange={(e) => setArticle({ ...article, type: e })}
               data={["日常", "分享", "感悟", "学习"]}
             />

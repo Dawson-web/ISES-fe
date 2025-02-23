@@ -23,8 +23,13 @@ export const logOut = async () => {
 };
 
 export const getOtherUserInfo = async (params: { userInfoId: string }) => {
-  console.log("userInfoId", params);
   return await $axios.get<ApiOk<IUserFormData>>("/user/info-other", {
     params,
+  });
+};
+
+export const searchUsers = async (data: { searchKey: string }) => {
+  return await $axios.post<ApiOk<IUserFormData[]>>("/user/search", {
+    ...data,
   });
 };

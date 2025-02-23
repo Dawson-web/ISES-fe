@@ -25,7 +25,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
     <Card
       ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined}
       className={clsx(
-        "flex flex-col gap-2 p-4 overflow-y-auto rounded-none border-x-0",
+        "flex flex-col gap-8 p-4 overflow-y-auto rounded-none border-x-0",
         className
       )}
       style={{ maxHeight: "65vh" }} // 可以根据需要调整最大高度

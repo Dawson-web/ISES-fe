@@ -1,6 +1,6 @@
-import { Button, Card } from "@mantine/core";
+import { Button, Card, CardSection } from "@mantine/core";
 import clsx from "clsx";
-import { Undo2 } from "lucide-react";
+import { Image, Undo2 } from "lucide-react";
 import React, { FC, useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import { getChatMessage, sendChatMessage } from "@/service/chat";
@@ -9,6 +9,8 @@ import { IGetChatMessageResponse } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
 import { IChatInfo } from "@/pages/home/chat";
+import { toast } from "sonner";
+import { toastMessage } from "@/components/toast";
 interface IProps {
   className?: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -71,11 +73,21 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
         <div>Loading...</div> // 显示加载中的提示
       )}
       <div className="flex flex-col flex-shrink-0 h-[160px] ">
+        <Card className="border-0  h-[20px]">
+          <CardSection className="flex  ">
+            <Image className="h-full" />
+          </CardSection>
+        </Card>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={async (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
+              if (content === "" || content === "\n") {
+                setContent("");
+                toastMessage.error("内容不能为空");
+                return;
+              }
               await handleSend();
               setMessages((prev) => [
                 ...prev,
@@ -85,11 +97,16 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             }
           }}
           placeholder=" 按 Enter 发送消息"
-          className="w-full h-full p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
+          className="w-full  p-3 bg-transparent outline-none resize-none bg-h-full focus-visible:outline-none border-box-border"
         />
         <Button
           className="w-[100px] h-10 bg-blue-500  font-bold self-end m-2 "
           onClick={async () => {
+            if (content === "" || content === "\n") {
+              setContent("");
+              toastMessage.error("内容不能为空");
+              return;
+            }
             await handleSend();
             setMessages((prev) => [
               ...prev,

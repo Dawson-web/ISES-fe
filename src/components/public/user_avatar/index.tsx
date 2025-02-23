@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { apiConfig } from "@/config";
 import { FC } from "react";
 import { uploadAvatar } from "../../../service/user";
-import { toast } from "sonner";
+import { toastMessage } from "@/components/toast";
 
 interface Props {
   src?: string;
@@ -27,10 +27,10 @@ const UserAvatar: FC<Props> = ({ src, size, className, disabled = false }) => {
       await uploadAvatar(formData)
         .then(() => {
           window.location.reload();
-          toast.success("头像上传成功");
+          toastMessage.success("头像上传成功");
         })
         .catch((err) => {
-          toast.error(String(err));
+          toastMessage.error(String(err));
         });
     };
   };

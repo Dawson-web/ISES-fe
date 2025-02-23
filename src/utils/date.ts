@@ -10,5 +10,13 @@ function getDaysSincePublished(dateString: string) {
 
   return daysDiff;
 }
+function formatISODate(isoString: string): string {
+  const date = new Date(isoString);
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const hour = date.getUTCHours().toString().padStart(2, "0");
+  const minute = date.getUTCMinutes().toString().padStart(2, "0");
 
-export { getDaysSincePublished };
+  return `${month}-${day} ${hour}:${minute}`;
+}
+export { formatISODate, getDaysSincePublished };

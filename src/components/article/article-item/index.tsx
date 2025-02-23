@@ -1,12 +1,12 @@
 import { likeArticle } from "@/service/article";
 import { IArticleDetail } from "@/types/article";
 import { Badge, Card, Title, Tooltip } from "@mantine/core";
-import { Heart, HeartCrack, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Heart, HeartCrack } from "lucide-react";
 import { FC, useState } from "react";
-import { toast } from "sonner";
 import UserAvatar from "../../public/user_avatar";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
+import { toastMessage } from "@/components/toast";
 
 interface Props {
   article: IArticleDetail;
@@ -36,7 +36,7 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
       await likeArticle(String(article.id));
       setLikesCount((prev) => Number(prev) + 1);
     } catch (error) {
-      toast.error(String(error));
+      toastMessage.error(String(error));
     }
   };
 
@@ -45,7 +45,7 @@ const ArticleItem: FC<Props> = ({ article, onClick }) => {
       await likeArticle(String(article.id));
       setLikesCount((prev) => Number(prev) - 1);
     } catch (error) {
-      toast.error(String(error));
+      toastMessage.error(String(error));
     }
   };
 

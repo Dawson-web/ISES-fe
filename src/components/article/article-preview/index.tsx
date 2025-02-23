@@ -1,6 +1,7 @@
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import FloatMenu from "@/components/editor/FloatMenu";
 import MenuBar from "@/components/editor/MenuBar";
+import { toastMessage } from "@/components/toast";
 import { updateArticle } from "@/service/article";
 import { IUpdateArticleRequest } from "@/types/article";
 import {
@@ -17,7 +18,6 @@ import clsx from "clsx";
 import { Undo2 } from "lucide-react";
 import { FC, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
 
 interface IProps {
   content: string;
@@ -57,10 +57,8 @@ const ArticlePreview: FC<IProps> = ({
         ...form,
         content: editor.getHTML(),
       };
-      console.log(data);
-
       await updateArticle(data);
-      toast.success("短文更新成功");
+      toastMessage.success("短文更新成功");
     } catch (e) {
       console.log(e);
     }

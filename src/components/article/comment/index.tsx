@@ -4,8 +4,8 @@ import { FC, useState } from "react";
 import { postComment } from "@/service/article";
 import { IPostCommentData } from "@/types/article";
 import { getValidUid } from "@/api/token";
-import { toast } from "sonner";
 import clsx from "clsx";
+import { toastMessage } from "@/components/toast";
 
 interface IProps {
   commentId: string;
@@ -48,7 +48,7 @@ const CommentBox: FC<IProps> = ({ commentId, content, className }) => {
             },
           ];
       });
-      toast.success("评论发布成功");
+      toastMessage.success("评论发布成功");
     });
     setNewComment("");
   }

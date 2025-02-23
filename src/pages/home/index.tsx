@@ -7,6 +7,7 @@ import { Pagination } from "@mantine/core";
 import News from "@/components/public/news";
 import { useDisclosure } from "@mantine/hooks";
 import UserProfile from "@/components/profile/UserProfile";
+import { toastMessage } from "@/components/toast";
 
 export default function Page() {
   const [articles, setArticles] = useState<IArticleDetail[]>([]);
@@ -28,7 +29,7 @@ export default function Page() {
       setArticles(res.data.data.articles);
       setTotal(res.data.data.pagination.total);
     } catch (error) {
-      toast.error(String(error));
+      toastMessage.error(String(error));
     }
   };
 

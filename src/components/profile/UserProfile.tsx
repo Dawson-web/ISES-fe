@@ -17,6 +17,7 @@ import { FC } from "react";
 import { toast } from "sonner";
 import AppLogo from "../public/app-logo";
 import { useNavigate } from "react-router-dom";
+import { toastMessage } from "../toast";
 // import classes from "./UserCardImage.module.css";
 
 interface IProps {
@@ -60,7 +61,7 @@ const UserProfile: FC<IProps> = ({ opened, close, userInfoId }) => {
       // toast.success(res.data.message);
       navigate(`/home/chat?id=${res.data.data.id}`);
     } catch (e) {
-      toast.error("创建失败");
+      toastMessage.error("创建失败");
     }
   }
 

@@ -1,12 +1,17 @@
 import { Badge, Button, Card } from "@mantine/core";
 import MarkDownLogo from "./MarkDownLogo";
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { IArticleFiled } from "@/types/article";
-import { toast } from "sonner";
 import { addArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
+import {
+  addArticleToDB,
+  createArticleDB,
+  deleteArticleFromDB,
+} from "@/utils/articleIndexDB";
+import { toastMessage } from "@/components/toast";
 
 const TipHeader: FC<PropsWithChildren> = ({ children }) => {
   return <div className="text-primary my-2 text-sm">{children}</div>;
@@ -28,18 +33,19 @@ interface SideTipProps {
 
 const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   const navigate = useNavigate();
+  const [isPosted, setIsPosted] = useState(false);
   function vertify() {
     article.content = editor.getHTML();
     if (!article.title) {
-      toast.error("请填写文章标题");
+      toastMessage.error("请填写文章标题");
       return false;
     }
     if (editor.getHTML() === "") {
-      toast.error("请填写文章内容");
+      toastMessage.error("请填写文章内容");
       return false;
     }
     if (!article.type) {
-      toast.error("请填写文章类型");
+      toastMessage.error("请填写文章类型");
       return false;
     }
     return true;
@@ -49,13 +55,33 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
     if (vertify()) {
       try {
         const res = await addArticle({ ...article, content: editor.getHTML() });
+        setIsPosted(true);
         navigate(`/home/article?id=${res.data.data.id}`);
-        toast.success("发布成功");
+        toastMessage.success("发布成功");
       } catch (error) {
-        toast.error(String(error));
+        toastMessage.error(String(error));
       }
     }
   };
+  const articleRef = useRef(article);
+  articleRef.current = article; // 每次渲染后更新为最新值
+
+  const handleStorage = () => {
+    console.log("objectStore2", { ...articleRef.current }); // 通过 ref 访问最新值
+    const request = createArticleDB();
+    addArticleToDB(
+      { ...articleRef.current, content: editor.getHTML() },
+      request
+    );
+  };
+
+  useEffect(() => {
+    return () => {
+      if (!isPosted) {
+        handleStorage(); // 卸载时使用的是最新的 articleRef.current
+      }
+    };
+  }, []); // 依赖数组仍为空，但通过 ref 绕过了闭包问题
 
   return (
     <Card className={clsx("rounded-lg  shadow-lg ", className)}>
