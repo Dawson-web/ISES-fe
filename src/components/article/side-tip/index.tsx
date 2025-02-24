@@ -6,12 +6,9 @@ import { addArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
-import {
-  addArticleToDB,
-  createArticleDB,
-  deleteArticleFromDB,
-} from "@/utils/articleIndexDB";
+import { addArticleToDB, createArticleDB } from "@/utils/articleIndexDB";
 import { toastMessage } from "@/components/toast";
+import { toast } from "sonner";
 
 const TipHeader: FC<PropsWithChildren> = ({ children }) => {
   return <div className="text-primary my-2 text-sm">{children}</div>;
@@ -33,7 +30,10 @@ interface SideTipProps {
 
 const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   const navigate = useNavigate();
-  const [isPosted, setIsPosted] = useState(false);
+
+  const isPosted = useRef(false);
+  const count = useRef(0);
+
   function vertify() {
     article.content = editor.getHTML();
     if (!article.title) {
@@ -55,7 +55,7 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
     if (vertify()) {
       try {
         const res = await addArticle({ ...article, content: editor.getHTML() });
-        setIsPosted(true);
+        isPosted.current = true;
         navigate(`/home/article?id=${res.data.data.id}`);
         toastMessage.success("发布成功");
       } catch (error) {
@@ -67,7 +67,6 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   articleRef.current = article; // 每次渲染后更新为最新值
 
   const handleStorage = () => {
-    console.log("objectStore2", { ...articleRef.current }); // 通过 ref 访问最新值
     const request = createArticleDB();
     addArticleToDB(
       { ...articleRef.current, content: editor.getHTML() },
@@ -77,14 +76,20 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
 
   useEffect(() => {
     return () => {
-      if (!isPosted) {
-        handleStorage(); // 卸载时使用的是最新的 articleRef.current
+      if (!isPosted.current && count.current > 0) {
+        toast("是否将草稿保留到本地", {
+          action: {
+            label: "确认",
+            onClick: () => handleStorage(),
+          },
+        });
       }
+      count.current++; // 标记已弹窗
     };
-  }, []); // 依赖数组仍为空，但通过 ref 绕过了闭包问题
+  }, []);
 
   return (
-    <Card className={clsx("rounded-lg  shadow-lg ", className)}>
+    <Card className={clsx("rounded-lg  shadow-lg ", className)} key="sideTip">
       <Button
         variant="gradient"
         gradient={{ from: "blue", to: "cyan", deg: 90 }}

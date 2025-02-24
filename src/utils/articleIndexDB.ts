@@ -1,5 +1,6 @@
 import { toastMessage } from "@/components/toast";
 import { IArticleFiled } from "@/types/article";
+import { Editor } from "@tiptap/react";
 
 const ArticleIndexDB = window.indexedDB;
 
@@ -37,7 +38,7 @@ async function addArticleToDB(
     const transaction = db.transaction(["articles"], "readwrite");
     const objectStore = transaction.objectStore("articles");
     objectStore.put({ ...article, id: 0 });
-    toastMessage.success("文章已加入记录库");
+    // toastMessage.success("文章已加入记录库");
 
     transaction.onerror = (error: string) => {
       console.error("数据库操作失败:", error);
@@ -59,7 +60,8 @@ async function deleteArticleFromDB(request: IDBOpenDBRequest) {
 }
 
 async function readArticleFromDB(
-  setArticle: React.Dispatch<React.SetStateAction<IArticleFiled>>
+  setArticle: React.Dispatch<React.SetStateAction<IArticleFiled>>,
+  editor: Editor
 ) {
   const request = ArticleIndexDB.open("articleDB", 1);
 
@@ -73,6 +75,7 @@ async function readArticleFromDB(
     request.onsuccess = () => {
       console.log("Data read successfully:", request.result);
       setArticle(request.result as IArticleFiled);
+      editor?.commands.setContent(request.result?.content || "");
       toastMessage.success("记录文章读取成功");
     };
     request.onerror = () => {

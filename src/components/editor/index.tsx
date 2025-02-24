@@ -13,6 +13,7 @@ import ImageResize from "tiptap-extension-resize-image";
 import clsx from "clsx";
 import FloatMenu from "./FloatMenu";
 import { readArticleFromDB } from "@/utils/articleIndexDB";
+import { toast } from "sonner";
 
 interface IProps {
   className?: string;
@@ -90,7 +91,13 @@ const IeseEditor: FC<IProps> = ({ className }) => {
 
   useEffect(() => {
     if (!loaded.current) {
-      readArticleFromDB(setArticle);
+      toast("是否导入上次未保存的文章？", {
+        action: {
+          label: "确认",
+          onClick: () => readArticleFromDB(setArticle, editor),
+        },
+      });
+
       loaded.current = true;
     }
   }, [loaded]);
@@ -120,7 +127,7 @@ const IeseEditor: FC<IProps> = ({ className }) => {
               ></Input>
             </div>
             <Select
-              label="类型"
+              label={<Badge className="text-[1rem] bg-theme_blue">类型</Badge>}
               placeholder="Pick value"
               defaultValue={"日常"}
               value={article.type}
