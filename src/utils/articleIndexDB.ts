@@ -2,92 +2,111 @@ import { toastMessage } from "@/components/toast";
 import { IArticleFiled } from "@/types/article";
 import { Editor } from "@tiptap/react";
 
-const ArticleIndexDB = window.indexedDB;
+// 数据库名称和版本
+const DB_NAME = "articleDB";
+const DB_VERSION = 1;
+const STORE_NAME = "articles";
 
-function createArticleDB() {
-  const request = ArticleIndexDB.open("articleDB", 1); // 打开数据库||创建数据库
+// 全局数据库实例Promise
+let dbPromise: Promise<IDBDatabase>;
 
-  request.onerror = (event) => {
-    console.log("Database error:", event);
-  };
+// 初始化数据库并返回Promise实例
+function getDatabase(): Promise<IDBDatabase> {
+  if (!dbPromise) {
+    dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-  request.onsuccess = () => {
-    console.log("Database opened successfully");
-  };
+      request.onerror = (event) => {
+        console.error("Database error:", event);
+        reject(new Error("Database error"));
+      };
 
-  request.onupgradeneeded = (event) => {
-    // @ts-expect-error 屏蔽event.target.result的类型错误
-    const db = event.target.result;
-    const objectStore = db.createObjectStore("articles", { keyPath: "id" });
-    objectStore.createIndex("title", "title", { unique: false });
-    objectStore.createIndex("content", "content", { unique: false });
-    objectStore.createIndex("type", "type", { unique: false });
-  };
-  return request;
+      request.onsuccess = (event) => {
+        resolve(request.result);
+      };
+
+      request.onupgradeneeded = (event) => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const objectStore = db.createObjectStore(STORE_NAME, {
+            keyPath: "id",
+          });
+          objectStore.createIndex("title", "title", { unique: false });
+          objectStore.createIndex("content", "content", { unique: false });
+          objectStore.createIndex("type", "type", { unique: false });
+        }
+      };
+    });
+  }
+  return dbPromise;
 }
 
-async function addArticleToDB(
-  article: IArticleFiled,
-  request: IDBOpenDBRequest
-) {
-  deleteArticleFromDB(request);
-  request.onsuccess = (event) => {
-    // @ts-expect-error 屏蔽event.target.result的类型错误
-    const db = event.target.result;
-    // 开启一个事务
-    const transaction = db.transaction(["articles"], "readwrite");
-    const objectStore = transaction.objectStore("articles");
-    objectStore.put({ ...article, id: 0 });
-    // toastMessage.success("文章已加入记录库");
+// 通用数据库操作函数
+async function executeTransaction<T>(
+  mode: IDBTransactionMode,
+  operation: (store: IDBObjectStore) => IDBRequest<T>
+): Promise<T> {
+  const db = await getDatabase();
+  const transaction = db.transaction(STORE_NAME, mode);
+  const objectStore = transaction.objectStore(STORE_NAME);
+  const request = operation(objectStore);
 
-    transaction.onerror = (error: string) => {
-      console.error("数据库操作失败:", error);
-    };
-  };
-
-  request.onerror = function () {
-    console.log("数据写入失败");
-  };
+  return new Promise<T>((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+    transaction.onerror = () => reject(transaction.error);
+  });
 }
 
-async function deleteArticleFromDB(request: IDBOpenDBRequest) {
-  request.onsuccess = function (event) {
-    // @ts-expect-error 屏蔽event.target.result的类型错误
-    const db = event.target.result;
-    db.transaction(["articles"], "readwrite").objectStore("articles").delete(0);
+// 文章操作方法
+async function addArticleToDB(article: Omit<IArticleFiled, "id">) {
+  try {
+    // 先删除旧记录
+    await executeTransaction("readwrite", (store) => store.delete(0));
+
+    // 添加新记录（强制指定id为0）
+    await executeTransaction("readwrite", (store) =>
+      store.put({ ...article, id: 0 } as IArticleFiled)
+    );
+
+    toastMessage.success("文章已加入记录库");
+  } catch (error) {
+    console.error("数据写入失败:", error);
+    toastMessage.error("文章保存失败");
+  }
+}
+
+async function deleteArticleFromDB() {
+  try {
+    await executeTransaction("readwrite", (store) => store.delete(0));
     console.log("数据删除成功");
-  };
+  } catch (error) {
+    console.error("数据删除失败:", error);
+  }
 }
 
 async function readArticleFromDB(
   setArticle: React.Dispatch<React.SetStateAction<IArticleFiled>>,
   editor: Editor
 ) {
-  const request = ArticleIndexDB.open("articleDB", 1);
+  try {
+    const article = await executeTransaction<IArticleFiled>(
+      "readonly",
+      (store) => store.get(0)
+    );
+    console.log("读取文章成功:", article);
 
-  request.onsuccess = (event) => {
-    // @ts-expect-error 屏蔽event.target.result的类型错误
-    const db = event.target.result;
-    const transaction = db.transaction(["articles"], "readonly");
-    const objectStore = transaction.objectStore("articles");
-    const request = objectStore.get(0);
-
-    request.onsuccess = () => {
-      console.log("Data read successfully:", request.result);
-      setArticle(request.result as IArticleFiled);
-      editor?.commands.setContent(request.result?.content || "");
+    if (article) {
+      setArticle(article);
+      editor?.commands.setContent(article.content);
       toastMessage.success("记录文章读取成功");
-    };
-    request.onerror = () => {
-      console.log("Data read error:");
-      toastMessage.error("记录文章读取失败");
-    };
-  };
+    } else {
+      toastMessage.info("未找到历史记录");
+    }
+  } catch (error) {
+    console.error("记录文章读取失败:", error);
+    toastMessage.error("记录文章读取失败");
+  }
 }
 
-export {
-  addArticleToDB,
-  createArticleDB,
-  deleteArticleFromDB,
-  readArticleFromDB,
-};
+export { addArticleToDB, deleteArticleFromDB, readArticleFromDB };

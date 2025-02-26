@@ -94,7 +94,9 @@ const IeseEditor: FC<IProps> = ({ className }) => {
       toast("是否导入上次未保存的文章？", {
         action: {
           label: "确认",
-          onClick: () => readArticleFromDB(setArticle, editor),
+          onClick: () => {
+            readArticleFromDB(setArticle, editor);
+          },
         },
       });
 

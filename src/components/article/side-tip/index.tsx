@@ -1,12 +1,12 @@
 import { Badge, Button, Card } from "@mantine/core";
 import MarkDownLogo from "./MarkDownLogo";
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useRef } from "react";
 import { IArticleFiled } from "@/types/article";
 import { addArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
-import { addArticleToDB, createArticleDB } from "@/utils/articleIndexDB";
+import { addArticleToDB } from "@/utils/articleIndexDB";
 import { toastMessage } from "@/components/toast";
 import { toast } from "sonner";
 
@@ -66,21 +66,17 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   const articleRef = useRef(article);
   articleRef.current = article; // 每次渲染后更新为最新值
 
-  const handleStorage = () => {
-    const request = createArticleDB();
-    addArticleToDB(
-      { ...articleRef.current, content: editor.getHTML() },
-      request
-    );
-  };
-
   useEffect(() => {
     return () => {
       if (!isPosted.current && count.current > 0) {
         toast("是否将草稿保留到本地", {
           action: {
             label: "确认",
-            onClick: () => handleStorage(),
+            onClick: () =>
+              addArticleToDB({
+                ...articleRef.current,
+                content: editor.getHTML(),
+              }),
           },
         });
       }
