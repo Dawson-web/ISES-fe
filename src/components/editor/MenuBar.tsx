@@ -20,7 +20,7 @@ const MenuBar: FC<IEditorMenuBarProps> = ({ editor }) => {
     <Card className="w-full flex flex-row gap-2 flex-wrap bg-gray-00 p-2 rounded-md  justify-center">
       {menuItemGroups.map((group) => {
         return (
-          <>
+          <div key={group[0].tooltip} className="flex flex-row gap-1">
             {group.map((itemProps, i) => (
               <MenuItemButton
                 {...itemProps}
@@ -29,7 +29,7 @@ const MenuBar: FC<IEditorMenuBarProps> = ({ editor }) => {
                 className={"p-[0.5em] rounded-md "}
               />
             ))}
-          </>
+          </div>
         );
       })}
     </Card>

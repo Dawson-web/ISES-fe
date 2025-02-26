@@ -2,7 +2,6 @@ import ArticleItem from "@/components/article/article-item";
 import { getArticlePagination } from "@/service/article";
 import { IArticleDetail, IPaginationRequest } from "@/types/article";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 import { Pagination } from "@mantine/core";
 import News from "@/components/public/news";
 import { useDisclosure } from "@mantine/hooks";
@@ -44,6 +43,7 @@ export default function Page() {
         {articles.map((article) => {
           return (
             <ArticleItem
+              key={article.id}
               article={article}
               onClick={() => {
                 userSelect.current = article.userInfoId;

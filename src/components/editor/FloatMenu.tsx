@@ -25,7 +25,7 @@ const FloatMenu: FC<IEditorClickMenuProps> = ({ editor, className, id }) => {
     >
       {menuItemGroups.map((group) => {
         return (
-          <>
+          <div key={group[0].tooltip} className="flex flex-row flex-nowrap">
             {group.map((itemProps, i) => (
               <FloatMenuItem
                 {...itemProps}
@@ -36,7 +36,7 @@ const FloatMenu: FC<IEditorClickMenuProps> = ({ editor, className, id }) => {
                 }
               />
             ))}
-          </>
+          </div>
         );
       })}
     </BubbleMenu>

@@ -68,7 +68,7 @@ const AddFriend: FC<IProps> = ({ opened, close }) => {
         <div className="flex flex-col gap-2 mt-2">
           {data.data.data.map((userInfo) => {
             return (
-              <Card className="p-2 ">
+              <Card className="p-2 " key={userInfo.id}>
                 <div className="flex items-center gap-4">
                   <UserAvatar
                     src={userInfo.avatar}
