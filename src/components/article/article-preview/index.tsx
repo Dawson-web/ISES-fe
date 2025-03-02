@@ -111,7 +111,11 @@ const ArticlePreview: FC<IProps> = ({
           </>
         )}
 
-        <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
+        {title == "" ? (
+          <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
+        ) : (
+          <div className="text-2xl font-bold">文章:&nbsp;{title}</div>
+        )}
         {showMenu && <MenuBar editor={editor} />}
         <Card className="overflow-visible  rounded-lg w-full mx-0 p-0 h-full flex flex-col flex-1 gap-2 [&>Card]:flex-1 [&>div>div]:flex-1">
           <EditorContent

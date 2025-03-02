@@ -32,6 +32,7 @@ export default function Page() {
           <div className="flex sm:flex-row flex-col sm:items-center sm:justify-center">
             <ArticlePreview
               content={data.data.data.content}
+              title={data.data.data.title}
               className="w-full h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full "
             />
           </div>

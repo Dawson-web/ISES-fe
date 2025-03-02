@@ -21,11 +21,11 @@ function getDatabase(): Promise<IDBDatabase> {
         reject(new Error("Database error"));
       };
 
-      request.onsuccess = (event) => {
+      request.onsuccess = () => {
         resolve(request.result);
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           const objectStore = db.createObjectStore(STORE_NAME, {

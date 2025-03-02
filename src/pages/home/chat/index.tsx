@@ -58,7 +58,7 @@ export default function Page() {
         className={clsx(
           "flex flex-col sm:gap-0 gap-2 sm:shadow-lg w-full sm:w-[35%] h-full overflow-y-scroll ",
           {
-            "sm:flex hidden ": open,
+            "sm:flex hidden ": chatOpen,
           }
         )}
       >
