@@ -22,6 +22,7 @@ import { IChatInfo } from "@/pages/home/chat";
 import { toastMessage } from "@/components/toast";
 import axios from "axios";
 import { apiConfig } from "@/config";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
 interface IProps {
   className?: string;
@@ -36,8 +37,14 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     (IGetChatMessageResponse & { isUploading?: boolean })[]
   >([]);
   const [content, setContent] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  // 在组件顶部添加主题检测
+  const isDarkMode = document.documentElement.classList.contains("dark");
 
   const handleSend = async () => {
     if (content === "" || content === "\n") {
@@ -145,11 +152,32 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     }
   }, []);
 
+  // 添加点击外部关闭emoji picker的处理
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    setContent((prev) => prev + emojiData.emoji);
+  };
+
   return (
     <Card
       className={clsx("p-0 bg-white dark:bg-gray-900 shadow-xl", className)}
     >
-      <div className="flex items-center justify-between h-[70px] flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
+      <Card className="h-[70px] flex-shrink-0 px-6 py-4  rounded-none border-0">
         <div className="flex items-center gap-4">
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
@@ -193,7 +221,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             />
           </div>
         </div>
-      </div>
+      </Card>
       <div className="flex-1 min-h-0 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-900">
         {isSuccess ? (
           messages.length > 0 ? (
@@ -219,7 +247,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           </div>
         )}
       </div>
-      <div className="flex flex-col flex-shrink-0 h-[180px] border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <Card className="h-[200px] flex-shrink-0 px-6 py-4  rounded-none border-0 overflow-visible">
         <div className="flex items-center gap-2 p-3 border-b border-gray-100 dark:border-gray-800">
           <input
             type="file"
@@ -235,20 +263,45 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
               <span className="text-sm text-gray-500">正在上传图片...</span>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <div
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all "
                 onClick={() => !isUploading && fileInputRef.current?.click()}
               >
                 <Image className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
               </div>
-              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105">
+              <div className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all ">
                 <Paperclip className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
               </div>
-              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105">
-                <Smile className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
+              <div className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all  relative">
+                <Smile
+                  className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                />
+                {showEmojiPicker && (
+                  <div
+                    className="absolute bottom-full left-0 mb-2 z-50"
+                    ref={emojiPickerRef}
+                    style={{
+                      transformOrigin: "bottom left",
+                    }}
+                  >
+                    <EmojiPicker
+                      onEmojiClick={onEmojiClick}
+                      autoFocusSearch={false}
+                      lazyLoadEmojis={true}
+                      searchPlaceHolder="搜索表情"
+                      width={350}
+                      height={300}
+                      previewConfig={{
+                        showPreview: false,
+                      }}
+                      skinTonesDisabled
+                    />
+                  </div>
+                )}
               </div>
-            </>
+            </div>
           )}
         </div>
 
@@ -264,8 +317,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           placeholder="按 Enter 发送消息"
           className="flex-1 w-full px-6 py-3 bg-transparent outline-none resize-none focus-visible:outline-none text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
-
-        <div className="flex justify-end items-center px-6 py-3 border-t border-gray-100 dark:border-gray-800">
+        <div className="flex justify-end items-center px-6 py-3 absolute bottom-0 right-0 ">
           <Button
             className={clsx(
               "w-[120px] h-10 font-bold transition-all flex items-center justify-center gap-2 rounded-full",
@@ -280,7 +332,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             发送
           </Button>
         </div>
-      </div>
+      </Card>
     </Card>
   );
 };

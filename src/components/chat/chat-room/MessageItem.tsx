@@ -14,7 +14,6 @@ interface Props {
 }
 
 const isImageUrl = (message: IGetChatMessageResponse) => {
-  console.log(message);
   if (message.messageType === "image") {
     return true;
   }
