@@ -44,8 +44,8 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   // 在组件顶部添加主题检测
-  const isDarkMode = document.documentElement.classList.contains("dark");
-
+  /*   const isDarkMode = document.documentElement.classList.contains("dark");
+   */
   const handleSend = async () => {
     if (content === "" || content === "\n") {
       setContent("");
@@ -59,6 +59,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
       chatListId: chatInfo.chatId,
       chatUser: chatInfo.chatUser,
       messageType: "text" as const,
+      createdAt: new Date().toISOString(),
     };
 
     try {
@@ -112,13 +113,13 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           chatUser: chatInfo.chatUser,
           messageType: "image" as const,
           imageUrl: imageUrl,
+          createdAt: new Date().toISOString(),
         };
 
         // 先发送到websocket和后端
         socket?.send(JSON.stringify(messageData));
         // 确保发送成功后再更新UI
         setMessages((prev) => {
-          console.log([...prev, messageData]);
           return [...prev, messageData];
         });
         toastMessage.success("图片发送成功");
@@ -178,15 +179,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
       className={clsx("p-0 bg-white dark:bg-gray-900 shadow-xl", className)}
     >
       <Card className="h-[70px] flex-shrink-0 px-6 py-4  rounded-none border-0">
-        <div className="flex items-center gap-4">
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-            <img
-              src={`${apiConfig.baseUrl}/uploads/avatars/${chatInfo.chatUser}.png`}
-              alt="avatar"
-              className="w-12 h-12 rounded-full relative ring-2 ring-white dark:ring-gray-800 hidden sm:block"
-            />
-          </div>
+        <div className="flex flex-nowrap justify-between">
           <div className="flex flex-col">
             <span className="font-bold text-lg text-gray-800 dark:text-white">
               {chatInfo.userName}
@@ -201,24 +194,24 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
               {chatInfo.online ? "在线" : "离线"}
             </span>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
-              <Video className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          <div className="flex items-center gap-4 ">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+                <Video className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </div>
             </div>
-          </div>
-          <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
-            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-          </div>
-          <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
-            <Undo2
-              className="w-5 h-5 text-gray-600 dark:text-gray-300"
-              onClick={() => {
-                setOpen(false);
-                websocketClose(socket as WebSocket);
-              }}
-            />
+            <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+              <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            </div>
+            <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+              <Undo2
+                className="w-5 h-5 text-gray-600 dark:text-gray-300"
+                onClick={() => {
+                  setOpen(false);
+                  websocketClose(socket as WebSocket);
+                }}
+              />
+            </div>
           </div>
         </div>
       </Card>

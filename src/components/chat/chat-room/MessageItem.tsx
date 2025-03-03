@@ -69,6 +69,19 @@ const MessageItem: FC<Props> = ({
   return (
     <div className={clsx("flex gap-2", className)}>
       <div className={clsx("relative w-[40px] h-[40px]")} onClick={() => {}}>
+        {isHover && (
+          <div
+            className={clsx(
+              "absolute mt-[-25px] text-gray-500 dark:text-gray-400 text-nowrap ",
+              {
+                "ml-[calc(100%-130px)]": getValidUid() === message.userInfoId,
+                "ml-[50px]": getValidUid() !== message.userInfoId,
+              }
+            )}
+          >
+            {formatISODate(String(message.createdAt))}
+          </div>
+        )}
         <img
           src={avatarSrc || "https://q.qlogo.cn/g?b=qq&nk=369060891&s=160"}
           alt="avatar"
@@ -76,11 +89,6 @@ const MessageItem: FC<Props> = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        {isHover && (
-          <div className="absolute mt-[-25px] text-gray-500 dark:text-gray-400 text-nowrap w-full">
-            {formatISODate(String(message.createdAt))}
-          </div>
-        )}
         <span
           onMouseEnter={() => setIsHover(true)}
           onMouseLeave={() => setIsHover(false)}
