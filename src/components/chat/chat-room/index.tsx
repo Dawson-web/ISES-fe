@@ -1,6 +1,16 @@
-import { Button, Card, CardSection } from "@mantine/core";
+import { Button, Card } from "@mantine/core";
 import clsx from "clsx";
-import { Image, Undo2, Loader2 } from "lucide-react";
+import {
+  Image,
+  Undo2,
+  Loader2,
+  Send,
+  Paperclip,
+  Smile,
+  MoreVertical,
+  Clock,
+  Video,
+} from "lucide-react";
 import React, { FC, useEffect, useState, useRef } from "react";
 import MessageList from "./MessageList";
 import { getChatMessage, sendChatMessage } from "@/service/chat";
@@ -136,18 +146,55 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   }, []);
 
   return (
-    <Card className={clsx("p-0", className)}>
-      <div className="flex items-center justify-between h-[60px] flex-shrink-0 p-2 border-b border-gray-200 dark:border-gray-700">
-        <span className="font-bold">{chatInfo.userName}</span>
-        <Undo2
-          className="text-gray-600 dark: hover:text-gray-800 dark:hover:text-gray-400 cursor-pointer transition-colors"
-          onClick={() => {
-            setOpen(false);
-            websocketClose(socket as WebSocket);
-          }}
-        />
+    <Card
+      className={clsx("p-0 bg-white dark:bg-gray-900 shadow-xl", className)}
+    >
+      <div className="flex items-center justify-between h-[70px] flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+            <img
+              src={`${apiConfig.baseUrl}/uploads/avatars/${chatInfo.chatUser}.png`}
+              alt="avatar"
+              className="w-12 h-12 rounded-full relative ring-2 ring-white dark:ring-gray-800 hidden sm:block"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-lg text-gray-800 dark:text-white">
+              {chatInfo.userName}
+            </span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <div
+                className={clsx("w-2 h-2 rounded-full animate-pulse", {
+                  "bg-green-500": chatInfo.online,
+                  "bg-red-500": !chatInfo.online,
+                })}
+              />
+              {chatInfo.online ? "在线" : "离线"}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+              <Video className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            </div>
+          </div>
+          <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          </div>
+          <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
+            <Undo2
+              className="w-5 h-5 text-gray-600 dark:text-gray-300"
+              onClick={() => {
+                setOpen(false);
+                websocketClose(socket as WebSocket);
+              }}
+            />
+          </div>
+        </div>
       </div>
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-900">
         {isSuccess ? (
           messages.length > 0 ? (
             <MessageList
@@ -155,38 +202,55 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
               className="h-full overflow-y-auto"
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-              暂无消息
+            <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 gap-4">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-full blur-xl"></div>
+                <Clock className="w-16 h-16 relative" />
+              </div>
+              <div className="text-center">
+                <span className="text-xl font-medium block mb-2">暂无消息</span>
+                <span className="text-sm">开始聊天吧</span>
+              </div>
             </div>
           )
         ) : (
           <div className="h-full flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
           </div>
         )}
       </div>
-      <div className="flex flex-col flex-shrink-0 h-[160px] border-t border-gray-200 dark:border-gray-700">
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-          disabled={isUploading}
-        />
-        {isUploading ? (
-          <div className="flex items-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-            <span className="text-sm text-gray-500">正在上传图片...</span>
-          </div>
-        ) : (
-          <div className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors">
-            <Image
-              className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors"
-              onClick={() => !isUploading && fileInputRef.current?.click()}
-            />
-          </div>
-        )}
+      <div className="flex flex-col flex-shrink-0 h-[180px] border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="flex items-center gap-2 p-3 border-b border-gray-100 dark:border-gray-800">
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            disabled={isUploading}
+          />
+          {isUploading ? (
+            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+              <span className="text-sm text-gray-500">正在上传图片...</span>
+            </div>
+          ) : (
+            <>
+              <div
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105"
+                onClick={() => !isUploading && fileInputRef.current?.click()}
+              >
+                <Image className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
+              </div>
+              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105">
+                <Paperclip className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
+              </div>
+              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all hover:scale-105">
+                <Smile className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
+              </div>
+            </>
+          )}
+        </div>
 
         <textarea
           value={content}
@@ -198,19 +262,21 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             }
           }}
           placeholder="按 Enter 发送消息"
-          className="flex-1 w-full px-4 py-2 bg-transparent outline-none resize-none focus-visible:outline-none"
+          className="flex-1 w-full px-6 py-3 bg-transparent outline-none resize-none focus-visible:outline-none text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
-        <div className="flex justify-end px-4 py-2">
+
+        <div className="flex justify-end items-center px-6 py-3 border-t border-gray-100 dark:border-gray-800">
           <Button
             className={clsx(
-              "w-[100px] h-9 font-bold transition-colors",
+              "w-[120px] h-10 font-bold transition-all flex items-center justify-center gap-2 rounded-full",
               isUploading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105"
             )}
             onClick={handleSend}
             disabled={isUploading}
           >
+            <Send className="w-4 h-4" />
             发送
           </Button>
         </div>
