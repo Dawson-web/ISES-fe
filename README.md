@@ -18,4 +18,6 @@ ISES-即刻短文
 
 ### 实时聊天窗
 
-实现了实时聊天窗，可以与好友进行聊天，支持发送文字、图片、表情包等
+实现了实时聊天窗，可以与好友进行聊天，支持发送文字、图片、语音、表情包等
+
+js-audio-recorder: https://recorder.api.zhuyuntao.cn/Recorder/start.html

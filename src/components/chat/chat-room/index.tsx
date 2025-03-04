@@ -23,6 +23,7 @@ import { toastMessage } from "@/components/toast";
 import axios from "axios";
 import { apiConfig } from "@/config";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import RecorderButton from "../recorder";
 
 interface IProps {
   className?: string;
@@ -33,19 +34,19 @@ interface IProps {
 let socket: WebSocket | null = null;
 
 const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
+  const [content, setContent] = useState<string>("");
   const [messages, setMessages] = useState<
     (IGetChatMessageResponse & { isUploading?: boolean })[]
   >([]);
-  const [content, setContent] = useState<string>("");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   const [isUploading, setIsUploading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
 
-  // 在组件顶部添加主题检测
-  /*   const isDarkMode = document.documentElement.classList.contains("dark");
-   */
+  // 发送消息
   const handleSend = async () => {
     if (content === "" || content === "\n") {
       setContent("");
@@ -73,6 +74,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     }
   };
 
+  // 上传图片
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -135,23 +137,29 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     }
   };
 
+  // 点击表情
+  const handleOnEmojiClick = (emojiData: EmojiClickData) => {
+    setContent((prev) => prev + emojiData.emoji);
+  };
+
+  //是否禁用发送消息
+  function isDisabledSend() {
+    return content === "" || content === "\n" || isUploading || isRecording;
+  }
+
+  // 获取聊天记录
   const { isSuccess, data, isFetching } = useQuery({
     queryKey: ["chatList", chatInfo.chatId],
     queryFn: () => getChatMessage(chatInfo.chatId),
   });
 
+  // 创建websocket
   useEffect(() => {
     if (isSuccess && !isFetching) {
       setMessages(data.data.data);
       socket = createChatsocket(setMessages, "chat");
     }
   }, [isSuccess, isFetching]);
-
-  useEffect(() => {
-    if (socket) {
-      websocketClose(socket as WebSocket);
-    }
-  }, []);
 
   // 添加点击外部关闭emoji picker的处理
   useEffect(() => {
@@ -163,16 +171,14 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
         setShowEmojiPicker(false);
       }
     };
-
+    if (socket) {
+      websocketClose(socket as WebSocket);
+    }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    setContent((prev) => prev + emojiData.emoji);
-  };
 
   return (
     <Card
@@ -280,7 +286,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
                     }}
                   >
                     <EmojiPicker
-                      onEmojiClick={onEmojiClick}
+                      onEmojiClick={handleOnEmojiClick}
                       autoFocusSearch={false}
                       lazyLoadEmojis={true}
                       searchPlaceHolder="搜索表情"
@@ -294,6 +300,13 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
                   </div>
                 )}
               </div>
+              <RecorderButton
+                isRecording={isRecording}
+                setIsRecording={setIsRecording}
+                chatInfo={chatInfo}
+                socket={socket}
+                setMessages={setMessages}
+              />
             </div>
           )}
         </div>
@@ -302,7 +315,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={async (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && !isDisabledSend()) {
               e.preventDefault();
               await handleSend();
             }
@@ -313,13 +326,11 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
         <div className="flex justify-end items-center px-6 py-3 absolute bottom-0 right-0 ">
           <Button
             className={clsx(
-              "w-[120px] h-10 font-bold transition-all flex items-center justify-center gap-2 rounded-full",
-              isUploading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105"
+              "w-[120px] h-10 font-bold transition-all flex items-center justify-center gap-2 rounded-full text-white bg-theme_blue",
+              isDisabledSend() && "bg-theme_blue/80"
             )}
             onClick={handleSend}
-            disabled={isUploading}
+            disabled={isDisabledSend()}
           >
             <Send className="w-4 h-4" />
             发送

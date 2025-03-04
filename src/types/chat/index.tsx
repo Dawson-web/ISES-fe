@@ -31,8 +31,10 @@ export interface IGetChatMessageResponse {
   createdAt?: string;
   updatedAt?: string;
   content: string;
-  messageType: "text" | "image";
+  messageType: "text" | "image" | "audio";
   imageUrl?: string;
+  duration?: number;
+  recordBlob?: Blob;
 }
 
 export interface ISendChatMessageRequest {
