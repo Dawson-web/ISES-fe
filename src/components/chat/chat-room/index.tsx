@@ -246,8 +246,8 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           </div>
         )}
       </div>
-      <Card className="h-[200px] flex-shrink-0 px-6 py-4  rounded-none border-0 overflow-visible">
-        <div className="flex items-center gap-2 p-3 border-b border-gray-100 dark:border-gray-800">
+      <Card className="  py-0  rounded-none border-0 h-[160px] border-t border-gray-100 dark:border-gray-800">
+        <div className="flex items-center gap-2 ">
           <input
             type="file"
             accept="image/*"
@@ -321,7 +321,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             }
           }}
           placeholder="按 Enter 发送消息"
-          className="flex-1 w-full px-6 py-3 bg-transparent outline-none resize-none focus-visible:outline-none text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+          className="flex-1 w-full px-2 py-3 bg-transparent outline-none resize-none focus-visible:outline-none text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
         <div className="flex justify-end items-center px-6 py-3 absolute bottom-0 right-0 ">
           <Button

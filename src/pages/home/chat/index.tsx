@@ -126,10 +126,10 @@ export default function Page() {
       ) : (
         <Card
           className={clsx(
-            "hidden sm:flex flex-col flex-grow justify-start  dark: p-0 rounded-none w-full border-0 "
+            "hidden sm:flex flex-col flex-grow justify-start  dark: p-0 rounded-none w-full border-0  "
           )}
         >
-          <Card className=" flex items-center justify-between h-[60px] flex-shrink-0  rounded-none "></Card>
+          <Card className=" flex items-center justify-between  flex-shrink-0  rounded-none h-[70px]"></Card>
           <Card className=" flex-1  flex items-center justify-center text-gray-600 rounded-none ">
             暂未选择聊天窗
           </Card>

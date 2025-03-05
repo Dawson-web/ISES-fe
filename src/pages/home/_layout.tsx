@@ -66,7 +66,7 @@ export default function Layout() {
           />
           <main
             className={clsx(
-              "flex-1 p-[1rem]  flex flex-col items-center m min-h-screen h-full"
+              "flex-1 p-[1rem]  flex flex-col items-center  min-h-screen h-full"
             )}
           >
             <ScoketMessage

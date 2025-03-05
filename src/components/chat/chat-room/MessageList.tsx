@@ -70,7 +70,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
     <Card
       ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined}
       className={clsx(
-        "flex flex-col gap-8 p-4 overflow-y-auto rounded-none border-x-0 border-b-0 shadow-none",
+        "flex flex-col gap-8 px-4 overflow-y-auto rounded-none border-x-0 border-b-0 shadow-none",
         className,
         contextMenu && "overflow-hidden" // 当右键菜单打开时禁用滚动
       )}
