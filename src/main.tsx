@@ -1,6 +1,7 @@
 import { Routes } from "@generouted/react-router/lazy";
 import "@mantine/notifications/styles.css";
 import "@mantine/core/styles.css";
+import "@arco-design/web-react/dist/css/arco.css";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

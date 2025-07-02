@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@arco-design/web-react": "^2.66.1",
     "@generouted/react-router": "^1.19.6",
     "@mantine/core": "^7.12.1",
     "@mantine/form": "^7.12.1",
