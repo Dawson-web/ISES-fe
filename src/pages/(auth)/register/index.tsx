@@ -3,8 +3,10 @@ import {
   Alert,
   Button,
   Input,
+  Typography,
+  VerificationCode,
 } from "@arco-design/web-react";
-import { Bell, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { useState } from "react";
 import AppLogo from "../../../components/public/app-logo";
@@ -61,37 +63,38 @@ export default function Page() {
     
     try {
       await sendEmailCode(formData.email);
+      toast.success(`验证邮件已发送至 ${formData.email}`);
       setStage("verify");
     } catch (error) {
-      toast(String(error));
+      toast.error(String(error));
     }
   };
 
   const handleRegister = async () => {
+    if (!formData.emailCode) {
+      toast.error("请输入验证码");
+      return;
+    }
+
     try {
-      await register(formData).then(() => {
-        setStage("done");
-      });
+      await register(formData);
+      setStage("done");
+      toast.success("注册成功");
     } catch (error) {
-      toast(String(error));
+      toast.error(String(error));
     }
   };
 
   return (
     <div>
-
       <AppLogo size="18px" title="ISES" subtitle="注册" />
 
-
       <div className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col items-center gap-2 overflow-hidden rounded-md p-4 shadow-md mt-4">
-        <form
-          className="w-full"
-          onSubmit={handleSubmit}
-        >
-          {stage === "fill" && (
+        {stage === "fill" && (
+          <form className="w-full" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">邮箱</label>
+                <label className="block text-sm font-medium mb-1 text-gray-600">邮箱</label>
                 <Input
                   placeholder="请输入邮箱"
                   value={formData.email}
@@ -102,7 +105,7 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">密码</label>
+                <label className="block text-sm font-medium mb-1 text-gray-600">密码</label>
                 <Input.Password
                   placeholder="请输入密码"
                   value={formData.password}
@@ -113,7 +116,7 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">确认密码</label>
+                <label className="block text-sm font-medium mb-1 text-gray-600">确认密码</label>
                 <Input.Password
                   placeholder="请确认密码"
                   value={formData._confirmPassword}
@@ -131,46 +134,55 @@ export default function Page() {
                 下一步
               </Button>
             </div>
-          )}
+          </form>
+        )}
 
-          {stage === "verify" && (
-            <div className="flex flex-col gap-4">
-              <Alert type="info" content={`验证邮件已发送至 ${formData.email}`} />
-              
-              <div className="my-10 flex justify-center">
-                <Input
-                  placeholder="请输入7位验证码"
-                  value={formData.emailCode}
-                  onChange={(value) => handleInputChange("emailCode", value)}
-                  maxLength={7}
-                  className="text-center"
-                />
-              </div>
-              
-              <Button
-                type="primary"
-                onClick={handleRegister}
-                className="mt-4"
-              >
-                注册
-              </Button>
+        {stage === "verify" && (
+          <div className="flex flex-col gap-4 w-full">
+            <Typography.Title heading={5} style={{ textAlign: 'center', margin: 0 }}>
+              请输入验证码
+            </Typography.Title>
+            
+            <Alert 
+              type="info" 
+              content={`验证邮件已发送至 ${formData.email}`} 
+              style={{ marginBottom: '20px' }}
+            />
+            
+            <div className="flex justify-center my-6">
+              <VerificationCode 
+                size="large" 
+                length={7} 
+                validate={({inputValue}) => /^[a-zA-Z0-9]*$/.test(inputValue) ? inputValue.toLowerCase() : false} 
+                onChange={(value) => handleInputChange("emailCode", value)}
+              />
             </div>
-          )}
-        </form>
+            
+            <Button 
+              type="primary" 
+              size="large" 
+              onClick={handleRegister}
+              className="mt-4"
+              disabled={!formData.emailCode || formData.emailCode.length !== 7}
+            >
+              注册
+            </Button>
+          </div>
+        )}
 
         {stage === "done" && (
           <div className="flex w-full flex-col items-center p-8">
-            <Check size={48} className="text-theme_blue" />
+            <Check size={48} className="text-blue-500" />
             <div className="mt-2 font-light">注册成功</div>
             <Link to="/login">
               <Button type="primary" className="mt-8">
-                继续
+                前往登录
               </Button>
             </Link>
           </div>
         )}
 
-        <div className="absolute inset-x-0 top-0 h-1 bg-theme_blue"></div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
       </div>
     </div>
   );

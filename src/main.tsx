@@ -36,7 +36,7 @@ const theme = createTheme({
   components: {
     Button: Button.extend({
       defaultProps: {
-        color: "#2563eb",
+        color: "rgb(22, 93, 255)",
       },
     }),
     Card: Card.extend({

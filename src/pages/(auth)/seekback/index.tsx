@@ -3,6 +3,8 @@ import {
   Alert,
   Button,
   Input,
+  Typography,
+  VerificationCode,
 } from "@arco-design/web-react";
 
 import { useState } from "react";
@@ -56,17 +58,16 @@ export default function Page() {
       await sendEmailCode(formData.email);
       setStage("verify");
     } catch (error) {
-      toast(String(error));
+      toast.error(String(error));
     }
   };
 
   const handleSeekback = async () => {
     try {
-      await seekback(formData).then(() => {
-        setStage("done");
-      });
+      await seekback(formData);
+      setStage("done");
     } catch (error) {
-      toast(String(error));
+      toast.error(String(error));
     }
   };
 
@@ -83,7 +84,7 @@ export default function Page() {
           {stage === "fill" && (
             <div className="flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">邮箱</label>
+                <label className="block text-sm font-medium mb-1 text-gray-600">邮箱</label>
                 <Input
                   placeholder="请输入邮箱"
                   value={formData.email}
@@ -94,7 +95,7 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">新密码</label>
+                <label className="block text-sm font-medium mb-1 text-gray-600">新密码</label>
                 <Input.Password
                   placeholder="请输入新密码"
                   value={formData.password}
@@ -114,43 +115,54 @@ export default function Page() {
             </div>
           )}
 
-          {stage === "verify" && (
-            <div className="flex flex-col gap-4">
-              <Alert type="info" content={`验证邮件已发送至 ${formData.email}`} />
-              
-              <div className="my-10 flex justify-center">
-                <Input
-                  placeholder="请输入7位验证码"
-                  value={formData.emailCode}
-                  onChange={(value) => handleInputChange("emailCode", value)}
-                  maxLength={7}
-                  className="text-center"
-                />
-              </div>
-              
-              <Button
-                type="primary"
-                onClick={handleSeekback}
-              >
-                找回
-              </Button>
-            </div>
-          )}
         </form>
+
+        {stage === "verify" && (
+          <div className="flex flex-col gap-4 w-full">
+            <Typography.Title heading={5} style={{ textAlign: 'center', margin: 0 }}>
+              请输入验证码
+            </Typography.Title>
+            
+            <Alert 
+              type="info" 
+              content={`验证邮件已发送至 ${formData.email}`} 
+              style={{ marginBottom: '20px' }}
+            />
+            
+            <div className="flex justify-center my-6">
+              <VerificationCode 
+                size="large" 
+                length={7} 
+                validate={({inputValue}) => /^[a-zA-Z0-9]*$/.test(inputValue) ? inputValue.toLowerCase() : false} 
+                onChange={(value) => handleInputChange("emailCode", value)}
+              />
+            </div>
+            
+            <Button 
+              type="primary" 
+              size="large" 
+              onClick={handleSeekback}
+              className="mt-4"
+              disabled={!formData.emailCode || formData.emailCode.length !== 7}
+            >
+              验证
+            </Button>
+          </div>
+        )}
 
         {stage === "done" && (
           <div className="flex w-full flex-col items-center p-8">
-            <Check size={48} className="text-theme_blue" />
+            <Check size={48} className="text-blue-500" />
             <div className="mt-2 font-light">密码重置成功</div>
             <Link to="/">
               <Button type="primary" className="mt-8">
-                继续
+                前往登录
               </Button>
             </Link>
           </div>
         )}
 
-        <div className="absolute inset-x-0 top-0 h-1 bg-theme_blue"></div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
       </div>
     </div>
   );

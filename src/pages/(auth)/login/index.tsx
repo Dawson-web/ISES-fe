@@ -1,4 +1,4 @@
-import { Button, Input, Space, Alert } from "@arco-design/web-react";
+import { Button, Input } from "@arco-design/web-react";
 import { useRef, useState } from "react";
 import AppLogo from "../../../components/public/app-logo";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import CaptchaCode from "../../../components/public/captcha_code";
 import { ILoginFileds } from "../../../types";
 import { login } from "../../../service";
 import { setToken, setUid } from "../../../api/token";
-import { toastMessage } from "@/components/toast";
+import { toast } from "sonner";
 
 export default function Page() {
   const errorTimes = useRef(0);
@@ -45,15 +45,14 @@ export default function Page() {
     if (!validateForm()) return;
     
     try {
-      await login(formData, code.current).then((res) => {
-        setToken(res.data.data.token);
-        setUid(res.data.data.userInfoId);
-      });
+      const res = await login(formData, code.current);
+      setToken(res.data.data.token);
+      setUid(res.data.data.userInfoId);
       navigate("/home");
-      toastMessage.success("登录成功");
+      toast.success("登录成功");
     } catch (error) {
       errorTimes.current++;
-      toastMessage.error(String(error));
+      toast.error(String(error));
     }
   };
 
@@ -75,7 +74,7 @@ export default function Page() {
         className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col gap-4 overflow-hidden rounded-md p-4 shadow-md mt-4"
       >
         <div>
-          <label className="block text-sm font-medium mb-1">邮箱</label>
+          <label className="block text-sm font-medium mb-1 text-gray-600">邮箱</label>
           <Input
             placeholder="请输入邮箱"
             value={formData.email}
@@ -86,7 +85,7 @@ export default function Page() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">密码</label>
+          <label className="block text-sm font-medium mb-1 text-gray-600">密码</label>
           <Input.Password
             placeholder="请输入密码"
             value={formData.password}
@@ -108,13 +107,11 @@ export default function Page() {
           </Link>
         )}
 
-        <div className="flex justify-end mt-4">
           <Button type="primary" htmlType="submit">
             登录
           </Button>
-        </div>
 
-        <div className="absolute inset-x-0 top-0 h-1 bg-theme_blue"></div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
       </form>
     </div>
   );
