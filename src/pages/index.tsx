@@ -1,39 +1,43 @@
 import homeBg from "../assets/home-bg.png";
 import { Button } from "@arco-design/web-react";
-import { useSpring, animated } from "@react-spring/web";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
+import FadeInAnimation from "../components/animation";
 
 export default function Page() {
   const navigate = useNavigate();
-  const [isVisible, setIsVisible] = useState(false);
-
-  // 页面挂载后触发淡入动画
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  // 淡入动画配置
-  const fadeInAnimation = useSpring({
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'translateY(0px)' : 'translateY(20px)',
-    config: { duration: 800 }
-  });
+  const [isVisible, setIsVisible] = useState(true);
+  const targetPathRef = useRef<string>("");
 
   // 处理按钮点击
   const handleButtonClick = (path: string) => {
+    targetPathRef.current = path;
     setIsVisible(false);
-    
-    // 延时跳转，等待淡出动画完成
-    setTimeout(() => {
-      navigate(path);
-    }, 600);
+  };
+
+  // 淡出动画完成后跳转
+  const handleAnimationEnd = () => {
+    if (targetPathRef.current) {
+      navigate(targetPathRef.current);
+    }
   };
 
   return (
     <>
       <div style={{backgroundImage: `url(${homeBg})`}} className="w-full h-screen bg-cover bg-center bg-no-repeat">
-        <animated.div style={fadeInAnimation} className="pt-[15%] pl-[15%] flex flex-col gap-2">
+        <FadeInAnimation 
+          className="
+            px-8 pt-[20vh] 
+            sm:px-8 sm:pt-[18vh] 
+            md:px-12 md:pt-[20vh] 
+            lg:px-16 lg:pt-[22vh] 
+            xl:px-20 xl:pt-[24vh] 
+            2xl:px-24 2xl:pt-[26vh]
+            flex flex-col gap-2 max-w-4xl
+          "
+          visible={isVisible}
+          onAnimationEnd={handleAnimationEnd}
+        >
           <div className="text-black font-bold flex items-center">
             <span className="text-black">arco.design</span>
             <div style={{width: '1.5px',height: '12px',background: '#6b7280',margin: '0 8px'}}></div>
@@ -57,7 +61,7 @@ export default function Page() {
               注册
             </Button>
           </div>
-        </animated.div>
+        </FadeInAnimation>
       </div>
     </>
   );

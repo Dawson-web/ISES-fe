@@ -1,18 +1,12 @@
 import clsx from "clsx";
 import { FC } from "react";
 
-const AppLogo: FC<{ className?: string }> = ({ className }) => {
+const AppLogo: FC<{title?:string,subtitle?:string,size?:string }> = ({ title, subtitle, size }) => {
   return (
-    <div
-      className={clsx(
-        "flex items-center gap-2 text-2xl font-semibold",
-        className
-      )}
-    >
-      <div className="font-comfortaa  dark:text-gray-600">
-        Ises
-        <span className="text-theme_blue">.</span>
-      </div>
+    <div className={clsx("text-black font-bold flex items-center")} style={{fontSize:size}}>
+      <span className="text-black">{title || 'arco.design'}</span>
+      <div style={{ width: '1.5px', height: '12px', background: '#6b7280', margin: '0 8px' }}></div>
+      <span className="text-gray-500 font-normal">{subtitle || 'subtitle'}</span>            
     </div>
   );
 };
