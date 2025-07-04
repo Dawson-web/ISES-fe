@@ -82,30 +82,51 @@
 // }
 
 import  { useEffect, useState } from 'react';
-import { Layout, Menu, Button, Tabs } from '@arco-design/web-react';
-import {  IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
+import { Layout, Menu, Avatar, Message } from '@arco-design/web-react';
+import { IconHome, IconEdit, IconFindReplace, IconCaretRight, IconCaretLeft, IconMessage } from '@arco-design/web-react/icon';
 import { Outlet } from 'react-router-dom';
 
+
 const Sider = Layout.Sider;
-const Header = Layout.Header;
 const Footer = Layout.Footer;
 const Content = Layout.Content;
-const TabPane = Tabs.TabPane;
+const MenuItem = Menu.Item;
 
+const menuList = [
+  {
+    key: 'home',
+    icon: <IconHome />,
+    label: '首页',
+  },
+  {
+    key: 'edit',
+    icon: <IconEdit />,
+    label: '创作中心',
+  },
+  {
+    key: 'info',
+    icon: <IconFindReplace />,
+    label: '爆料',
+  },
+  {
+    key: 'message',
+    icon: <IconMessage />,
+    label: '消息',
+  },
+];
 
 const _Layout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [mode, setMode] = useState<'horizontal' | 'vertical'>('horizontal');
   
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
   const handleResize = () => {
-    if (window.innerWidth < 1000) {
-      setMode('horizontal');
+    if (window.innerWidth < 600) {
+      setCollapsed(true);
     } else {
-      setMode('vertical');
+      setCollapsed(false);
     }
   }
 
@@ -119,37 +140,36 @@ const _Layout = () => {
 
     return (
       <Layout className='h-screen w-full'>
-       {mode === 'vertical' && <Sider collapsed={collapsed} onCollapse={handleCollapsed} breakpoint='xl'>
+         <Sider
+          collapsed={collapsed}
+          onCollapse={handleCollapsed}
+          collapsible
+          trigger={collapsed ? <IconCaretRight fontSize={20} /> : <IconCaretLeft fontSize={20} />}
+          breakpoint='xl'
+        >
           <div className='logo' />
-          <Menu style={{ width: '100%' }}>
-            <Button shape='round' className='trigger' onClick={handleCollapsed} size='default'>
-              {collapsed ? <IconCaretRight /> : <IconCaretLeft />}
-            </Button>
+          <Menu
+            defaultOpenKeys={['1']}
+            defaultSelectedKeys={['0_3']}
+            onClickMenuItem={(key) =>
+              Message.info({
+                content: `You select ${key}`,
+                showIcon: true,
+              })
+            }
+          >
+             <div key='avatar' className='flex justify-center items-center my-4'>
+              <Avatar size={collapsed ? 28 : 32}>A</Avatar>
+            </div>
+            {menuList.map((item) => (
+              <MenuItem key={item.key} className='text-lg'>
+                {item.icon}
+                {item.label}
+              </MenuItem>
+            ))}
           </Menu>
-        </Sider>}
+        </Sider>
         <Layout>
-          {mode === 'horizontal' && <Header>
-              <Tabs defaultActiveTab='key1' direction='horizontal' style={{ height: 200 }}>
-                <TabPane destroyOnHide key='1' title='Home'>
-                  <div>Home</div>
-                </TabPane>
-                <TabPane destroyOnHide key='2' title='Solution'>
-                  <div>Solution</div>
-                </TabPane>
-                <TabPane destroyOnHide key='3' title='Cloud Service'>
-                  <div>Cloud Service</div>
-                </TabPane>
-                <TabPane destroyOnHide key='4' title='Cooperation'>
-                  <div>Cooperation</div>
-                </TabPane>
-                <TabPane destroyOnHide key='5' title='About'>
-                  <div>About</div>
-                </TabPane>
-                <TabPane destroyOnHide key='6' title='Contact'>
-                  <div>Contact</div>
-                </TabPane>
-              </Tabs>
-          </Header>}
           <Layout style={{ padding: '0 24px' }}>
             <Content>
               <Outlet />
