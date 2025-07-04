@@ -84,7 +84,7 @@
 import  { useEffect, useState } from 'react';
 import { Layout, Menu, Avatar, Message } from '@arco-design/web-react';
 import { IconHome, IconEdit, IconFindReplace, IconCaretRight, IconCaretLeft, IconMessage } from '@arco-design/web-react/icon';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 
 const Sider = Layout.Sider;
@@ -117,6 +117,7 @@ const menuList = [
 
 const _Layout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
   
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -158,11 +159,13 @@ const _Layout = () => {
               })
             }
           >
-             <div key='avatar' className='flex justify-center items-center my-4'>
+             <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
+              navigate('/home/profile');
+             }}>
               <Avatar size={collapsed ? 28 : 32}>A</Avatar>
             </div>
             {menuList.map((item) => (
-              <MenuItem key={item.key} className='text-lg'>
+              <MenuItem key={item.key} className='text-md'>
                 {item.icon}
                 {item.label}
               </MenuItem>
@@ -170,11 +173,11 @@ const _Layout = () => {
           </Menu>
         </Sider>
         <Layout>
-          <Layout style={{ padding: '0 24px' }}>
+          <Layout>
             <Content>
               <Outlet />
             </Content>
-            <Footer>Footer</Footer>
+            {/* <Footer>Footer</Footer> */}
           </Layout>
         </Layout>
       </Layout>

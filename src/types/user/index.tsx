@@ -4,9 +4,22 @@ export interface IAccountData {
 }
 
 export interface IUserInfo {
-  userId: number;
+  id: string;
+  userId: string;
   username: string;
-  avatar: string;
+  introduce?: string;
+  role: number;
+  school?: string;
+  avatar?: string;
+  online?: boolean;
+  grade?: string;
+  company?: any;
+  circles?: string;
+  major?: string;
+  techDirection?: string;
+  banner?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IUserFormData {
