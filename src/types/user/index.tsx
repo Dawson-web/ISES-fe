@@ -3,6 +3,17 @@ export interface IAccountData {
   password?: string;
 }
 
+export interface ICompany {
+  id?: string;
+  name: string;
+  position: string;
+  department: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  description?: string;
+}
+
 export interface IUserInfo {
   id: string;
   userId: string;
@@ -13,7 +24,7 @@ export interface IUserInfo {
   avatar?: string;
   online?: boolean;
   grade?: string;
-  company?: any;
+  company?: ICompany[];
   circles?: string;
   major?: string;
   techDirection?: string;

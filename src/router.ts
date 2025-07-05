@@ -13,10 +13,6 @@ export type Path =
   | `/home/components`
   | `/home/post`
   | `/home/profile`
-  | `/home/profile/components/MyCollects`
-  | `/home/profile/components/MyPosts`
-  | `/home/profile/demo`
-  | `/home/profile/selfpost`
   | `/home/profile/user-list`
   | `/home/video`
   | `/login`
