@@ -15,8 +15,6 @@ const theme = createTheme({
   headings: {
     fontFamily: "Roboto, sans-serif",
   },
-  primaryColor: "primary",
-  black: "#1e3a8a",
 
   colors: {
     primary: [

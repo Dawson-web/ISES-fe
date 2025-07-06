@@ -88,18 +88,18 @@ export default function Page() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="max-w-6xl mx-auto">
+    <div className="p-4 bg-gray-100 min-h-screen">
+      <div className="mx-auto">
         {/* 用户头部卡片 */}
         <Card
-          className="rounded-md mb-6"
+          className="rounded-lg mb-6"
           cover={
             userData.banner && (
               <div className="max-h-48 overflow-hidden">
                 <Image
                   src={userData.banner}
                   alt="用户封面"
-                  className="w-full h-full object-contain rounded-md"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </div>
             )
@@ -117,12 +117,6 @@ export default function Page() {
                 >
                   {!userData.avatar && userData.username?.charAt(0)}
                 </Avatar>
-                {/* 在线状态指示器 */}
-                {/* <div className={`absolute bottom-4 right-0 w-5 h-5 rounded-full border-2 border-white ${userData.online ? 'bg-green-500' : 'bg-gray-400'
-                  }`}>
-                  <div className="absolute inset-0 rounded-full animate-ping opacity-75 bg-green-400"
-                    style={{ display: userData.online ? 'block' : 'none' }}></div>
-                </div> */}
               </div>
 
               <div className="flex-1 pt-2 w-full flex-wrap">
@@ -158,7 +152,7 @@ export default function Page() {
 
         <Row gutter={24}>
         <Col span={24}>
-            <Card title="实习经历" className="mb-6 rounded-md">
+            <Card title="实习经历" className="mb-6 rounded-lg">
               <div className="flex flex-col gap-4">
               {userData.company?.map((item) => (
                 <div className="space-y-4">
@@ -185,7 +179,7 @@ export default function Page() {
           </Col>
 
           <Col span={12}>
-            <Card title="基本信息" className="mb-6 rounded-md">
+            <Card title="基本信息" className="mb-6 rounded-lg">
               <Descriptions
                 column={1}
                 colon={":"}
@@ -212,7 +206,7 @@ export default function Page() {
           </Col>
 
           <Col span={12}>
-            <Card title="技能与兴趣" className="mb-6 rounded-md">
+            <Card title="技能与兴趣" className="mb-6 rounded-lg">
               <div className="mb-4">
                 <Text className="font-medium text-gray-600 mb-2 block">
                   <IconCode /> 技术方向
