@@ -118,11 +118,11 @@ export default function Page() {
                   {!userData.avatar && userData.username?.charAt(0)}
                 </Avatar>
                 {/* 在线状态指示器 */}
-                <div className={`absolute bottom-4 right-0 w-5 h-5 rounded-full border-2 border-white ${userData.online ? 'bg-green-500' : 'bg-gray-400'
+                {/* <div className={`absolute bottom-4 right-0 w-5 h-5 rounded-full border-2 border-white ${userData.online ? 'bg-green-500' : 'bg-gray-400'
                   }`}>
                   <div className="absolute inset-0 rounded-full animate-ping opacity-75 bg-green-400"
                     style={{ display: userData.online ? 'block' : 'none' }}></div>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex-1 pt-2 w-full flex-wrap">
