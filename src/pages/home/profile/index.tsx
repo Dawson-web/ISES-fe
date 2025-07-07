@@ -28,7 +28,14 @@ const mockUserData: IUserInfo = {
   avatar: "/src/assets/favicon.png",
   online: true,
   grade: "",
-    company: [
+  currentCompany: {
+    id: "company-123",
+    name: "阿里巴巴",
+    position: "高级工程师",
+    department: "蚂蚁金服",
+    joinDate: "2023-01-01"
+  },
+  company: [
     {
       id: "1",
       name: "字节跳动",
@@ -196,7 +203,14 @@ export default function Page() {
                     label: "年级",
                     value: userData.grade || "-"
                   },
-
+                  {
+                    label: "在职公司",
+                    value: userData.currentCompany?.name ||  "-"
+                  },
+                  {
+                    label: "在职职位",
+                    value: userData.currentCompany?.position ||  "-"
+                  },
                 ]}
                 layout='inline-horizontal'
                 labelStyle={{ color: "#4e5969", fontWeight: "500" }}

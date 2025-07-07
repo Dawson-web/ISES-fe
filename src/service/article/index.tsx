@@ -10,6 +10,8 @@ import {
   IPaginationRequest,
   IPostCommentData,
   IUpdateArticleRequest,
+  ArticleResponse,
+  Api,
 } from "@/types/article";
 
 export const addArticle = async (data: IArticleFiled) => {
@@ -42,10 +44,12 @@ export const getCollects = async (params: IGetCollectsRequest) => {
   );
 };
 
-export const likeArticle = async (articleId: string) => {
-  return await $axios.post<ApiOk<unknown>>(
-    `/articles/like?articleId=${articleId}`
-  );
+export const likeArticle = (id: string) => {
+  return $axios.post<Api<null>>(`/api/content/${id}/like`);
+};
+
+export const unlikeArticle = (id: string) => {
+  return $axios.delete<Api<null>>(`/api/content/${id}/like`);
 };
 
 export const uploadImage = async (formData: FormData) => {
@@ -60,10 +64,8 @@ export const uploadImage = async (formData: FormData) => {
   );
 };
 
-export const getArticleDetail = async (articleId: string) => {
-  return await $axios.get<ApiOk<IGetArticleDetailResponse>>(
-    `/articles/detail/${articleId}`
-  );
+export const getArticleDetail = (id: string) => {
+  return $axios.get<ArticleResponse>(`/api/content/${id}`);
 };
 
 export const postComment = async (data: IPostCommentData) => {

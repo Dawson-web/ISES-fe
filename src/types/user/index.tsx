@@ -14,6 +14,14 @@ export interface ICompany {
   description?: string;
 }
 
+export interface ICurrentCompany {
+  id?: string;
+  name: string;
+  position: string;
+  department: string;
+  joinDate: string;
+}
+
 export interface IUserInfo {
   id: string;
   userId: string;
@@ -24,6 +32,7 @@ export interface IUserInfo {
   avatar?: string;
   online?: boolean;
   grade?: string;
+  currentCompany?: ICurrentCompany;
   company?: ICompany[];
   circles?: string;
   major?: string;

@@ -5,9 +5,10 @@ import { components, hooks, utils } from '@generouted/react-router/client'
 
 export type Path =
   | `/`
+  | `/article`
+  | `/article/edit`
+  | `/article/list`
   | `/home`
-  | `/home/article`
-  | `/home/article/edit`
   | `/home/chat`
   | `/home/chat/components/AddFriend`
   | `/home/components`

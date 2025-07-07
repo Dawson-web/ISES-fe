@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Input, Select, Button, Typography, Space, Avatar, Divider, Card, Tag, Badge } from '@arco-design/web-react';
-import { IconSearch, IconEdit, IconDown, IconEye, IconHeart, IconMessage, IconClockCircle, IconCalendar } from '@arco-design/web-react/icon';
+import { Input, Select, Button, Typography, Space, Avatar, Divider, Card, Tag, Badge, Result } from '@arco-design/web-react';
+import { IconSearch, IconEdit, IconDown, IconEye, IconHeart, IconMessage, IconClockCircle, IconCalendar, IconUser } from '@arco-design/web-react/icon';
 import { IContent, IContentListRequest, IContentListResponse } from '@/types/article';
 import { toastMessage } from '@/components/toast';
 import UserProfile from '@/components/profile/UserProfile';
@@ -21,6 +21,50 @@ const Home: React.FC = () => {
     { name: '春招', period: '3月-5月', status: 'past', color: '#00B42A' },
     { name: '暑期实习', period: '6月-8月', status: 'current', color: '#3370FF' },
     { name: '秋招', period: '9月-11月', status: 'future', color: '#FF7D00' },
+  ];
+
+  // 公司校友数据
+  const companyAlumni = [
+    {
+      id: '1',
+      name: '张三',
+      company: '字节跳动',
+      position: '前端工程师',
+      status: 'online' as const,
+      avatar: '👨‍💻'
+    },
+    {
+      id: '2',
+      name: '李四',
+      company: '腾讯',
+      position: '后端工程师',
+      status: 'offline' as const,
+      avatar: '👩‍💻'
+    },
+    {
+      id: '3',
+      name: '王五',
+      company: '阿里巴巴',
+      position: '产品经理',
+      status: 'online' as const,
+      avatar: '👨‍💼'
+    },
+    {
+      id: '4',
+      name: '赵六',
+      company: '美团',
+      position: '算法工程师',
+      status: 'offline' as const,
+      avatar: '👩‍🔬'
+    },
+    {
+      id: '5',
+      name: '钱七',
+      company: '滴滴',
+      position: 'UI设计师',
+      status: 'online' as const,
+      avatar: '🎨'
+    }
   ];
 
   // 当前日期判断
@@ -167,7 +211,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
 
-          {/* 右侧文章列表 */}
+          {/* 左侧文章列表 */}
           <div className="flex-1">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               {/* 搜索框 */}
@@ -256,8 +300,8 @@ const Home: React.FC = () => {
               )}
             </div>
           </div>
-          {/* 左侧时间轴 */}
-          <div className="w-full lg:w-64 flex-shrink-0">
+          {/* 右侧时间轴 */}
+          <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-4">
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               {/* 招聘季节进度条 */}
               <div className="mb-4">
@@ -273,10 +317,10 @@ const Home: React.FC = () => {
                       <div className="flex flex-col items-center mr-4 mt-0.5">
                         <div
                           className={`w-3 h-3 rounded-full transition-all duration-500 ${season.status === 'current'
-                              ? 'bg-blue-500 ring-4 ring-blue-200 timeline-current'
-                              : season.status === 'past'
-                                ? 'bg-gray-400'
-                                : 'bg-gray-200'
+                            ? 'bg-blue-500 ring-4 ring-blue-200 timeline-current'
+                            : season.status === 'past'
+                              ? 'bg-gray-400'
+                              : 'bg-gray-200'
                             }`}
                         />
                         {index < recruitmentSeasons.length - 1 && (
@@ -305,6 +349,100 @@ const Home: React.FC = () => {
                 <Button type="secondary" long>
                   公司爆料
                 </Button>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1">
+              {/* 公司校友列表 */}
+              <div className="mb-4">
+                <div className="flex items-center mb-4">
+                  <IconUser className="mr-2 text-green-500" />
+                  <Text className="font-medium text-gray-900">公司校友</Text>
+                </div>
+
+                {/* 校友列表 */}
+                <div className="space-y-3">
+                  {companyAlumni.length === 0 && companyAlumni.slice(0, 3).map((alumni) => (
+                    <>
+                      <div
+                        key={alumni.id}
+                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => handleUserClick(alumni.id)}
+                        style={{ border: '1px solid transparent' }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Avatar size={32} style={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {alumni.name.charAt(0)}
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <Text className="font-medium text-gray-900 text-sm truncate">
+                              {alumni.name}
+                            </Text>
+                            <Text className="text-xs text-gray-500 truncate">
+                              {alumni.company} · {alumni.position}
+                            </Text>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Tag
+                            size="small"
+                            color={alumni.status === 'online' ? 'green' : 'gray'}
+                            style={{
+                              borderRadius: '12px',
+                              padding: '2px 8px',
+                              fontSize: '10px'
+                            }}
+                          >
+                            {alumni.status === 'online' ? '在线' : '离线'}
+                          </Tag>
+                          <Button
+                            type="text"
+                            size="mini"
+                            icon={<IconMessage />}
+                            className="text-gray-400 hover:text-blue-500"
+                            style={{
+                              borderRadius: '6px',
+                              padding: '4px'
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-4 text-center">
+                        <Button
+                          type="text"
+                          size="small"
+                          className="text-blue-500 hover:text-blue-600"
+                          style={{
+                            borderRadius: '8px',
+                            padding: '8px 16px',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          查看全部校友 →
+                        </Button>
+                      </div>
+                    </>
+                  ))}
+                  {companyAlumni.length >= 0 && (
+                    <Result
+                    status='404'
+                    subTitle='未填写个人公司信息，或公司暂无校友'
+                    // extra={[
+                    //   <Button key='again' style={{ margin: '0 16px' }}>
+                    //     去填写
+                    //   </Button>,
+                    //   <Button key='back' type='primary'>
+                    //     去查看
+                    //   </Button>,
+                    // ]}
+                  ></Result>
+                  )}
+                </div>
+
+
               </div>
             </div>
           </div>
