@@ -1,39 +1,47 @@
 import { useEffect, useState } from 'react';
-import { Layout, Menu, Avatar, Message } from '@arco-design/web-react';
+import { Layout, Menu, Avatar, Message, Tag } from '@arco-design/web-react';
 import { IconHome, IconEdit, IconFindReplace, IconCaretRight, IconCaretLeft, IconMessage, IconCommon, IconEye } from '@arco-design/web-react/icon';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
+import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
 
 
 const Sider = Layout.Sider;
 const Content = Layout.Content;
+const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
 
 const menuList = [
   {
     key: '/',
-    icon: <IconHome />,
+    icon: <Compass size={16} />,
     label: '首页',
   },
   {
     key: '/articles/edit',
-    icon: <IconEdit />,
+    icon: <PencilRuler size={16} />,
     label: '创作中心',
   },
   {
     key: '/articles',
-    icon: <IconEye />,
+    icon: <BookText size={16} />,
     label: '文章',
   },
   {
     key: '/info',
-    icon: <IconFindReplace />,
+    icon: <Building2 size={16} />,
     label: '爆料',
   },
   {
+    key: '/campus',
+    icon: <LibraryBigIcon size={16} />,
+    label: '校园墙',
+    tag: 'New',
+  },
+  {
     key: '/chat',
-    icon: <IconMessage />,
+    icon: <MessageSquareText size={16} />,
     label: '消息',
   },
 ];
@@ -88,11 +96,17 @@ const _Layout = () => {
             <Avatar size={collapsed ? 28 : 32}>A</Avatar>
           </div>
           {menuList.map((item) => (
-            <MenuItem key={item.key} className='text-md' onClick={() => {
+            <MenuItem 
+            key={item.key} 
+            className='text-md flex items-center justify-between gap-2 h-10' 
+            onClick={() => {
               navigate(`${item.key}`);
             }}>
-              {item.icon}
-              {item.label}
+              <div className='flex items-center gap-4'>
+                {item.icon}
+                {item.label}
+              </div>
+              {item.tag && <Tag color="red">{item.tag}</Tag>}
             </MenuItem>
           ))}
         </Menu>

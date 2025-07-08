@@ -1,0 +1,185 @@
+.info-container {
+  padding: 20px;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+/* 头部样式 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.tab {
+  font-size: 16px;
+  color: #86909c;
+  cursor: pointer;
+  position: relative;
+  padding: 4px 0;
+}
+
+.tab.active {
+  color: #1d2129;
+  font-weight: 500;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #165dff;
+}
+
+.more-link {
+  color: #165dff !important;
+  font-size: 14px;
+}
+
+/* 搜索区域样式 */
+.search-box {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.search-wrapper {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.search-input {
+  width: 100%;
+  height: 40px !important;
+}
+
+.search-input .arco-input-inner-wrapper {
+  background-color: #f2f3f5 !important;
+}
+
+.search-input .arco-btn {
+  margin: -1px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 0 4px 4px 0;
+}
+
+.search-tags {
+  margin-top: 12px;
+}
+
+.search-tags .arco-tag {
+  margin-right: 8px;
+  cursor: pointer;
+  background: #f7f8fa;
+  border: none;
+  color: #4e5969;
+}
+
+/* 工具箱样式 */
+.tool-box {
+  width: 300px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.tool-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1d2129;
+  margin-bottom: 16px;
+}
+
+.tool-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tool-button {
+  width: 100%;
+  height: auto !important;
+  padding: 12px !important;
+  text-align: left !important;
+  background: #f7f8fa !important;
+  border: none !important;
+}
+
+.tool-button:hover {
+  background: #f2f3f5 !important;
+}
+
+.button-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.highlight {
+  color: #00b42a;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.tool-group {
+  display: flex;
+  gap: 12px;
+}
+
+.tool-button.small {
+  flex: 1;
+  padding: 8px !important;
+}
+
+.sub {
+  color: #86909c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 表格样式 */
+.schedule-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.company-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.schedule-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.link-button {
+  color: #165dff !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.note {
+  color: #86909c;
+  font-size: 12px;
+} 

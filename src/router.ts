@@ -11,8 +11,8 @@ export type Path =
   | `/chat`
   | `/chat/components/AddFriend`
   | `/components`
+  | `/info`
   | `/login`
-  | `/post`
   | `/profile`
   | `/profile/user-list`
   | `/register`

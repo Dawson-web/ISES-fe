@@ -1,4 +1,4 @@
-import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs } from '@arco-design/web-react';
+import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs, Result } from '@arco-design/web-react';
 import { IconSearch, IconPlus, IconHeart, IconEye, IconMessage, IconRefresh } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -257,24 +257,19 @@ export default function ArticleList() {
               {filteredArticles.length === 0 && (
                 <Grid.Col span={24}>
                   <div className="text-center py-16">
-                    <img 
-                      src="/favicon.webp" 
-                      alt="empty" 
-                      className="w-24 h-24 mx-auto mb-4 opacity-20"
-                    />
-                    <Title heading={5} className="!text-[#8A919F] !font-normal !mb-2">
-                      暂无相关内容
-                    </Title>
-                    <Text type="secondary" className="text-sm">
-                      换个关键词试试，或者
-                      <Button 
-                        type="text" 
-                        className="text-[#1e80ff] hover:text-[#1e70ee] text-sm"
-                        onClick={() => navigate('/home/article/edit')}
+                    <Result
+                      status="404"
+                      title="暂无相关内容"
+                      subTitle={<>
+                      换个关键词试试，或者 
+                      <Text 
+                        className="text-[#1e80ff] hover:text-[#1e70ee] text-sm ml-1 cursor-pointer"
+                        onClick={() => navigate('/articles/edit')}
                       >
-                        发布内容
-                      </Button>
-                    </Text>
+                        发布相关内容
+                      </Text>
+                      </>}
+                    />
                   </div>
                 </Grid.Col>
               )}
