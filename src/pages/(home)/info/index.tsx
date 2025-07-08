@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Table, Tag, Button, Input } from '@arco-design/web-react';
 import { IconRight } from '@arco-design/web-react/icon';
+import SalaryCalculator from '@/components/salary-calculator';
+import salaryGIF from '@/assets/salary.gif';
 import './style.css';
 
 interface CompanySchedule {
@@ -102,6 +104,7 @@ const mockData: CompanySchedule[] = [
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
+  const [calculatorVisible, setCalculatorVisible] = useState(false);
 
   const columns = [
     {
@@ -178,8 +181,8 @@ const Info = () => {
     <div className="info-container">
       <div className="header">
         <div className="tabs">
-        <div className="tab">公司爆料</div>
-        <div className="tab">内推爆料</div>
+          <div className="tab">公司爆料</div>
+          <div className="tab">内推爆料</div>
           <div className="tab">薪资爆料</div>
           <div className="tab">校友爆料</div>
         </div>
@@ -206,10 +209,11 @@ const Info = () => {
         <div className="tool-box">
           <div className="tool-title">求职工具箱</div>
           <div className="tool-buttons">
-            <Button className="tool-button">
+            <Button className="tool-button" onClick={() => setCalculatorVisible(true)}>
               <div className="button-content">
                 <span>查薪资</span>
                 <span className="highlight">·数万牛人真实分享通通领先</span>
+                <img src={salaryGIF} alt="salary" className="tool-icon w-20 h-20 absolute right-0 top-0" />
               </div>
             </Button>
             <div className="tool-group">
@@ -229,6 +233,11 @@ const Info = () => {
           </div>
         </div>
       </div>
+
+      <SalaryCalculator
+        visible={calculatorVisible}
+        onClose={() => setCalculatorVisible(false)}
+      />
 
       <Table
         columns={columns}
