@@ -17,7 +17,7 @@ const menuList = [
     label: '首页',
   },
   {
-    key: '/edit',
+    key: '/articles/edit',
     icon: <IconEdit />,
     label: '创作中心',
   },

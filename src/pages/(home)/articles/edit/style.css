@@ -1,0 +1,162 @@
+.editor-container {
+  min-height: 100vh;
+  background-color: var(--color-bg-1);
+}
+
+/* 编辑器头部 */
+.editor-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-bg-2);
+  border-bottom: 1px solid var(--color-border-2);
+  backdrop-filter: blur(8px);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 标题输入框 */
+.title-input {
+  width: 500px !important;
+  border: none !important;
+  padding: 4px 12px !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.title-input:focus {
+  box-shadow: none !important;
+  width: 600px !important;
+}
+
+.title-input::placeholder {
+  color: var(--color-text-3);
+  font-weight: 400;
+}
+
+/* 状态标签 */
+.status-tag {
+  font-size: 13px !important;
+  padding: 0 12px !important;
+  height: 28px !important;
+  border-radius: 4px !important;
+}
+
+/* 按钮样式 */
+.more-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
+}
+
+/* 编辑器主体 */
+.editor-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* 工具栏 */
+.editor-toolbar {
+  background: var(--color-bg-2);
+  border: 1px solid var(--color-border-2);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.format-tools,
+.insert-tools {
+  display: flex;
+  gap: 4px;
+}
+
+.tool-btn {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  color: var(--color-text-2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.tool-btn:hover {
+  color: rgb(var(--primary-6)) !important;
+  background: rgb(var(--primary-1)) !important;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border-2);
+  margin: 0 8px;
+}
+
+/* 编辑器内容区域 */
+.editor-content {
+  position: relative;
+  background: var(--color-bg-2);
+  border: 1px solid var(--color-border-2);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  min-height: calc(100vh - 200px);
+}
+
+.content-input {
+  border: none !important;
+  padding: 24px !important;
+  font-size: 16px !important;
+  line-height: 1.8 !important;
+  color: var(--color-text-1) !important;
+  background: transparent !important;
+  resize: none !important;
+  height: 100% !important;
+  min-height: calc(100vh - 200px) !important;
+}
+
+.content-input:focus {
+  box-shadow: none !important;
+}
+
+.content-input::placeholder {
+  color: var(--color-text-3);
+  font-size: 16px;
+}
+
+/* 字数统计 */
+.word-count {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  font-size: 14px;
+  color: var(--color-text-3);
+  background: var(--color-bg-2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-2);
+} 
