@@ -18,7 +18,7 @@ import { getValidUid } from "@/api/token";
 import { IGetChatMessageResponse } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
-import { IChatInfo } from "@/pages/home/chat";
+import { IChatInfo } from "@/pages/(home)/chat";
 import { toastMessage } from "@/components/toast";
 import axios from "axios";
 import { apiConfig } from "@/config";

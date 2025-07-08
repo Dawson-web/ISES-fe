@@ -99,7 +99,7 @@ export default function ArticleList() {
   const [activeTab, setActiveTab] = useState('发动态');
 
   const handleArticleClick = (id: number) => {
-    navigate(`/home/article?id=${id}`);
+    navigate(`/articles/detail?id=${id}`);
   };
 
   const filteredArticles = DEMO_ARTICLES.filter(article => {

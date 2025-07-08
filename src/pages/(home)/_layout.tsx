@@ -12,27 +12,27 @@ const MenuItem = Menu.Item;
 
 const menuList = [
   {
-    key: '/home',
+    key: '/',
     icon: <IconHome />,
     label: '首页',
   },
   {
-    key: 'edit',
+    key: '/edit',
     icon: <IconEdit />,
     label: '创作中心',
   },
   {
-    key: '/article/list',
+    key: '/articles',
     icon: <IconEye />,
     label: '文章',
   },
   {
-    key: 'info',
+    key: '/info',
     icon: <IconFindReplace />,
     label: '爆料',
   },
   {
-    key: 'message',
+    key: '/chat',
     icon: <IconMessage />,
     label: '消息',
   },
@@ -83,7 +83,7 @@ const _Layout = () => {
           }
         >
           <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
-            navigate('/home/profile');
+            navigate('/profile');
           }}>
             <Avatar size={collapsed ? 28 : 32}>A</Avatar>
           </div>

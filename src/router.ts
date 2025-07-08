@@ -5,20 +5,19 @@ import { components, hooks, utils } from '@generouted/react-router/client'
 
 export type Path =
   | `/`
-  | `/article`
-  | `/article/edit`
-  | `/article/list`
-  | `/home`
-  | `/home/chat`
-  | `/home/chat/components/AddFriend`
-  | `/home/components`
-  | `/home/post`
-  | `/home/profile`
-  | `/home/profile/user-list`
-  | `/home/video`
+  | `/articles`
+  | `/articles/detail`
+  | `/articles/edit`
+  | `/chat`
+  | `/chat/components/AddFriend`
+  | `/components`
   | `/login`
+  | `/post`
+  | `/profile`
+  | `/profile/user-list`
   | `/register`
   | `/seekback`
+  | `/video`
 
 export type Params = {
   

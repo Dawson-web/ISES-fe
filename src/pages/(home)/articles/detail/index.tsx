@@ -81,7 +81,7 @@ export default function Page() {
           <Tooltip label="返回">
             <ActionIcon
               variant="subtle"
-              onClick={() => navigate("/home")}
+              onClick={() => navigate("/articles")}
             >
               <Undo2 className="text-gray-600" />
             </ActionIcon>
