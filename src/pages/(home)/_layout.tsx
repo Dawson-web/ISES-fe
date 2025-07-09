@@ -37,7 +37,7 @@ const menuList = [
     key: '/campus',
     icon: <LibraryBigIcon size={16} />,
     label: '校园墙',
-    tag: 'New',
+    tag: '开发中',
   },
   {
     key: '/chat',

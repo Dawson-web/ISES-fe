@@ -8,6 +8,7 @@ export type Path =
   | `/articles`
   | `/articles/detail`
   | `/articles/edit`
+  | `/campus`
   | `/chat`
   | `/chat/components/AddFriend`
   | `/components`

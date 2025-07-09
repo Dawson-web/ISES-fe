@@ -302,34 +302,55 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
             <TabPane key="detail" title="缴费明细">
               <Table
                 columns={[
-                  { title: '项目', dataIndex: 'name' },
-                  { title: '缴费基数', dataIndex: 'base', render: (value: number) => value.toFixed(2) },
+                  { 
+                    title: '项目', 
+                    dataIndex: 'name',
+                    align: 'left',
+                    width: 100
+                  },
+                  { 
+                    title: '缴费基数', 
+                    dataIndex: 'base', 
+                    align: 'right',
+                    width: 120,
+                    render: (value: number) => value.toFixed(2)
+                  },
                   { 
                     title: '个人部分',
+                    align: 'center',
                     children: [
                       { 
                         title: '比例', 
                         dataIndex: 'personalRate',
+                        align: 'center',
+                        width: 80,
                         render: (value: number) => (value * 100).toFixed(1) + '%'
                       },
                       { 
                         title: '金额', 
                         dataIndex: 'personalAmount',
+                        align: 'right',
+                        width: 100,
                         render: (value: number) => value.toFixed(2)
                       }
                     ]
                   },
                   { 
                     title: '单位部分',
+                    align: 'center',
                     children: [
                       { 
                         title: '比例', 
                         dataIndex: 'companyRate',
+                        align: 'center',
+                        width: 80,
                         render: (value: number) => (value * 100).toFixed(1) + '%'
                       },
                       { 
                         title: '金额', 
                         dataIndex: 'companyAmount',
+                        align: 'right',
+                        width: 100,
                         render: (value: number) => value.toFixed(2)
                       }
                     ]
@@ -337,6 +358,8 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                   { 
                     title: '合计', 
                     dataIndex: 'total',
+                    align: 'right',
+                    width: 120,
                     render: (value: number) => value.toFixed(2)
                   }
                 ]}
@@ -344,6 +367,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                 pagination={false}
                 className="detail-table"
                 border={{ wrapper: true, cell: true }}
+                size="small"
               />
             </TabPane>
           </Tabs>

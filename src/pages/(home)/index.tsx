@@ -5,6 +5,7 @@ import { IContent, IContentListRequest, IContentListResponse } from '@/types/art
 import { toastMessage } from '@/components/toast';
 import UserProfile from '@/components/profile/UserProfile';
 import { useDisclosure } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -14,6 +15,7 @@ const Home: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectValue, setSelectValue] = useState<string>('');
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   // 招聘季节数据
   const recruitmentSeasons = [
@@ -213,7 +215,7 @@ const Home: React.FC = () => {
 
           {/* 左侧文章列表 */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="h-full bg-white rounded-lg border border-gray-200 p-6">
               {/* 搜索框 */}
               <div className="mb-6">
                 <Input.Search
@@ -231,7 +233,7 @@ const Home: React.FC = () => {
               </div>
 
               {/* 文章列表 */}
-              <div className="space-y-3">
+              <div className="space-y-3 ">
                 {filteredArticles.map((article) => (
                   <Card
                     key={article.id}
@@ -430,14 +432,13 @@ const Home: React.FC = () => {
                     <Result
                     status='404'
                     subTitle='未填写个人公司信息，或公司暂无校友'
-                    // extra={[
-                    //   <Button key='again' style={{ margin: '0 16px' }}>
-                    //     去填写
-                    //   </Button>,
-                    //   <Button key='back' type='primary'>
-                    //     去查看
-                    //   </Button>,
-                    // ]}
+                    extra={
+                     <Text className='text-blue-500 cursor-pointer' onClick={() => {
+                      navigate('/profile')
+                     }}>
+                      前往填写
+                     </Text>
+                    }
                   ></Result>
                   )}
                 </div>

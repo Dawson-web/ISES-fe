@@ -113,12 +113,8 @@
   height: auto !important;
   padding: 12px !important;
   text-align: left !important;
-  background: #f7f8fa !important;
+  /* background: #f7f8fa !important; */
   border: none !important;
-}
-
-.tool-button:hover {
-  background: #f2f3f5 !important;
 }
 
 .button-content {

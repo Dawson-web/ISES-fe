@@ -4,6 +4,8 @@ import { IconRight } from '@arco-design/web-react/icon';
 import SalaryCalculator from '@/components/salary-calculator';
 import salaryGIF from '@/assets/salary.gif';
 import './style.css';
+import { Tabs, Typography } from '@arco-design/web-react';
+const TabPane = Tabs.TabPane;
 
 interface CompanySchedule {
   id: number;
@@ -105,6 +107,8 @@ const mockData: CompanySchedule[] = [
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('发动态');
+
 
   const columns = [
     {
@@ -179,17 +183,15 @@ const Info = () => {
 
   return (
     <div className="info-container">
-      <div className="header">
-        <div className="tabs">
-          <div className="tab">公司爆料</div>
-          <div className="tab">内推爆料</div>
-          <div className="tab">薪资爆料</div>
-          <div className="tab">校友爆料</div>
-        </div>
-        <Button type="text" className="more-link">
-          查看更多 <IconRight />
-        </Button>
-      </div>
+      <Tabs
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        className="article-tabs"
+      >
+        <TabPane key="发动态" title={<span className="px-2">发动态</span>} />
+        <TabPane key="写文章" title={<span className="px-2">写文章</span>} />
+        <TabPane key="发内推" title={<span className="px-2">发内推</span>} />
+      </Tabs>
 
       <div className="search-box">
         <div className="search-wrapper">
@@ -209,10 +211,13 @@ const Info = () => {
         <div className="tool-box">
           <div className="tool-title">求职工具箱</div>
           <div className="tool-buttons">
-            <Button className="tool-button" onClick={() => setCalculatorVisible(true)}>
+            <Button
+              className="tool-button"
+              onClick={() => setCalculatorVisible(true)}
+            >
               <div className="button-content">
-                <span>查薪资</span>
-                <span className="highlight">·数万牛人真实分享通通领先</span>
+                <span className=' font-bold '>查薪资</span>
+                <span className="">在线计算真实到手薪资💰</span>
                 <img src={salaryGIF} alt="salary" className="tool-icon w-20 h-20 absolute right-0 top-0" />
               </div>
             </Button>
