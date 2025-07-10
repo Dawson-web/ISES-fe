@@ -5,6 +5,7 @@ import SalaryCalculator from '@/components/salary-calculator';
 import salaryGIF from '@/assets/salary.gif';
 import './style.css';
 import { Tabs, Typography } from '@arco-design/web-react';
+import { title } from 'process';
 const TabPane = Tabs.TabPane;
 
 interface CompanySchedule {
@@ -136,49 +137,60 @@ const Info = () => {
       ),
     },
     {
-      title: '网申',
-      dataIndex: 'online',
-      render: (online: CompanySchedule['online']) => (
+      title:'工作地点',
+      dataIndex: 'location',
+      render: (location: string) => (
         <div className="schedule-cell">
-          <div>{online.date}</div>
-          {online.link && (
-            <Button type="text" className="link-button">
-              {online.link}
-            </Button>
-          )}
+          <div>{location}</div>
         </div>
       ),
     },
     {
-      title: '笔试',
-      dataIndex: 'written',
-      render: (written: CompanySchedule['written']) => (
+      title:'招聘类型',
+      dataIndex: 'type',
+      render: (type: string) => (
         <div className="schedule-cell">
-          <div>{written.date}</div>
-          {written.note && <div className="note">{written.note}</div>}
+          <div>{type}</div>
         </div>
       ),
     },
     {
-      title: '面试',
-      dataIndex: 'interview',
-      render: (interview: CompanySchedule['interview']) => (
+      title:'招聘对象',
+      dataIndex: 'object',
+      render: (object: string) => (
         <div className="schedule-cell">
-          <div>{interview.date}</div>
-          {interview.note && <div className="note">{interview.note}</div>}
+          <div>{object}</div>
         </div>
       ),
     },
     {
-      title: 'offer',
-      dataIndex: 'offer',
-      render: (offer: CompanySchedule['offer']) => (
+      title:'岗位',
+      dataIndex: 'job',
+      render: (job: string) => (
         <div className="schedule-cell">
-          <div>{offer.date}</div>
-          {offer.note && <div className="note">{offer.note}</div>}
+          <div>{job}</div>
         </div>
       ),
     },
+    {
+      title:'更新时间',
+      dataIndex: 'time',
+      render: (time: string) => (
+        <div className="schedule-cell">
+          <div>{time}</div>
+        </div>
+      ),
+    },
+    {
+      title:'投递链接',
+      dataIndex: 'link',
+      render: (link: string) => (
+        <div className="schedule-cell">
+          <div>{link}</div>
+        </div>
+      ),
+    }
+
   ];
 
   return (

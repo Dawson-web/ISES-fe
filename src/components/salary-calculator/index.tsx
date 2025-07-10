@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Modal, Input, Select, Button, Radio, InputNumber, Table, Tabs } from '@arco-design/web-react';
 import { IconEye } from '@arco-design/web-react/icon';
-import './style.css';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -85,7 +84,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: base * 0.08,
         companyRate: 0.16,
         companyAmount: base * 0.16,
-        total: base * (0.08 + 0.16)
+        total: Number((base * (0.08 + 0.16)).toFixed(2))
       },
       {
         name: '医疗保险',
@@ -94,7 +93,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: base * 0.02 + 3, // 包含大病医疗3元
         companyRate: 0.09,
         companyAmount: base * 0.09,
-        total: base * (0.02 + 0.09) + 3
+        total: Number((base * (0.02 + 0.09) + 3).toFixed(2))
       },
       {
         name: '失业保险',
@@ -103,7 +102,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: base * 0.002,
         companyRate: 0.008,
         companyAmount: base * 0.008,
-        total: base * (0.002 + 0.008)
+        total: Number((base * (0.002 + 0.008)).toFixed(2))
       },
       {
         name: '工伤保险',
@@ -112,7 +111,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: 0,
         companyRate: 0.004, // 假设为中等风险行业
         companyAmount: base * 0.004,
-        total: base * 0.004
+        total: Number((base * 0.004).toFixed(2))
       },
       {
         name: '生育保险',
@@ -121,7 +120,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: 0,
         companyRate: 0.008,
         companyAmount: base * 0.008,
-        total: base * 0.008
+        total: Number((base * 0.008).toFixed(2))
       },
       {
         name: '住房公积金',
@@ -130,7 +129,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
         personalAmount: base * Number(housingRate) / 100,
         companyRate: Number(housingRate) / 100,
         companyAmount: base * Number(housingRate) / 100,
-        total: base * Number(housingRate) / 50
+        total: Number((base * Number(housingRate) / 50).toFixed(2))
       }
     ];
     return details;
@@ -151,19 +150,19 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     const details = calculateInsuranceDetails(salary);
     
     // 计算社保公积金总额
-    const totalInsurance = details.reduce((sum, item) => sum + item.personalAmount, 0);
+    const totalInsurance = Number(details.reduce((sum, item) => sum + item.personalAmount, 0).toFixed(2));
     
     // 计算应纳税所得额
-    const taxableIncome = salary - totalInsurance - TAX_THRESHOLD;
+    const taxableIncome = Number((salary - totalInsurance - TAX_THRESHOLD).toFixed(2));
     
     // 计算个税
-    const taxAmount = calculateTax(Math.max(0, taxableIncome));
+    const taxAmount = Number(calculateTax(Math.max(0, taxableIncome)).toFixed(2));
 
     setInsuranceDetails(details);
-    setSocialInsurance(totalInsurance - details[5].personalAmount); // 不包含公积金
-    setHousingFund(details[5].personalAmount);
+    setSocialInsurance(Number((totalInsurance - details[5].personalAmount).toFixed(2))); // 不包含公积金
+    setHousingFund(Number(details[5].personalAmount.toFixed(2)));
     setTax(taxAmount);
-    setAfterTaxMonthly(salary - totalInsurance - taxAmount);
+    setAfterTaxMonthly(Number((salary - totalInsurance - taxAmount).toFixed(2)));
   };
 
   return (
@@ -172,48 +171,55 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
       visible={visible}
       onCancel={onClose}
       footer={null}
-      className="salary-calculator-modal"
+      className="w-[80vw] min-w-[360px] max-h-4/5 flex  gap-5 p-5  flex-col  md:flex-row overflow-auto "
     >
-      <div className="calculator-container">
-        <div className="result-section">
-          <div className="total-amount">
-            <span className="label">税后月薪</span>
-            <span className="value">¥ {afterTaxMonthly.toFixed(1)}</span>
+      <div className="flex flex-col md:flex-row  overflow-auto">
+        {/* 左侧结果区域 */}
+        <div className="min-w-[280px] p-6 rounded-lg">
+          <div className="text-center mb-5">
+            <span className="block text-base text-gray-600 mb-2">税后月薪</span>
+            <span className="text-3xl font-bold ">¥ {afterTaxMonthly.toFixed(1)}</span>
           </div>
-          <div className="detail-items">
-            <div className="detail-item">
-              <span>个人所得税</span>
-              <span>¥ {tax}</span>
+          <div className="flex flex-col gap-4 ">
+            <div className="bg-white p-4 rounded-lg flex justify-between items-center md:flex-col md:text-center md:p-3">
+              <span className="text-sm text-gray-600">个人所得税</span>
+              <span className="text-lg text-gray-800 font-medium">¥ {tax}</span>
             </div>
-            <div className="detail-item">
-              <span>社保缴纳</span>
-              <span>¥ {socialInsurance}</span>
+            <div className="bg-white p-4 rounded-lg flex justify-between items-center md:flex-col md:text-center md:p-3">
+              <span className="text-sm text-gray-600">社保缴纳</span>
+              <span className="text-lg text-gray-800 font-medium">¥ {socialInsurance}</span>
             </div>
-            <div className="detail-item">
-              <span>公积金缴纳</span>
-              <span>¥ {housingFund}</span>
+            <div className="bg-white p-4 rounded-lg flex justify-between items-center md:flex-col md:text-center md:p-3">
+              <span className="text-sm text-gray-600">公积金缴纳</span>
+              <span className="text-lg text-gray-800 font-medium">¥ {housingFund}</span>
             </div>
           </div>
         </div>
 
-        <div className="input-section">
-          <Tabs activeTab={activeTab} onChange={setActiveTab}>
+        {/* 右侧表单区域 */}
+        <div className="flex-1 ">
+          <Tabs activeTab={activeTab} onChange={setActiveTab} className="h-full flex flex-col">
             <TabPane key="result" title="基本信息">
-              <div className="input-group">
-                <div className="input-group-title">基本信息</div>
-                <div className="input-row">
-                  <div className="input-item">
-                    <div className="label">税前月薪</div>
+              <div className="mb-6">
+                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">基本信息</div>
+                <div className="grid grid-cols-2 gap-4 mb-4 ">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">税前月薪</div>
                     <Input
                       placeholder="请输入月薪"
                       value={preTaxSalary}
                       onChange={setPreTaxSalary}
                       suffix={<Button type="text" onClick={handleCalculate}>计算</Button>}
+                      className="!bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
                     />
                   </div>
-                  <div className="input-item">
-                    <div className="label">工作城市</div>
-                    <Select value={city} onChange={setCity} style={{ width: '100%' }}>
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">工作城市</div>
+                    <Select 
+                      value={city} 
+                      onChange={setCity} 
+                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                    >
                       {cities.map(city => (
                         <Option key={city.value} value={city.value}>
                           {city.label}
@@ -224,43 +230,46 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                 </div>
               </div>
 
-              <div className="input-group">
-                <div className="input-group-title">社保公积金</div>
-                <div className="input-row">
-                  <div className="input-item">
-                    <div className="label">
+              <div className="mb-6">
+                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">社保公积金</div>
+                <div className="grid grid-cols-2 gap-4 mb-4 ">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2 flex items-center">
                       社保缴纳类型
-                      <IconEye className="info-icon" />
+                      <IconEye className="ml-1 text-[#86909c] cursor-pointer" />
                     </div>
-                    <Select defaultValue="standard" style={{ width: '100%' }}>
+                    <Select 
+                      defaultValue="standard" 
+                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                    >
                       <Option value="standard">按照工资</Option>
                       <Option value="base">按照基数</Option>
                     </Select>
                   </div>
-                  <div className="input-item">
-                    <div className="label">社保缴纳基数</div>
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">社保缴纳基数</div>
                     <InputNumber
                       value={socialBase}
                       onChange={val => setSocialBase(String(val))}
-                      style={{ width: '100%' }}
+                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
                     />
                   </div>
                 </div>
-                <div className="input-row">
-                  <div className="input-item">
-                    <div className="label">公积金缴纳基数</div>
+                <div className="grid grid-cols-2 gap-4 mb-4 ">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">公积金缴纳基数</div>
                     <InputNumber
                       value={housingBase}
                       onChange={val => setHousingBase(String(val))}
-                      style={{ width: '100%' }}
+                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
                     />
                   </div>
-                  <div className="input-item">
-                    <div className="label">公积金缴纳比例</div>
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">公积金缴纳比例</div>
                     <Select
                       value={housingRate}
                       onChange={setHousingRate}
-                      style={{ width: '100%' }}
+                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
                     >
                       <Option value="12">12%</Option>
                       <Option value="10">10%</Option>
@@ -270,26 +279,27 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                 </div>
               </div>
 
-              <div className="input-group">
-                <div className="input-group-title">年终奖</div>
-                <div className="input-row">
-                  <div className="input-item">
-                    <div className="label">计税方式</div>
+              <div className="mb-6">
+                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">年终奖</div>
+                <div className="flex">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">计税方式</div>
                     <RadioGroup value={taxType} onChange={setTaxType}>
                       <Radio value="separate">单独计税</Radio>
                       <Radio value="together">并入年薪</Radio>
                     </RadioGroup>
                   </div>
                 </div>
-                <div className="input-row">
-                  <div className="input-item">
-                    <div className="label">年终奖倍数</div>
-                    <div className="bonus-section">
+                <div className="flex">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">年终奖倍数</div>
+                    <div className="flex gap-2 flex-wrap">
                       {bonusMultiples.map(multiple => (
                         <Button
                           key={multiple}
                           type={bonus === String(multiple) ? 'primary' : 'default'}
                           onClick={() => setBonus(String(multiple))}
+                          className="flex-1 min-w-[60px] !border-[#E5E6EB] !text-[#4E5969] hover:!border-[#165DFF] hover:!text-[#165DFF]"
                         >
                           ×{multiple}
                         </Button>
@@ -365,7 +375,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                 ]}
                 data={insuranceDetails}
                 pagination={false}
-                className="detail-table"
+                className="mt-4 rounded-lg overflow-hidden [&_.arco-table-th]:!bg-gradient-to-br [&_.arco-table-th]:!from-[#f6f9fe] [&_.arco-table-th]:!to-[#f0f4f9] [&_.arco-table-th]:!font-medium [&_.arco-table-th]:!text-[#1D2129] [&_.arco-table-th]:!h-12 [&_.arco-table-th]:!p-3 [&_.arco-table-th]:!text-sm [&_.arco-table-td]:!h-13 [&_.arco-table-td]:!p-3 [&_.arco-table-td]:!text-[#4E5969] [&_.arco-table-td]:!text-sm [&_.arco-table-td]:!transition-all [&_.arco-table-tr:hover_.arco-table-td]:!bg-[#F2F3F5] [&_.arco-table-border]:!border [&_.arco-table-border]:!border-[#E5E6EB] [&_.arco-table-border]:!rounded-lg [&_.arco-table-border-cell_.arco-table-th]:!border-r [&_.arco-table-border-cell_.arco-table-th]:!border-[#E5E6EB] [&_.arco-table-border-cell_.arco-table-td]:!border-r [&_.arco-table-border-cell_.arco-table-td]:!border-[#E5E6EB] [&_.arco-table-tr:last-child_.arco-table-td]:!border-b-0 [&_.arco-table-td[style*='text-align:_right']]:!font-['Roboto_Mono'] [&_.arco-table-td[style*='text-align:_right']]:!font-medium [&_.arco-table-td[style*='text-align:_right']]:!text-[#1D2129] [&_.arco-table-td[style*='text-align:_center']]:!text-[#86909C] [&_.arco-table-td:last-child]:!text-[#165DFF] [&_.arco-table-td:last-child]:!font-medium [&_.arco-table-header-group]:!bg-gradient-to-br [&_.arco-table-header-group]:!from-[#f6f9fe] [&_.arco-table-header-group]:!to-[#f0f4f9] [&_.arco-table-header-group_.arco-table-th]:!bg-transparent [&_.arco-table-header-group_.arco-table-th]:!h-10 [&_.arco-table-header-group_.arco-table-th]:!font-semibold [&_.arco-table-header-group_.arco-table-th]:!text-[#1D2129] [&_.arco-table-cell]:!flex [&_.arco-table-cell]:!items-center [&_.arco-table-cell]:!justify-start [&_.arco-table-cell[style*='text-align:_right']]:!justify-end [&_.arco-table-cell[style*='text-align:_center']]:!justify-center [&_.arco-table-tr:nth-child(even)_.arco-table-td]:!bg-[#FAFBFC] [&_.arco-table-tr:hover_.arco-table-td]:!bg-[#F2F3F5]"
                 border={{ wrapper: true, cell: true }}
                 size="small"
               />

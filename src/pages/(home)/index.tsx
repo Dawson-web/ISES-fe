@@ -1,82 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Input, Select, Button, Typography, Space, Avatar, Divider, Card, Tag, Badge, Result } from '@arco-design/web-react';
-import { IconSearch, IconEdit, IconDown, IconEye, IconHeart, IconMessage, IconClockCircle, IconCalendar, IconUser } from '@arco-design/web-react/icon';
-import { IContent, IContentListRequest, IContentListResponse } from '@/types/article';
-import { toastMessage } from '@/components/toast';
-import UserProfile from '@/components/profile/UserProfile';
-import { useDisclosure } from '@mantine/hooks';
-import { useNavigate } from 'react-router-dom';
+import { Input, Button, Typography, Card, Tag, Badge } from '@arco-design/web-react';
+import { IconSearch, IconEye, IconHeart } from '@arco-design/web-react/icon';
+
+import CampusCalander from './components/campuscalander';
+import CompanyAlumni from './components/companyalumni';
 
 const { Title, Text } = Typography;
 
 const Home: React.FC = () => {
-  const [userProfileOpened, { open: openUserProfile, close: closeUserProfile }] = useDisclosure(false);
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [searchValue, setSearchValue] = useState<string>('');
-  const [selectValue, setSelectValue] = useState<string>('');
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
-  const navigate = useNavigate();
-
-  // 招聘季节数据
-  const recruitmentSeasons = [
-    { name: '寒假实习', period: '12月-2月', status: 'past', color: '#86909C' },
-    { name: '春招', period: '3月-5月', status: 'past', color: '#00B42A' },
-    { name: '暑期实习', period: '6月-8月', status: 'current', color: '#3370FF' },
-    { name: '秋招', period: '9月-11月', status: 'future', color: '#FF7D00' },
-  ];
-
-  // 公司校友数据
-  const companyAlumni = [
-    {
-      id: '1',
-      name: '张三',
-      company: '字节跳动',
-      position: '前端工程师',
-      status: 'online' as const,
-      avatar: '👨‍💻'
-    },
-    {
-      id: '2',
-      name: '李四',
-      company: '腾讯',
-      position: '后端工程师',
-      status: 'offline' as const,
-      avatar: '👩‍💻'
-    },
-    {
-      id: '3',
-      name: '王五',
-      company: '阿里巴巴',
-      position: '产品经理',
-      status: 'online' as const,
-      avatar: '👨‍💼'
-    },
-    {
-      id: '4',
-      name: '赵六',
-      company: '美团',
-      position: '算法工程师',
-      status: 'offline' as const,
-      avatar: '👩‍🔬'
-    },
-    {
-      id: '5',
-      name: '钱七',
-      company: '滴滴',
-      position: 'UI设计师',
-      status: 'online' as const,
-      avatar: '🎨'
-    }
-  ];
-
-  // 当前日期判断
-  const getCurrentSeason = () => {
-    const month = new Date().getMonth() + 1;
-    if (month >= 12 || month <= 2) return 0;
-    if (month >= 3 && month <= 5) return 1;
-    if (month >= 6 && month <= 8) return 2;
-    return 3;
-  };
 
   // 文章数据
   const articles = [
@@ -174,22 +107,11 @@ const Home: React.FC = () => {
     setFilteredArticles(filtered);
   };
 
-  // 高亮搜索关键词
-  const highlightSearchTerm = (text: string, searchTerm: string) => {
-    if (!searchTerm) return text;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    return text.replace(regex, '<span class="search-highlight">$1</span>');
-  };
-
   // 初始化显示所有文章
   useEffect(() => {
     setFilteredArticles(articles);
   }, []);
 
-  const handleUserClick = (userId: string) => {
-    setSelectedUserId(userId);
-    openUserProfile();
-  };
 
   const handleArticleClick = (articleId: number) => {
     console.log('查看文章:', articleId);
@@ -199,7 +121,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* 头部 */}
       <div className="bg-white border-b border-gray-200">
-        <div className="flex flex-col px-6 py-2 gap-4">
+        <div className="flex flex-col px-6 py-2">
           <div className="flex items-center justify-between w-full">
             <div className="text-2xl font-bold">Aigei</div>
             <Button type="primary" size="small" className="ml-2">发布文章</Button>
@@ -304,158 +226,11 @@ const Home: React.FC = () => {
           </div>
           {/* 右侧时间轴 */}
           <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-4">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              {/* 招聘季节进度条 */}
-              <div className="mb-4">
-                <div className="flex items-center mb-4">
-                  <IconCalendar className="mr-2 text-blue-500" />
-                  <Text className="font-medium text-gray-900">招聘季节</Text>
-                </div>
-
-                {/* 桌面端垂直时间轴 */}
-                <div className="block ">
-                  {recruitmentSeasons.map((season, index) => (
-                    <div key={season.name} className="flex items-start timeline-node">
-                      <div className="flex flex-col items-center mr-4 mt-0.5">
-                        <div
-                          className={`w-3 h-3 rounded-full transition-all duration-500 ${season.status === 'current'
-                            ? 'bg-blue-500 ring-4 ring-blue-200 timeline-current'
-                            : season.status === 'past'
-                              ? 'bg-gray-400'
-                              : 'bg-gray-200'
-                            }`}
-                        />
-                        {index < recruitmentSeasons.length - 1 && (
-                          <div className={`w-0.5 h-10 mt-2 ${index < getCurrentSeason() ? 'bg-blue-300' : 'bg-gray-200'
-                            }`} />
-                        )}
-                      </div>
-                      <div className="flex-1 -mt-0.5 flex justify-between">
-                        <Text className={`font-medium transition-colors leading-tight ${season.status === 'current' ? 'text-blue-600' : 'text-gray-900'
-                          }`}>
-                          {season.name}
-                        </Text>
-                        <Text className="text-xs text-gray-500 mt-0.5 leading-tight">{season.period}</Text>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* 快速导航 */}
-              <div className="space-y-2">
-                <Button type="primary" long>
-                  内推详情
-                </Button>
-                <Button type="secondary" long>
-                  公司爆料
-                </Button>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1">
-              {/* 公司校友列表 */}
-              <div className="mb-4">
-                <div className="flex items-center mb-4">
-                  <IconUser className="mr-2 text-green-500" />
-                  <Text className="font-medium text-gray-900">公司校友</Text>
-                </div>
-
-                {/* 校友列表 */}
-                <div className="space-y-3">
-                  {companyAlumni.length === 0 && companyAlumni.slice(0, 3).map((alumni) => (
-                    <>
-                      <div
-                        key={alumni.id}
-                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => handleUserClick(alumni.id)}
-                        style={{ border: '1px solid transparent' }}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Avatar size={32} style={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            fontWeight: 'bold'
-                          }}>
-                            {alumni.name.charAt(0)}
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <Text className="font-medium text-gray-900 text-sm truncate">
-                              {alumni.name}
-                            </Text>
-                            <Text className="text-xs text-gray-500 truncate">
-                              {alumni.company} · {alumni.position}
-                            </Text>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Tag
-                            size="small"
-                            color={alumni.status === 'online' ? 'green' : 'gray'}
-                            style={{
-                              borderRadius: '12px',
-                              padding: '2px 8px',
-                              fontSize: '10px'
-                            }}
-                          >
-                            {alumni.status === 'online' ? '在线' : '离线'}
-                          </Tag>
-                          <Button
-                            type="text"
-                            size="mini"
-                            icon={<IconMessage />}
-                            className="text-gray-400 hover:text-blue-500"
-                            style={{
-                              borderRadius: '6px',
-                              padding: '4px'
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-4 text-center">
-                        <Button
-                          type="text"
-                          size="small"
-                          className="text-blue-500 hover:text-blue-600"
-                          style={{
-                            borderRadius: '8px',
-                            padding: '8px 16px',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          查看全部校友 →
-                        </Button>
-                      </div>
-                    </>
-                  ))}
-                  {companyAlumni.length >= 0 && (
-                    <Result
-                    status='404'
-                    subTitle='未填写个人公司信息，或公司暂无校友'
-                    extra={
-                     <Text className='text-blue-500 cursor-pointer' onClick={() => {
-                      navigate('/profile')
-                     }}>
-                      前往填写
-                     </Text>
-                    }
-                  ></Result>
-                  )}
-                </div>
-
-
-              </div>
-            </div>
+            <CampusCalander />
+            <CompanyAlumni />
           </div>
         </div>
       </div>
-
-      {/* 用户资料弹窗 */}
-      <UserProfile
-        opened={userProfileOpened}
-        close={closeUserProfile}
-        userInfoId={selectedUserId}
-      />
     </div>
   );
 };
