@@ -14,7 +14,7 @@ const MenuItem = Menu.Item;
 
 const menuList = [
   {
-    key: '/',
+    key: '/navigation',
     icon: <Compass size={16} />,
     label: '首页',
   },

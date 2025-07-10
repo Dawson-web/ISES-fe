@@ -16,6 +16,7 @@ export type Path =
   | `/components/companyalumni`
   | `/info`
   | `/login`
+  | `/navigation`
   | `/profile`
   | `/profile/user-list`
   | `/register`
