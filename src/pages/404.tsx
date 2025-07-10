@@ -24,7 +24,7 @@ const Page = () => {
                 <p className="text-gray-500 sm:text-xl text-base mt-4">
                     你迷失在了神秘的角落，让小黑带你回家吧
                 </p>
-                <Button className=" font-bold text-lg mt-4 cursor-pointer text-theme_blue">前往异世界 -&gt; 🚪</Button>
+                <Button className=" font-bold text-lg mt-4 cursor-pointer text-theme_blue" onClick={() => location.pathname = '/'}>前往异世界 -&gt; 🚪</Button>
             </div>
         </div>
     )

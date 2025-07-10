@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Layout, Menu, Avatar, Message, Tag } from '@arco-design/web-react';
-import { IconHome, IconEdit, IconFindReplace, IconCaretRight, IconCaretLeft, IconMessage, IconCommon, IconEye } from '@arco-design/web-react/icon';
+import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
@@ -9,12 +9,11 @@ import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, Pencil
 
 const Sider = Layout.Sider;
 const Content = Layout.Content;
-const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
 
 const menuList = [
   {
-    key: '/navigation',
+    key: '/',
     icon: <Compass size={16} />,
     label: '首页',
   },
@@ -91,7 +90,7 @@ const _Layout = () => {
           }
         >
           <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
-            navigate('/profile');
+            navigate('/navigator/profile');
           }}>
             <Avatar size={collapsed ? 28 : 32}>A</Avatar>
           </div>
@@ -100,7 +99,7 @@ const _Layout = () => {
             key={item.key} 
             className='text-md flex items-center justify-between gap-2 h-10' 
             onClick={() => {
-              navigate(`${item.key}`);
+              navigate(`/navigator${item.key}`);
             }}>
               <div className='flex items-center gap-4'>
                 {item.icon}
