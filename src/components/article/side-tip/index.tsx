@@ -1,8 +1,8 @@
 import { Badge, Button, Card } from "@mantine/core";
 import MarkDownLogo from "./MarkDownLogo";
 import { FC, PropsWithChildren, useEffect, useRef } from "react";
-import { IArticleFiled } from "@/types/article";
-import { addArticle } from "@/service/article";
+import { IArticleForm } from "@/types/article";
+import { createArticle } from "@/service/article";
 import { Editor } from "@tiptap/react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ const TipContainer: FC<PropsWithChildren> = ({ children }) => {
 };
 
 interface SideTipProps {
-  article: IArticleFiled;
+  article: IArticleForm;
   editor: Editor;
   className?: string;
 }
@@ -54,9 +54,9 @@ const SideTip: FC<SideTipProps> = ({ article, editor, className }) => {
   const handlePublish = async () => {
     if (vertify()) {
       try {
-        const res = await addArticle({ ...article, content: editor.getHTML() });
-        isPosted.current = true;
-        navigate(`/home/article?id=${res.data.data.id}`);
+        // const res = await addArticle({ ...article, content: editor.getHTML() });
+        // isPosted.current = true;
+        // navigate(`/home/article?id=${res.data.data.id}`);
         toastMessage.success("发布成功");
       } catch (error) {
         toastMessage.error(String(error));

@@ -21,7 +21,6 @@ import {
 import { Editor } from "@tiptap/react";
 import { ReactElement } from "react";
 import { toast } from "sonner";
-import { uploadImage } from "@/service/article";
 import { apiConfig } from "@/config";
 import { toastMessage } from "@/components/toast";
 
@@ -166,15 +165,15 @@ const getFloatMenuItemGroups = (editor: Editor) => {
                 const formData = new FormData();
                 formData.append("file", file);
 
-                uploadImage(formData).then((res) => {
-                  editor
-                    .chain()
-                    .focus()
-                    .setImage({
-                      src: apiConfig.baseUrl + res.data.data.path,
-                    })
-                    .run();
-                });
+                // uploadImage(formData).then((res) => {
+                //   editor
+                //     .chain()
+                //     .focus()
+                //     .setImage({
+                //       src: apiConfig.baseUrl + res.data.data.path,
+                //     })
+                //     .run();
+                // });
               } else {
                 toastMessage.error("只能上传图片文件");
               }

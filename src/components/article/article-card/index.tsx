@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Avatar, Tag, Space, Button, Typography } from '@arco-design/web-react';
+import {  Avatar, Typography } from '@arco-design/web-react';
 import { IconHeart, IconMessage, IconStar, IconEye, IconSchedule, IconUser } from '@arco-design/web-react/icon';
 import { IContent } from '@/types/article';
 
@@ -47,7 +47,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     metadata,
     creator,
     createdAt,
-    updatedAt
   } = content;
 
   const {
@@ -58,7 +57,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     likeCount = 0,
     commentCount = 0,
     readTime = 0,
-    featured = false,
     rating = 0
   } = metadata;
 
@@ -142,7 +140,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
           {/* 标签 */}
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-              {tags.slice(0, 3).map((tag) => (
+              {tags.slice(0, 3).map((tag: string) => (
                 <span 
                   key={tag} 
                   className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"

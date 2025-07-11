@@ -2,8 +2,9 @@ import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import FloatMenu from "@/components/editor/FloatMenu";
 import MenuBar from "@/components/editor/MenuBar";
 import { toastMessage } from "@/components/toast";
-import { updateArticle } from "@/service/article";
-import { IUpdateArticleRequest } from "@/types/article";
+import { IArticleForm } from "@/types/article";
+// import { updateArticle } from "@/service/article";
+// import { IUpdateArticleRequest } from "@/types/article";
 import {
   Badge,
   Button,
@@ -44,20 +45,20 @@ const ArticlePreview: FC<IProps> = ({
   const editorRef = useRef(null);
 
   const articleId = searchParams.get("id") as string;
-  const [form, setForm] = useState<IUpdateArticleRequest>({
+  const [form, setForm] = useState<IArticleForm>({
     title: title || "",
     type: title || "",
     content: "",
-    articleId,
+    // articleId,
   });
 
   const handleUpdate = async () => {
     try {
-      const data: IUpdateArticleRequest = {
-        ...form,
-        content: editor.getHTML(),
-      };
-      await updateArticle(data);
+      // const data: IUpdateArticleRequest = {
+      //   ...form,
+      //   content: editor.getHTML(),
+      // };
+      // await updateArticle(data);
       toastMessage.success("短文更新成功");
     } catch (e) {
       console.log(e);
@@ -103,8 +104,8 @@ const ArticlePreview: FC<IProps> = ({
               <Select
                 label="类型"
                 placeholder="Pick value"
-                defaultValue={type}
-                onChange={(e) => setForm({ ...form, type: e })}
+                defaultValue={type || "日常"}
+                onChange={(e) => setForm({ ...form, type: e || "日常" })}
                 data={["日常", "分享", "感悟", "学习"]}
               />
             </div>

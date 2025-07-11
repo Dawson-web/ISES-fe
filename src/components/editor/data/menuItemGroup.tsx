@@ -166,15 +166,15 @@ const getMenuItemGroups = (editor: Editor) => {
                 const formData = new FormData();
                 formData.append("file", file);
 
-                uploadImage(formData).then((res) => {
-                  editor
-                    .chain()
-                    .focus()
-                    .setImage({
-                      src: apiConfig.baseUrl + res.data.data.path,
-                    })
-                    .run();
-                });
+                // uploadImage(formData).then((res) => {
+                //   editor
+                //     .chain()
+                //     .focus()
+                //     .setImage({
+                //       src: apiConfig.baseUrl + res.data.data.path,
+                //     })
+                //     .run();
+                // });
               } else {
                 toastMessage.error("只能上传图片文件");
               }
