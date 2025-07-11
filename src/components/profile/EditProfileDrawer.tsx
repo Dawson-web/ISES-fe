@@ -6,7 +6,6 @@ import {
   Button,
   Upload,
   Avatar,
-  Space,
   Divider,
   Message,
   Select,
@@ -25,7 +24,7 @@ interface EditProfileDrawerProps {
 interface FormItemConfig {
   label: string;
   field: string;
-  type: "input" | "textarea" | "select";
+  type: "input" | "textarea" | "select" | "multiSelect";
   required?: boolean;
   placeholder?: string;
   rules?: any[];
@@ -33,7 +32,7 @@ interface FormItemConfig {
   showWordLimit?: boolean;
   autoSize?: { minRows: number; maxRows: number };
 }
-const GradeOptions = ["大一", "大二", "大三", "毕业"];
+const GradeOptions = ["大一", "大二", "大三", "大四", "研究生", "博士","毕业"];
 // 表单项配置数据
 const formItemConfigs: FormItemConfig[] = [
   {
@@ -75,14 +74,14 @@ const formItemConfigs: FormItemConfig[] = [
   {
     label: "技术方向",
     field: "techDirection",
-    type: "input",
-    placeholder: "请输入技术方向，用逗号分隔，如：前端开发,全栈开发",
+    type: "multiSelect",
+    placeholder: "请输入技术方向，按回车确认",
   },
   {
     label: "兴趣圈子",
     field: "circles",
-    type: "input",
-    placeholder: "请输入兴趣圈子，用逗号分隔，如：技术圈,产品圈",
+    type: "multiSelect",
+    placeholder: "请输入兴趣圈子，按回车确认",
   },
 ];
 
@@ -158,7 +157,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(userInfo.avatar || "");
-  const [companies, setCompanies] = useState<ICompany[]>([]);
+  const [companies, setCompanies] = useState<ICompany[]>(userInfo.company || []);
 
   useEffect(() => {
     if (visible && userInfo) {
@@ -168,8 +167,8 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         school: userInfo.school,
         major: userInfo.major,
         grade: userInfo.grade,
-        techDirection: userInfo.techDirection,
-        circles: userInfo.circles,
+        techDirection: Array.isArray(userInfo.techDirection) ? userInfo.techDirection : [],
+        circles: Array.isArray(userInfo.circles) ? userInfo.circles : [],
       });
       setAvatarUrl(userInfo.avatar || "");
       setCompanies(userInfo.company || []);
@@ -189,8 +188,8 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         school: values.school,
         major: values.major,
         grade: values.grade,
-        techDirection: values.techDirection?.split(",").map((v) => v.trim()),
-        circles: values.circles?.split(",").map((v) => v.trim()),
+        techDirection: values.techDirection || [],
+        circles: values.circles || [],
         avatar: avatarUrl,
         company: companies,
         updatedAt: new Date(),
@@ -276,6 +275,13 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
           />
         ) : type === "select" ? (
           <Select options={GradeOptions.map((v) => ({ label: v, value: v }))} />
+        ) : type === "multiSelect" ? (
+          <Select
+            mode="multiple"
+            placeholder={placeholder}
+            allowCreate
+            allowClear
+          />
         ) : null}
       </Form.Item>
     );

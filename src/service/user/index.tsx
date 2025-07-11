@@ -11,21 +11,6 @@ export const getUserInfo = async () => {
 };
 
 export const updateUserInfo = async (data: IUpdateUserForm) => {
-  //const formBody = new URLSearchParams();
-  //Object.entries(data).forEach(([key, value]) => {
-  //if (value !== undefined && value !== null) {
-  // formBody.append(key, String(value));
-  //}
-  //});
-  //return await $axios.post<ApiOk<IUserFormData>>(
-  //"/user/info-update",
-  //formBody,
-  //{
-  //headers: {
-  //"Content-Type": "application/x-www-form-urlencoded",
-  //},
-  //}
-  //);
   return await $axios.post<ApiOk<IUserFormData>>("/user/info-update", data);
 };
 

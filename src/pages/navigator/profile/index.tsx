@@ -29,15 +29,17 @@ const roleMap = {
   2: { text: "管理员", color: "red" },
 };
 const userId = getValidUid();
-console.log("用户的id是" + userId);
+
 export default function Page() {
   const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const queryClient = useQueryClient();
+
   //获取信息
   const { data, isLoading, isError } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getUserInfo().then((res) => res.data.data),
   });
+
   //修改信息
   const { mutate: mutateUserInfo } = useMutation({
     mutationFn: updateUserInfo,
@@ -45,12 +47,12 @@ export default function Page() {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
     },
   });
+  
   //数据获取
   if (isLoading) return <div>加载中...</div>;
   if (isError) return <div>加载失败</div>;
   const userData = data; // 下面 UI 全部用 userData
-  //数据检查
-  console.log(typeof userData.company, userData.company);
+
   //修改信息抽屉
   const handleSaveProfile = (u: IUserInfo) => {
     const {
@@ -75,9 +77,10 @@ export default function Page() {
     });
     setEditDrawerVisible(false);
   };
+
   //渲染标签
   const renderTags = (tagsString?: string[]) => {
-    if (!tagsString) return <Text type="secondary">-</Text>;
+    if (!tagsString || tagsString.length === 0) return <Text type="secondary" className="ml-2">-</Text>;
     return (
       <Space wrap>
         {tagsString.map((tag, index) => (
@@ -96,15 +99,14 @@ export default function Page() {
         <Card
           className="rounded-lg mb-6"
           cover={
-            userData.banner && (
               <div className="max-h-48 overflow-hidden">
                 <Image
-                  src={userData.banner}
+                  src={userData?.banner}
                   alt="用户封面"
                   className="w-full h-full object-contain rounded-lg"
                 />
               </div>
-            )
+            
           }
         >
           <div className="relative">
@@ -114,33 +116,33 @@ export default function Page() {
                   size={80}
                   className="border-4 border-white shadow-lg bg-cover bg-center "
                   style={{
-                    backgroundImage: userData.avatar
+                    backgroundImage: userData?.avatar
                       ? `url(${userData.avatar})`
                       : undefined,
                   }}
                 >
-                  {!userData.avatar && userData.username?.charAt(0)}
+                  {!userData?.avatar && userData?.username?.charAt(0)}
                 </Avatar>
               </div>
 
               <div className="flex-1 pt-2 w-full flex-wrap">
                 <div className="flex items-center gap-3 mb-4">
                   <Title heading={2} style={{ margin: 0 }}>
-                    {userData.username}
+                    {userData?.username}
                   </Title>
                   <Tag
                     color={
-                      roleMap[userData.role as keyof typeof roleMap]?.color ||
+                      roleMap[userData?.role as keyof typeof roleMap]?.color ||
                       "blue"
                     }
                   >
-                    {roleMap[userData.role as keyof typeof roleMap]?.text ||
+                    {roleMap[userData?.role as keyof typeof roleMap]?.text ||
                       "普通用户"}
                   </Tag>
                 </div>
 
                 <Paragraph className="text-gray-600 mb-4">
-                  {userData.introduce || "这个人很懒，什么都没有留下..."}
+                  {userData?.introduce || "这个人很懒，什么都没有留下..."}
                 </Paragraph>
 
                 <div className="flex gap-2 flex-wrap">
@@ -167,7 +169,7 @@ export default function Page() {
           <Col span={24}>
             <Card title="实习经历" className="mb-6 rounded-lg">
               <div className="flex flex-col gap-4">
-                {userData.company?.map((item) => (
+                {userData?.company?.map((item) => (
                   <div className="space-y-4">
                     {/* 公司基本信息 */}
                     <div className="border-l-4 border-blue-500 pl-4">
@@ -187,7 +189,7 @@ export default function Page() {
                     </div>
                   </div>
                 ))}
-                {userData.company?.length === 0 && (
+                {userData?.company?.length === 0 && (
                   <Text type="secondary" className="text-center">
                     暂无实习经历
                   </Text>
@@ -204,23 +206,23 @@ export default function Page() {
                 data={[
                   {
                     label: "学校",
-                    value: userData.school || "-",
+                    value: userData?.school || "-",
                   },
                   {
                     label: "专业",
-                    value: userData.major || "-",
+                    value: userData?.major || "-",
                   },
                   {
                     label: "年级",
-                    value: userData.grade || "-",
+                    value: userData?.grade || "-",
                   },
                   {
                     label: "在职公司",
-                    value: userData.currentCompany?.name || "-",
+                    value: userData?.currentCompany?.name || "-",
                   },
                   {
                     label: "在职职位",
-                    value: userData.currentCompany?.position || "-",
+                    value: userData?.currentCompany?.position || "-",
                   },
                 ]}
                 layout="inline-horizontal"
@@ -236,13 +238,13 @@ export default function Page() {
                 <Text className="font-medium text-gray-600 mb-2 block">
                   <IconCode /> 技术方向
                 </Text>
-                {renderTags(userData.techDirection)}
+                {renderTags(userData?.techDirection)}
               </div>
               <div>
                 <Text className="font-medium text-gray-600 mb-2 block">
                   <IconBook /> 兴趣圈子
                 </Text>
-                {renderTags(userData.circles)}
+                {renderTags(userData?.circles)}
               </div>
             </Card>
           </Col>
@@ -252,7 +254,7 @@ export default function Page() {
       <EditProfileDrawer
         visible={editDrawerVisible}
         onClose={() => setEditDrawerVisible(false)}
-        userInfo={userData}
+        userInfo={userData as IUserInfo}
         onSave={handleSaveProfile}
       />
     </div>
