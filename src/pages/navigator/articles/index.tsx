@@ -114,7 +114,7 @@ export default function ArticleList() {
     <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#17171A]">
       {/* 头部搜索区域 */}
       <div className="bg-white dark:bg-[#232324] border-b border-[#E5E6E8] dark:border-[#333335] sticky top-0 z-10">
-        <div className="max-w-[1140px] mx-auto px-6 py-3">
+        <div className=" mx-auto px-6 py-3">
           <div className="flex items-center gap-4">
             <Input.Search
               placeholder="搜索感兴趣的内容..."
@@ -144,8 +144,8 @@ export default function ArticleList() {
               type="primary" 
               icon={<IconPlus />} 
               size="large"
-              className="ml-auto shadow-sm !bg-[#1e80ff] hover:!bg-[#1e70ee]"
-              onClick={() => navigate('/home/article/edit')}
+              className="ml-auto shadow-sm "
+              onClick={() => navigate('/navigator/articles/edit')}
             >
               写文章
             </Button>
@@ -154,7 +154,8 @@ export default function ArticleList() {
       </div>
 
       {/* 主体内容区域 */}
-      <div className="max-w-[1140px] mx-auto px-6 py-4 flex gap-6">
+      <div className=" mx-auto px-6 py-4 flex gap-6 md:flex-nowrap flex-wrap">
+        
         {/* 左侧内容区 */}
         <div className="flex-1">
           <Tabs 
