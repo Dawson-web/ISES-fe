@@ -1,21 +1,39 @@
 import { $axios } from "../../api";
 import { ApiOk } from "../../api/types";
-import { IUpdateUserForm, IUserFormData } from "../../types/user";
+import { IUpdateUserForm, IUserFormData, IUserInfo } from "../../types/user";
+import { getValidUid } from "@/api/token";
 
 export const getUserInfo = async () => {
-  return await $axios.get<ApiOk<IUserFormData>>("/user/info");
+  const userId = getValidUid();
+  return await $axios.get<ApiOk<IUserInfo>>("/user/info", {
+    params: { userId },
+  });
 };
 
 export const updateUserInfo = async (data: IUpdateUserForm) => {
+  //const formBody = new URLSearchParams();
+  //Object.entries(data).forEach(([key, value]) => {
+  //if (value !== undefined && value !== null) {
+  // formBody.append(key, String(value));
+  //}
+  //});
+  //return await $axios.post<ApiOk<IUserFormData>>(
+  //"/user/info-update",
+  //formBody,
+  //{
+  //headers: {
+  //"Content-Type": "application/x-www-form-urlencoded",
+  //},
+  //}
+  //);
   return await $axios.post<ApiOk<IUserFormData>>("/user/info-update", data);
 };
 
 export const uploadAvatar = async (formData: FormData) => {
-  return await $axios.post<ApiOk<null>>("/user/upload-avatar", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return await $axios.post<ApiOk<{ avatar: string }>>(
+    "/user/upload-avatar",
+    formData
+  );
 };
 
 export const logOut = async () => {

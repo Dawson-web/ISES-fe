@@ -34,9 +34,9 @@ export interface IUserInfo {
   grade?: string;
   currentCompany?: ICurrentCompany;
   company?: ICompany[];
-  circles?: string;
+  circles?: string[];
   major?: string;
-  techDirection?: string;
+  techDirection?: string[];
   banner?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -56,9 +56,14 @@ export interface IUserFormData {
 }
 
 export interface IUpdateUserForm {
-  username: string;
-  introduce: string;
-  school: string;
+  username?: string;
+  introduce?: string;
+  school?: string;
+  grade?: string | null;
+  company?: ICompany[];
+  circles?: string[] | null;
+  major?: string | null;
+  techDirection?: string[] | null;
 }
 
 export interface IFormContext {
