@@ -1,9 +1,13 @@
 import { $axios } from "../../api";
 import { ApiOk } from "../../api/types";
-import { IUpdateUserForm, IUserFormData } from "../../types/user";
+import { IUpdateUserForm, IUserFormData, IUserInfo } from "../../types/user";
+import { getValidUid } from "@/api/token";
 
 export const getUserInfo = async () => {
-  return await $axios.get<ApiOk<IUserFormData>>("/user/info");
+  const userId = getValidUid();
+  return await $axios.get<ApiOk<IUserInfo>>("/user/info", {
+    params: { userId },
+  });
 };
 
 export const updateUserInfo = async (data: IUpdateUserForm) => {
@@ -11,11 +15,10 @@ export const updateUserInfo = async (data: IUpdateUserForm) => {
 };
 
 export const uploadAvatar = async (formData: FormData) => {
-  return await $axios.post<ApiOk<null>>("/user/upload-avatar", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return await $axios.post<ApiOk<{ avatar: string }>>(
+    "/user/upload-avatar",
+    formData
+  );
 };
 
 export const logOut = async () => {

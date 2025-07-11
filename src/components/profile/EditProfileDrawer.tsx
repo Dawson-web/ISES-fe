@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Drawer,
   Form,
@@ -6,12 +6,12 @@ import {
   Button,
   Upload,
   Avatar,
-  Space,
   Divider,
-  Message
-} from '@arco-design/web-react';
-import { IconPlus, IconCamera, IconDelete } from '@arco-design/web-react/icon';
-import { IUserInfo, ICompany } from '@/types/user';
+  Message,
+  Select,
+} from "@arco-design/web-react";
+import { IconPlus, IconCamera, IconDelete } from "@arco-design/web-react/icon";
+import { IUserInfo, ICompany } from "@/types/user";
 
 interface EditProfileDrawerProps {
   visible: boolean;
@@ -24,7 +24,7 @@ interface EditProfileDrawerProps {
 interface FormItemConfig {
   label: string;
   field: string;
-  type: 'input' | 'textarea';
+  type: "input" | "textarea" | "select" | "multiSelect";
   required?: boolean;
   placeholder?: string;
   rules?: any[];
@@ -32,69 +32,69 @@ interface FormItemConfig {
   showWordLimit?: boolean;
   autoSize?: { minRows: number; maxRows: number };
 }
-
+const GradeOptions = ["大一", "大二", "大三", "大四", "研究生", "博士","毕业"];
 // 表单项配置数据
 const formItemConfigs: FormItemConfig[] = [
   {
-    label: '用户名',
-    field: 'username',
-    type: 'input',
+    label: "用户名",
+    field: "username",
+    type: "input",
     required: true,
-    placeholder: '请输入用户名',
-    rules: [{ required: true, message: '请输入用户名' }]
+    placeholder: "请输入用户名",
+    rules: [{ required: true, message: "请输入用户名" }],
   },
   {
-    label: '个人介绍',
-    field: 'introduce',
-    type: 'textarea',
-    placeholder: '请输入个人介绍',
+    label: "个人介绍",
+    field: "introduce",
+    type: "textarea",
+    placeholder: "请输入个人介绍",
     maxLength: 200,
     showWordLimit: true,
     autoSize: { minRows: 3, maxRows: 6 },
-    rules: [{ maxLength: 200, message: '个人介绍不能超过200字' }]
+    rules: [{ maxLength: 200, message: "个人介绍不能超过200字" }],
   },
   {
-    label: '学校',
-    field: 'school',
-    type: 'input',
-    placeholder: '请输入学校名称'
+    label: "学校",
+    field: "school",
+    type: "input",
+    placeholder: "请输入学校名称",
   },
   {
-    label: '专业',
-    field: 'major',
-    type: 'input',
-    placeholder: '请输入专业名称'
+    label: "专业",
+    field: "major",
+    type: "input",
+    placeholder: "请输入专业名称",
   },
   {
-    label: '年级',
-    field: 'grade',
-    type: 'input',
-    placeholder: '请输入年级，如：2024届'
+    label: "年级",
+    field: "grade",
+    type: "select",
+    placeholder: "选择您的年级",
   },
   {
-    label: '技术方向',
-    field: 'techDirection',
-    type: 'input',
-    placeholder: '请输入技术方向，用逗号分隔，如：前端开发,全栈开发'
+    label: "技术方向",
+    field: "techDirection",
+    type: "multiSelect",
+    placeholder: "请输入技术方向，按回车确认",
   },
   {
-    label: '兴趣圈子',
-    field: 'circles',
-    type: 'input',
-    placeholder: '请输入兴趣圈子，用逗号分隔，如：技术圈,产品圈'
-  }
+    label: "兴趣圈子",
+    field: "circles",
+    type: "multiSelect",
+    placeholder: "请输入兴趣圈子，按回车确认",
+  },
 ];
 
 // 分组配置
 const formSections = [
   {
-    title: '基本信息',
-    fields: ['username', 'introduce', 'school', 'major', 'grade']
+    title: "基本信息",
+    fields: ["username", "introduce", "school", "major", "grade"],
   },
   {
-    title: '技能与兴趣',
-    fields: ['techDirection', 'circles']
-  }
+    title: "技能与兴趣",
+    fields: ["techDirection", "circles"],
+  },
 ];
 
 // 公司表单项配置接口
@@ -109,55 +109,55 @@ interface CompanyFormItemConfig {
 // 公司表单项配置数据
 const companyFormItemConfigs: CompanyFormItemConfig[] = [
   {
-    label: '公司名称',
-    field: 'name',
-    placeholder: '请输入公司名称',
+    label: "公司名称",
+    field: "name",
+    placeholder: "请输入公司名称",
     required: true,
-    gridCol: 1
+    gridCol: 1,
   },
   {
-    label: '职位',
-    field: 'position',
-    placeholder: '请输入职位',
+    label: "职位",
+    field: "position",
+    placeholder: "请输入职位",
     required: true,
-    gridCol: 1
+    gridCol: 1,
   },
   {
-    label: '部门',
-    field: 'department',
-    placeholder: '请输入部门',
-    gridCol: 1
+    label: "部门",
+    field: "department",
+    placeholder: "请输入部门",
+    gridCol: 1,
   },
   {
-    label: '工作地点',
-    field: 'location',
-    placeholder: '请输入工作地点',
-    gridCol: 1
+    label: "工作地点",
+    field: "location",
+    placeholder: "请输入工作地点",
+    gridCol: 1,
   },
   {
-    label: '开始日期',
-    field: 'startDate',
-    placeholder: '如：2023-06-01',
-    gridCol: 1
+    label: "开始日期",
+    field: "startDate",
+    placeholder: "如：2023-06-01",
+    gridCol: 1,
   },
   {
-    label: '结束日期',
-    field: 'endDate',
-    placeholder: '如：2024-01-20',
-    gridCol: 1
-  }
+    label: "结束日期",
+    field: "endDate",
+    placeholder: "如：2024-01-20",
+    gridCol: 1,
+  },
 ];
 
 const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   visible,
   onClose,
   userInfo,
-  onSave
+  onSave,
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState(userInfo.avatar || '');
-  const [companies, setCompanies] = useState<ICompany[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState(userInfo.avatar || "");
+  const [companies, setCompanies] = useState<ICompany[]>(userInfo.company || []);
 
   useEffect(() => {
     if (visible && userInfo) {
@@ -167,10 +167,10 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         school: userInfo.school,
         major: userInfo.major,
         grade: userInfo.grade,
-        techDirection: userInfo.techDirection,
-        circles: userInfo.circles,
+        techDirection: Array.isArray(userInfo.techDirection) ? userInfo.techDirection : [],
+        circles: Array.isArray(userInfo.circles) ? userInfo.circles : [],
       });
-      setAvatarUrl(userInfo.avatar || '');
+      setAvatarUrl(userInfo.avatar || "");
       setCompanies(userInfo.company || []);
     }
   }, [visible, userInfo, form]);
@@ -179,7 +179,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
     try {
       await form.validate();
       setLoading(true);
-      
+
       const values = form.getFieldsValue();
       const updatedUserInfo: IUserInfo = {
         ...userInfo,
@@ -188,18 +188,18 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         school: values.school,
         major: values.major,
         grade: values.grade,
-        techDirection: values.techDirection,
-        circles: values.circles,
+        techDirection: values.techDirection || [],
+        circles: values.circles || [],
         avatar: avatarUrl,
         company: companies,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       onSave(updatedUserInfo);
-      Message.success('个人信息更新成功！');
+      Message.success("个人信息更新成功！");
       onClose();
     } catch (error) {
-      Message.error('请检查表单信息');
+      Message.error("请检查表单信息");
     } finally {
       setLoading(false);
     }
@@ -207,7 +207,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
   const handleAvatarUpload = (option: any) => {
     const { onSuccess, onError, file } = option;
-    
+
     // 这里应该上传到服务器，现在先模拟
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -222,13 +222,13 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   const addCompany = () => {
     const newCompany: ICompany = {
       id: `company_${Date.now()}`,
-      name: '',
-      position: '',
-      department: '',
-      startDate: '',
-      endDate: '',
-      location: '',
-      description: ''
+      name: "",
+      position: "",
+      department: "",
+      startDate: "",
+      endDate: "",
+      location: "",
+      description: "",
     };
     setCompanies([...companies, newCompany]);
   };
@@ -238,7 +238,11 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
     setCompanies(newCompanies);
   };
 
-  const updateCompany = (index: number, field: keyof ICompany, value: string) => {
+  const updateCompany = (
+    index: number,
+    field: keyof ICompany,
+    value: string
+  ) => {
     const newCompanies = [...companies];
     newCompanies[index] = { ...newCompanies[index], [field]: value };
     setCompanies(newCompanies);
@@ -246,23 +250,37 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
   // 渲染表单项的通用函数
   const renderFormItem = (config: FormItemConfig) => {
-    const { label, field, type, required, placeholder, rules, maxLength, showWordLimit, autoSize } = config;
+    const {
+      label,
+      field,
+      type,
+      required,
+      placeholder,
+      rules,
+      maxLength,
+      showWordLimit,
+      autoSize,
+    } = config;
 
     return (
-      <Form.Item
-        key={field}
-        label={label}
-        field={field}
-        rules={rules}
-      >
-        {type === 'input' ? (
+      <Form.Item key={field} label={label} field={field} rules={rules}>
+        {type === "input" ? (
           <Input placeholder={placeholder} />
-        ) : type === 'textarea' ? (
+        ) : type === "textarea" ? (
           <Input.TextArea
             placeholder={placeholder}
             maxLength={maxLength}
             showWordLimit={showWordLimit}
             autoSize={autoSize}
+          />
+        ) : type === "select" ? (
+          <Select options={GradeOptions.map((v) => ({ label: v, value: v }))} />
+        ) : type === "multiSelect" ? (
+          <Select
+            mode="multiple"
+            placeholder={placeholder}
+            allowCreate
+            allowClear
           />
         ) : null}
       </Form.Item>
@@ -270,7 +288,11 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   };
 
   // 渲染公司表单项的通用函数
-  const renderCompanyFormItem = (config: CompanyFormItemConfig, company: ICompany, index: number) => {
+  const renderCompanyFormItem = (
+    config: CompanyFormItemConfig,
+    company: ICompany,
+    index: number
+  ) => {
     const { label, field, placeholder, required } = config;
 
     return (
@@ -299,17 +321,17 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       okText="保存"
       cancelText="取消"
     >
-      <Form
-        form={form}
-        layout="vertical"
-        scrollToFirstError
-      >
+      <Form form={form} layout="vertical" scrollToFirstError>
         {/* 头像上传 */}
         <Form.Item label="头像">
           <div className="flex items-center gap-4">
             <Avatar size={80} className="bg-cover bg-center">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="头像" className="w-full h-full object-cover" />
+                <img
+                  src={avatarUrl}
+                  alt="头像"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 userInfo.username?.charAt(0)
               )}
@@ -331,7 +353,9 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
           <div key={section.title}>
             <Divider>{section.title}</Divider>
             {section.fields.map((fieldName) => {
-              const config = formItemConfigs.find(item => item.field === fieldName);
+              const config = formItemConfigs.find(
+                (item) => item.field === fieldName
+              );
               return config ? renderFormItem(config) : null;
             })}
           </div>
@@ -343,7 +367,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
             <span>实习经历</span>
           </div>
         </Divider>
-        
+
         {companies.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <p>暂无实习经历</p>
@@ -351,9 +375,14 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         ) : (
           <div className="space-y-6">
             {companies.map((company, index) => (
-              <div key={company.id || index} className="border border-gray-200 rounded-md p-4 relative">
+              <div
+                key={company.id || index}
+                className="border border-gray-200 rounded-md p-4 relative"
+              >
                 <div className="flex justify-between items-start mb-4">
-                  <h4 className="font-medium text-gray-900">实习经历 {index + 1}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    实习经历 {index + 1}
+                  </h4>
                   <Button
                     type="text"
                     size="small"
@@ -364,9 +393,9 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
                     删除
                   </Button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
-                  {companyFormItemConfigs.map((config) => 
+                  {companyFormItemConfigs.map((config) =>
                     renderCompanyFormItem(config, company, index)
                   )}
                 </div>
@@ -374,12 +403,17 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
             ))}
           </div>
         )}
-        <Button type="primary"  className='mt-4 w-4/5 mx-auto' icon={<IconPlus />} onClick={addCompany}>
-              添加实习经历
+        <Button
+          type="primary"
+          className="mt-4 w-4/5 mx-auto"
+          icon={<IconPlus />}
+          onClick={addCompany}
+        >
+          添加实习经历
         </Button>
       </Form>
     </Drawer>
   );
 };
 
-export default EditProfileDrawer; 
+export default EditProfileDrawer;

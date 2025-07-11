@@ -1,8 +1,8 @@
 import { Home, Link, PodcastIcon, User } from "lucide-react";
 
 export const apiConfig = {
-  // baseUrl: "http://47.93.254.190:3000",
-  baseUrl: "http://43.139.172.162:3000",
+  baseUrl: "http://127.0.0.1:3000",
+  // baseUrl: "http://43.139.172.162:3000",
   unProtectedUrls: ["/login", "/captcha", "/signup", "/email", "/seekback"],
 };
 
