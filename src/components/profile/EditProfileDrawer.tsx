@@ -12,6 +12,9 @@ import {
 } from "@arco-design/web-react";
 import { IconPlus, IconCamera, IconDelete } from "@arco-design/web-react/icon";
 import { IUserInfo, ICompany } from "@/types/user";
+import { isMobile } from "@/utils";
+import { uploadAvatar } from "@/service/user";
+import { apiConfig } from "@/config";
 
 interface EditProfileDrawerProps {
   visible: boolean;
@@ -205,18 +208,28 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
     }
   };
 
-  const handleAvatarUpload = (option: any) => {
+  const handleAvatarUpload = async (option: any) => {
     const { onSuccess, onError, file } = option;
 
-    // 这里应该上传到服务器，现在先模拟
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setAvatarUrl(result);
+    const formData = new FormData();
+    formData.append("avatar", file);
+    await uploadAvatar(formData).then((res) => {
+      setAvatarUrl(apiConfig.baseUrl + res.data.data.avatar);
       onSuccess();
-    };
-    reader.onerror = () => onError();
-    reader.readAsDataURL(file);
+    }).catch((err) => {
+      onError();
+    })
+   
+
+    // // 这里应该上传到服务器，现在先模拟
+    // const reader = new FileReader();
+    // reader.onload = (e) => {
+    //   const result = e.target?.result as string;
+    //   setAvatarUrl(result);
+    //   onSuccess();
+    // };
+    // reader.onerror = () => onError();
+    // reader.readAsDataURL(file);
   };
 
   const addCompany = () => {
@@ -312,7 +325,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
   return (
     <Drawer
-      width={360}
+      width={isMobile() ? "100%" : "500px"}
       title="编辑个人信息"
       visible={visible}
       onOk={handleSave}

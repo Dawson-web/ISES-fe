@@ -18,11 +18,8 @@ export type Path =
   | `/navigator/components/companyalumni`
   | `/navigator/info`
   | `/navigator/profile`
-  | `/navigator/profile/user-list`
   | `/register`
   | `/seekback`
-
-
 
 export type Params = {
   
