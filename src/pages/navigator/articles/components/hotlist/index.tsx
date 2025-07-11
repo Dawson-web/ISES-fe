@@ -5,7 +5,7 @@ import clsx from 'clsx';
 const { Title, Text } = Typography;
 
 const HotList = () => {
-  return   <div className="w-[300px] flex-shrink-0">
+  return   <div className="w-full md:w-[300px] flex-shrink-0">
   <Card className="mb-4" bordered={false}>
     <div className="flex items-center justify-between mb-4">
       <Title heading={6} className="!m-0">全站热榜</Title>

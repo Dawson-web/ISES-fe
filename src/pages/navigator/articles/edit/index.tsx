@@ -196,9 +196,9 @@ export default function ArticleEditPage() {
   );
   
   return (
-    <div className="editor-container">
+    <div className="editor-container p-6 ">
       <header className="editor-header">
-        <div className="header-content">
+        <div className="header-content flex justify-between flex-wrap gap-4">
           <div className="header-left">
             <Avatar size={32}>D</Avatar>
             <Input
@@ -237,7 +237,7 @@ export default function ArticleEditPage() {
         </div>
       </header>
 
-      <main className="editor-main">
+      <main className="editor-main bg-white">
       
       <div>
           <div className="mb-6">

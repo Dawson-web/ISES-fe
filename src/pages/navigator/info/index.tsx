@@ -195,24 +195,16 @@ const Info = () => {
 
   return (
     <div className="info-container">
-      <Tabs
-        activeTab={activeTab}
-        onChange={setActiveTab}
-        className="article-tabs"
-      >
-        <TabPane key="发动态" title={<span className="px-2">发动态</span>} />
-        <TabPane key="写文章" title={<span className="px-2">写文章</span>} />
-        <TabPane key="发内推" title={<span className="px-2">发内推</span>} />
-      </Tabs>
 
-      <div className="search-box">
+      <div className="search-box flex md:flex-nowrap flex-wrap">
         <div className="search-wrapper">
           <Input
             placeholder="请输入公司/岗位名称"
             value={searchValue}
             onChange={setSearchValue}
             className="search-input"
-            suffix={<Button type="primary">GO→</Button>}
+            style={{paddingRight: '0px !important'}}
+            suffix={<Button type="primary" className="absolute right-0 top-0">GO→</Button>}
           />
           <div className="search-tags">
             <Tag>华为</Tag>
@@ -220,7 +212,7 @@ const Info = () => {
             <Tag>字节</Tag>
           </div>
         </div>
-        <div className="tool-box">
+        <div className="tool-box md:w-[300px] w-full ">
           <div className="tool-title">求职工具箱</div>
           <div className="tool-buttons">
             <Button
