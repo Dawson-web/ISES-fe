@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Input, Button, Space, Message, Avatar, Tag, Dropdown, Menu, Upload } from '@arco-design/web-react';
+import { Input, Button, Space, Message, Avatar, Tag, Dropdown, Menu, Upload, Select } from '@arco-design/web-react';
 import { 
   IconImage, 
   IconBold, 
@@ -19,15 +19,33 @@ import {
 } from '@arco-design/web-react/icon';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getArticleDetail } from '@/service/article';
-import './style.css';
 
-interface IArticleForm {
-  title: string;
-  content: string;
-  type: string;
-  cover?: string;
+import './style.css';
+import { createArticle } from '@/service/article';
+import { IArticleForm } from '@/types/article';
+
+const CATEGORY = [
+  {
+    label: '日常',
+    value: 'life'
+  },
+  {
+    label: '校园',
+    value: 'campus'
+  },
+  {
+    label: '公司爆料',
+    value: 'company'
+  }
+]
+
+const CONTENT_TYPE = {
+  'life': ['动态','技术','分享'],
+  'campus': ['内推'],
+  'company': ['信息']
 }
+
+
 
 const formatTools = [
   { icon: <IconBold />, tip: '加粗', type: 'bold' },
@@ -48,7 +66,11 @@ export default function ArticleEditPage() {
     title: '',
     content: '',
     type: '技术',
-    cover: ''
+    cover: '',
+    category: undefined,
+    contentType: undefined,
+    tags: [],
+    excerpt: ''
   });
   const [isDraft, setIsDraft] = useState(true);
   const [wordCount, setWordCount] = useState(0);
@@ -56,18 +78,22 @@ export default function ArticleEditPage() {
 
   const { isSuccess, data } = useQuery({
     queryKey: [articleId],
-    queryFn: () => getArticleDetail(articleId as string),
+    // queryFn: () => getArticleDetail(articleId as string),
     enabled: !!articleId
   });
 
   useEffect(() => {
     if (isSuccess && data?.data?.data) {
-      const { title, content, type, cover } = data.data.data;
+      const { title, content, type, cover, category, contentType, tags, excerpt } = data.data.data;
       setForm({
         title,
         content,
         type,
-        cover
+        cover,
+        category,
+        contentType,
+        tags,
+        excerpt
       });
       setWordCount(content.length);
     }
@@ -90,8 +116,22 @@ export default function ArticleEditPage() {
       Message.error('请输入文章内容');
       return;
     }
+    if (!form.category) {
+      Message.error('请选择文章分类');
+      return;
+    }
+    if (!form.contentType) {
+      Message.error('请选择内容类型');
+      return;
+    }
+   await createArticle(form).then((res) => {
+    if (res.data.status) {
+      Message.success('发布成功');
+    } else {
+      Message.error('发布失败');
+    }
+   })
     // TODO: 实现保存逻辑
-    Message.success(isDraft ? '已保存草稿' : '发布成功');
   };
 
   const handleFormat = (type: string) => {
@@ -154,7 +194,7 @@ export default function ArticleEditPage() {
       </Menu.Item>
     </Menu>
   );
-
+  
   return (
     <div className="editor-container">
       <header className="editor-header">
@@ -198,6 +238,73 @@ export default function ArticleEditPage() {
       </header>
 
       <main className="editor-main">
+      
+      <div>
+          <div className="mb-6">
+            <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">
+              文章信息
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">分类</div>
+                <Select
+                  placeholder="请选择文章分类"
+                  className="w-full"
+                  allowClear
+                  value={form.category}
+                  onChange={value => setForm(prev => ({ ...prev, category: value }))}
+                >
+                  {CATEGORY.map(({value, label}) => (
+                    <Select.Option key={value} value={value}>
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">内容类型</div>
+                <Select
+                  placeholder="请选择内容类型"
+                  className="w-full"
+                  allowClear
+                  value={form.contentType}
+                  onChange={value => setForm(prev => ({ ...prev, contentType: value }))}
+                >
+                  {form.category && CONTENT_TYPE[form.category as keyof typeof CONTENT_TYPE].map((value) => (
+                    <Select.Option key={value} value={value}>
+                      {value}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+            <div className="mb-4">
+              <div className="text-sm text-gray-600 mb-2">标签</div>
+              <Select
+                mode="multiple"
+                placeholder="请输入标签，按回车确认"
+                className="w-full"
+                allowCreate
+                allowClear
+                value={form.tags}
+                onChange={value => setForm(prev => ({ ...prev, tags: value }))}
+              />
+            </div>
+            <div className="mb-4">
+              <div className="text-sm text-gray-600 mb-2">引言</div>
+              <Input.TextArea
+                placeholder="请输入文章引言，将显示在文章列表中"
+                className="w-full"
+                style={{ minHeight: '100px' }}
+                value={form.excerpt}
+                onChange={value => setForm(prev => ({ ...prev, excerpt: value }))}
+                maxLength={200}
+                showWordLimit
+              />
+            </div>
+          </div>
+        </div>
+      <div>
         <div className="editor-toolbar">
           <Space size="small" className="format-tools">
             {formatTools.map((tool, index) => (
@@ -227,7 +334,6 @@ export default function ArticleEditPage() {
             </Upload>
           </Space>
         </div>
-
         <div className="editor-content">
           <Input.TextArea
             ref={editorRef}
@@ -239,6 +345,7 @@ export default function ArticleEditPage() {
           <div className="word-count">
             {wordCount} 字
           </div>
+        </div>
         </div>
       </main>
     </div>
