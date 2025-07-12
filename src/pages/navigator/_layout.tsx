@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Layout, Menu, Avatar, Message, Tag } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
 import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
@@ -16,33 +16,33 @@ const MenuItem = Menu.Item;
 
 const menuList = [
   {
-    key: '/',
+    key: '/navigator',
     icon: <Compass size={16} />,
     label: '首页',
   },
   {
-    key: '/articles/edit',
+    key: '/navigator/articles/edit',
     icon: <PencilRuler size={16} />,
     label: '创作中心',
   },
   {
-    key: '/articles',
+    key: '/navigator/articles',
     icon: <BookText size={16} />,
     label: '文章',
   },
   {
-    key: '/info',
+    key: '/navigator/info',
     icon: <Building2 size={16} />,
     label: '爆料',
   },
   {
-    key: '/campus',
+    key: '/navigator/campus',
     icon: <LibraryBigIcon size={16} />,
     label: '校园墙',
     tag: '开发中',
   },
   {
-    key: '/chat',
+    key: '/navigator/chat',
     icon: <MessageSquareText size={16} />,
     label: '消息',
   },
@@ -51,6 +51,7 @@ const menuList = [
 const _Layout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -95,14 +96,7 @@ const _Layout = () => {
       >
         <div className='logo' />
         <Menu
-          defaultOpenKeys={['1']}
-          defaultSelectedKeys={['0_3']}
-          onClickMenuItem={(key) =>
-            Message.info({
-              content: `You select ${key}`,
-              showIcon: true,
-            })
-          }
+          selectedKeys={[location.pathname]}
         >
           <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
             navigate('/navigator/profile');
@@ -114,7 +108,7 @@ const _Layout = () => {
             key={item.key} 
             className='text-md flex items-center justify-between gap-2 h-10' 
             onClick={() => {
-              navigate(`/navigator${item.key}`);
+              navigate(`${item.key}`);
             }}>
               <div className='flex items-center gap-4'>
                 {item.icon}

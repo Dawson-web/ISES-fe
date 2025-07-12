@@ -1,5 +1,5 @@
-import ArticlePreview from "@/components/article/article-preview";
-import CommentBox from "@/components/article/comment";
+import ArticlePreview from "@/components/article/article-preview/index";
+import CommentBox from "@/components/article/comment/index";
 import { Card, Tooltip, Badge, Group, Text, ActionIcon, Button } from "@mantine/core";
 import { Undo2, ThumbsUp, Eye, MessageCircle, Clock } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -80,8 +80,10 @@ export default function Page() {
 
   const { data, isLoading, isSuccess} = useQuery({
     queryKey: ["article", searchParams.get('id')],
-    queryFn: () => getArticleDetail(String(searchParams.get('id'))),
+    queryFn: () => getArticleDetail(String(searchParams.get('id'))).then((res) => res.data.data),
   });
+
+  const article = data;
 
 
   return (
@@ -91,14 +93,14 @@ export default function Page() {
           <Tooltip label="返回">
             <ActionIcon
               variant="subtle"
-              onClick={() => navigate("/articles")}
+              onClick={() => navigate("/navigator/articles")}
             >
               <Undo2 className="text-gray-600" />
             </ActionIcon>
           </Tooltip>
           
           <Group>
-            {data?.data.data.metadata.tags.map((tag: string) => (
+            {article?.metadata.tags.map((tag: string) => (
               <Badge key={tag} variant="light">
                 {tag}
               </Badge>
@@ -108,16 +110,16 @@ export default function Page() {
 
         <div className="flex items-center gap-4 mb-4">
           <UserAvatar 
-            src={data?.data.data.creator.avatar}
+            src={article?.creator.avatar}
             size="medium"
             disabled={true}
           />
           <div>
-            <Text size="sm" fw={500}>{data?.data.data.creator.username}</Text>
+            <Text size="sm" fw={500}>{article?.creator.username}</Text>
             <Group gap="xs" mt={4}>
               <Clock size={14} className="text-gray-500" />
               <Text size="xs" c="dimmed">
-                {formatISODate(data?.data.data.createdAt || '')}
+                {formatISODate(article?.createdAt || '')}
               </Text>
             </Group>
           </div>
@@ -125,9 +127,9 @@ export default function Page() {
 
         <div className="flex sm:flex-row flex-col sm:items-center sm:justify-center">
           <ArticlePreview
-            content={String(data?.data.data.content)}
-            title={data?.data.data.title}
-            type={data?.data.data.metadata.category}
+            content={String(article?.content)}
+            title={article?.title}
+            type={article?.metadata.category}
             className="w-full h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full"
           />
         </div>
@@ -138,26 +140,26 @@ export default function Page() {
             leftSection={<ThumbsUp size={18} />}
             onClick={handleLike}
           >
-            {data?.data.data.metadata.likeCount}
+            {article?.metadata.likeCount}
           </Button>
           
           <Group gap="xs">
             <Eye size={18} className="text-gray-500" />
             <Text size="sm" c="dimmed">
-              {data?.data.data.metadata.viewCount}
+              {article?.metadata.viewCount}
             </Text>
           </Group>
 
           <Group gap="xs">
             <MessageCircle size={18} className="text-gray-500" />
             <Text size="sm" c="dimmed">
-              {data?.data.data.metadata.commentCount}
+              {article?.metadata.commentCount}
             </Text>
           </Group>
 
-          {data?.data.data.metadata.category && (
+          {article?.metadata.category && (
             <Badge variant="light" color="blue">
-              {data?.data.data.metadata.category}
+              {article?.metadata.category}
             </Badge>
           )}
         </Group>

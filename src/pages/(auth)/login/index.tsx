@@ -48,7 +48,7 @@ export default function Page() {
       const res = await login(formData, code.current);
       setToken(res.data.data.token);
       setUid(res.data.data.userInfoId);
-      navigate("/home");
+      navigate("/navigator");
       toast.success("登录成功");
     } catch (error) {
       errorTimes.current++;

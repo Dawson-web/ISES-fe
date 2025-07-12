@@ -21,6 +21,7 @@ import EditProfileDrawer from "@/components/profile/EditProfileDrawer";
 import { updateUserInfo } from "@/service/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userStore from "@/store/User";
+import homeBG from "@/assets/home-bg.png";
 
 const { Title, Paragraph, Text } = Typography;
 const { Row, Col } = Grid;
@@ -96,8 +97,7 @@ export default function Page() {
           cover={
               <div className="max-h-48 overflow-hidden">
                 <Image
-                  src={userData?.avatar}
-                  alt="用户封面"
+                  src={userData?.banner || homeBG}
                   className="w-full h-full object-contain rounded-lg"
                 />
               </div>

@@ -9,6 +9,7 @@ class User {
   role: number = 0;
   school?: string = "";
   avatar?: string = "";
+  banner?: string = "";
   online?: boolean = false;
   grade?: string = "";
   company?: ICompany[];
@@ -25,6 +26,7 @@ class User {
     this.introduce = u.introduce;
     this.school = u.school;
     this.avatar = u.avatar;
+    this.banner = u.banner;
     this.online = u.online;
     this.grade = u.grade;
     this.company = u.company;
