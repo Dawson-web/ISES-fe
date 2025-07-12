@@ -9,49 +9,43 @@ import {
   Grid,
   Image,
 } from "@arco-design/web-react";
-import { useState } from "react";
-import { IUserInfo } from "@/types/user";
 import {
   IconUser,
   IconBook,
   IconCode,
   IconEdit,
 } from "@arco-design/web-react/icon";
+import { useState } from "react";
+import { IUserInfo } from "@/types/user";
 import EditProfileDrawer from "@/components/profile/EditProfileDrawer";
-import { getUserInfo, updateUserInfo } from "@/service/user";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getValidUid } from "@/api/token";
+import { updateUserInfo } from "@/service/user";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import userStore from "@/store/User";
+
 const { Title, Paragraph, Text } = Typography;
 const { Row, Col } = Grid;
+
+
 const roleMap = {
   0: { text: "普通用户", color: "blue" },
   1: { text: "VIP用户", color: "gold" },
   2: { text: "管理员", color: "red" },
 };
-const userId = getValidUid();
 
 export default function Page() {
   const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const queryClient = useQueryClient();
+  const userData = userStore; // 下面 UI 全部用 userData
 
-  //获取信息
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getUserInfo().then((res) => res.data.data),
-  });
 
   //修改信息
   const { mutate: mutateUserInfo } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
-  
-  //数据获取
-  if (isLoading) return <div>加载中...</div>;
-  if (isError) return <div>加载失败</div>;
-  const userData = data; // 下面 UI 全部用 userData
+
 
   //修改信息抽屉
   const handleSaveProfile = (u: IUserInfo) => {
@@ -75,6 +69,7 @@ export default function Page() {
       techDirection,
       company,
     });
+    userStore.setUserInfo(u);
     setEditDrawerVisible(false);
   };
 
@@ -101,7 +96,7 @@ export default function Page() {
           cover={
               <div className="max-h-48 overflow-hidden">
                 <Image
-                  src={userData?.banner}
+                  src={userData?.avatar}
                   alt="用户封面"
                   className="w-full h-full object-contain rounded-lg"
                 />
@@ -218,11 +213,11 @@ export default function Page() {
                   },
                   {
                     label: "在职公司",
-                    value: userData?.currentCompany?.name || "-",
+                    value: userData?.company?.map((item) => item.name) || "-",
                   },
                   {
                     label: "在职职位",
-                    value: userData?.currentCompany?.position || "-",
+                    value: userData?.company?.map((item) => item.position) || "-",
                   },
                 ]}
                 layout="inline-horizontal"

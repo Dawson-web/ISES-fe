@@ -2,10 +2,12 @@ import ArticlePreview from "@/components/article/article-preview";
 import CommentBox from "@/components/article/comment";
 import { Card, Tooltip, Badge, Group, Text, ActionIcon, Button } from "@mantine/core";
 import { Undo2, ThumbsUp, Eye, MessageCircle, Clock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatISODate } from "@/utils/date";
 import UserAvatar from "@/components/public/user_avatar";
 import { useState } from "react";
+import { getArticleDetail } from "@/service/article";
+import { useQuery } from "@tanstack/react-query";
 
 // Demo数据
 const DEMO_ARTICLE = {
@@ -62,6 +64,8 @@ function hello() {
 
 export default function Page() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(DEMO_ARTICLE.metadata.likeCount);
 
@@ -73,6 +77,12 @@ export default function Page() {
     }
     setIsLiked(!isLiked);
   };
+
+  const { data, isLoading, isSuccess} = useQuery({
+    queryKey: ["article", searchParams.get('id')],
+    queryFn: () => getArticleDetail(String(searchParams.get('id'))),
+  });
+
 
   return (
     <div className="w-full h-full">
@@ -88,7 +98,7 @@ export default function Page() {
           </Tooltip>
           
           <Group>
-            {DEMO_ARTICLE.metadata.tags.map((tag: string) => (
+            {data?.data.data.metadata.tags.map((tag: string) => (
               <Badge key={tag} variant="light">
                 {tag}
               </Badge>
@@ -98,16 +108,16 @@ export default function Page() {
 
         <div className="flex items-center gap-4 mb-4">
           <UserAvatar 
-            src={DEMO_ARTICLE.creator.avatar}
+            src={data?.data.data.creator.avatar}
             size="medium"
             disabled={true}
           />
           <div>
-            <Text size="sm" fw={500}>{DEMO_ARTICLE.creator.nickname}</Text>
+            <Text size="sm" fw={500}>{data?.data.data.creator.username}</Text>
             <Group gap="xs" mt={4}>
               <Clock size={14} className="text-gray-500" />
               <Text size="xs" c="dimmed">
-                {formatISODate(DEMO_ARTICLE.createdAt)}
+                {formatISODate(data?.data.data.createdAt || '')}
               </Text>
             </Group>
           </div>
@@ -115,9 +125,9 @@ export default function Page() {
 
         <div className="flex sm:flex-row flex-col sm:items-center sm:justify-center">
           <ArticlePreview
-            content={DEMO_ARTICLE.content}
-            title={DEMO_ARTICLE.title}
-            type={DEMO_ARTICLE.type}
+            content={String(data?.data.data.content)}
+            title={data?.data.data.title}
+            type={data?.data.data.metadata.category}
             className="w-full h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full"
           />
         </div>
@@ -128,26 +138,26 @@ export default function Page() {
             leftSection={<ThumbsUp size={18} />}
             onClick={handleLike}
           >
-            {likeCount}
+            {data?.data.data.metadata.likeCount}
           </Button>
           
           <Group gap="xs">
             <Eye size={18} className="text-gray-500" />
             <Text size="sm" c="dimmed">
-              {DEMO_ARTICLE.metadata.viewCount}
+              {data?.data.data.metadata.viewCount}
             </Text>
           </Group>
 
           <Group gap="xs">
             <MessageCircle size={18} className="text-gray-500" />
             <Text size="sm" c="dimmed">
-              {DEMO_ARTICLE.metadata.commentCount}
+              {data?.data.data.metadata.commentCount}
             </Text>
           </Group>
 
-          {DEMO_ARTICLE.metadata.category && (
+          {data?.data.data.metadata.category && (
             <Badge variant="light" color="blue">
-              {DEMO_ARTICLE.metadata.category}
+              {data?.data.data.metadata.category}
             </Badge>
           )}
         </Group>

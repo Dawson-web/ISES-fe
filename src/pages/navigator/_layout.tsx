@@ -5,6 +5,9 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
 import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from '@/service/user';
+import userStore from '@/store/User';
 
 
 const Sider = Layout.Sider;
@@ -68,6 +71,18 @@ const _Layout = () => {
       window.removeEventListener('resize', monitorResizeChange);
     };
   }, []);
+
+   //获取信息
+   const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUserInfo().then((res) => res.data.data),
+  });
+
+  if (data) {
+  userStore.setUserInfo(data);
+  }else{
+    return <div>加载中...</div>
+  }
 
   return (
     <Layout className='h-screen w-full'>

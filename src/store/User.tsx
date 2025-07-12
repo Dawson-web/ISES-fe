@@ -1,9 +1,6 @@
+import { ICompany, IUserInfo } from "@/types/user";
 import { makeAutoObservable } from "mobx";
-interface companyInfo {
-  name: string;
-  position: string;
-  period: { start: string; end: string };
-}
+
 class User {
   id: string = "";
   userId: string = "";
@@ -14,34 +11,27 @@ class User {
   avatar?: string = "";
   online?: boolean = false;
   grade?: string = "";
-  company?: companyInfo[];
-  circles?: string = "";
+  company?: ICompany[];
+  circles?: string[] = [];
   major?: string = "";
-  technirection?: string = "";
+  techDirection?: string[] = [];
+  
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
-    this.init();
   }
-  init = () => {
-    this.id = "1";
-    this.userId = "111";
-    this.username = "lsm";
-    this.introduce = "前端开发";
-    this.role = 1;
-    this.school = "成都信息工程大学";
-    this.avatar = "#";
-    this.online = true;
-    this.grade = "20203级";
-    this.company = [
-      {
-        name: "腾讯",
-        position: "前端工程师",
-        period: { start: "2025-07", end: "2025-07" },
-      },
-    ];
-    this.circles = "回声实验室";
-    this.major = "计算机科学与技术";
-    this.technirection = "前端开发";
+
+  setUserInfo = (u: IUserInfo) => {
+    this.username = u.username;
+    this.introduce = u.introduce;
+    this.school = u.school;
+    this.avatar = u.avatar;
+    this.online = u.online;
+    this.grade = u.grade;
+    this.company = u.company;
+    this.circles = u.circles;
+    this.major = u.major;
+    this.techDirection = u.techDirection;
   };
 }
-export default User;
+const userStore = new User();
+export default userStore;

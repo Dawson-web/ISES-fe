@@ -35,7 +35,18 @@ interface FormItemConfig {
   showWordLimit?: boolean;
   autoSize?: { minRows: number; maxRows: number };
 }
-const GradeOptions = ["大一", "大二", "大三", "大四", "研究生", "博士","毕业"];
+
+// 公司表单项配置接口
+interface CompanyFormItemConfig {
+  label: string;
+  field: keyof ICompany;
+  placeholder?: string;
+  required?: boolean;
+  gridCol?: number; // 1 或 2，表示占据几列
+}
+
+const GradeOptions = ["大一", "大二", "大三", "大四", "研究生", "博士", "毕业"];
+
 // 表单项配置数据
 const formItemConfigs: FormItemConfig[] = [
   {
@@ -100,15 +111,6 @@ const formSections = [
   },
 ];
 
-// 公司表单项配置接口
-interface CompanyFormItemConfig {
-  label: string;
-  field: keyof ICompany;
-  placeholder?: string;
-  required?: boolean;
-  gridCol?: number; // 1 或 2，表示占据几列
-}
-
 // 公司表单项配置数据
 const companyFormItemConfigs: CompanyFormItemConfig[] = [
   {
@@ -151,6 +153,69 @@ const companyFormItemConfigs: CompanyFormItemConfig[] = [
   },
 ];
 
+// 渲染表单项的通用函数
+const renderFormItem = (config: FormItemConfig) => {
+  const {
+    label,
+    field,
+    type,
+    required,
+    placeholder,
+    rules,
+    maxLength,
+    showWordLimit,
+    autoSize,
+  } = config;
+
+  return (
+    <Form.Item key={field} label={label} field={field} rules={rules}>
+      {type === "input" ? (
+        <Input placeholder={placeholder} />
+      ) : type === "textarea" ? (
+        <Input.TextArea
+          placeholder={placeholder}
+          maxLength={maxLength}
+          showWordLimit={showWordLimit}
+          autoSize={autoSize}
+        />
+      ) : type === "select" ? (
+        <Select options={GradeOptions.map((v) => ({ label: v, value: v }))} />
+      ) : type === "multiSelect" ? (
+        <Select
+          mode="multiple"
+          placeholder={placeholder}
+          allowCreate
+          allowClear
+        />
+      ) : null}
+    </Form.Item>
+  );
+};
+
+// 渲染公司表单项的通用函数
+const renderCompanyFormItem = (
+  config: CompanyFormItemConfig,
+  company: ICompany,
+  index: number,
+  updateCompany: (index: number, field: keyof ICompany, value: string) => void
+) => {
+  const { label, field, placeholder, required } = config;
+
+  return (
+    <div key={field}>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      <Input
+        placeholder={placeholder}
+        value={company[field] as string}
+        onChange={(value) => updateCompany(index, field, value)}
+      />
+    </div>
+  );
+};
+
 const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   visible,
   onClose,
@@ -176,6 +241,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       setAvatarUrl(userInfo.avatar || "");
       setCompanies(userInfo.company || []);
     }
+
   }, [visible, userInfo, form]);
 
   const handleSave = async () => {
@@ -218,18 +284,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       onSuccess();
     }).catch((err) => {
       onError();
-    })
-   
-
-    // // 这里应该上传到服务器，现在先模拟
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   const result = e.target?.result as string;
-    //   setAvatarUrl(result);
-    //   onSuccess();
-    // };
-    // reader.onerror = () => onError();
-    // reader.readAsDataURL(file);
+    });
   };
 
   const addCompany = () => {
@@ -259,68 +314,6 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
     const newCompanies = [...companies];
     newCompanies[index] = { ...newCompanies[index], [field]: value };
     setCompanies(newCompanies);
-  };
-
-  // 渲染表单项的通用函数
-  const renderFormItem = (config: FormItemConfig) => {
-    const {
-      label,
-      field,
-      type,
-      required,
-      placeholder,
-      rules,
-      maxLength,
-      showWordLimit,
-      autoSize,
-    } = config;
-
-    return (
-      <Form.Item key={field} label={label} field={field} rules={rules}>
-        {type === "input" ? (
-          <Input placeholder={placeholder} />
-        ) : type === "textarea" ? (
-          <Input.TextArea
-            placeholder={placeholder}
-            maxLength={maxLength}
-            showWordLimit={showWordLimit}
-            autoSize={autoSize}
-          />
-        ) : type === "select" ? (
-          <Select options={GradeOptions.map((v) => ({ label: v, value: v }))} />
-        ) : type === "multiSelect" ? (
-          <Select
-            mode="multiple"
-            placeholder={placeholder}
-            allowCreate
-            allowClear
-          />
-        ) : null}
-      </Form.Item>
-    );
-  };
-
-  // 渲染公司表单项的通用函数
-  const renderCompanyFormItem = (
-    config: CompanyFormItemConfig,
-    company: ICompany,
-    index: number
-  ) => {
-    const { label, field, placeholder, required } = config;
-
-    return (
-      <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-        <Input
-          placeholder={placeholder}
-          value={company[field] as string}
-          onChange={(value) => updateCompany(index, field, value)}
-        />
-      </div>
-    );
   };
 
   return (
@@ -409,7 +402,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
                 <div className="grid grid-cols-2 gap-4">
                   {companyFormItemConfigs.map((config) =>
-                    renderCompanyFormItem(config, company, index)
+                    renderCompanyFormItem(config, company, index, updateCompany)
                   )}
                 </div>
               </div>
