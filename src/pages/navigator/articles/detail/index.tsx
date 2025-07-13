@@ -3,71 +3,22 @@ import CommentBox from "@/components/article/comment/index";
 import { Card, Tooltip, Badge, Group, Text, ActionIcon, Button } from "@mantine/core";
 import { Undo2, ThumbsUp, Eye, MessageCircle, Clock } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { formatISODate } from "@/utils/date";
-import UserAvatar from "@/components/public/user_avatar";
 import { useState } from "react";
-import { getArticleDetail } from "@/service/article";
-import { useQuery } from "@tanstack/react-query";
-
-// Demo数据
-const DEMO_ARTICLE = {
-  id: '1',
-  title: '示例文章标题',
-  content: `
-# 这是一个示例文章
-
-这是文章的正文内容。
-
-## 特点
-- 支持Markdown格式
-- 包含基础样式
-- 可以展示图片和链接
-
-## 代码示例
-\`\`\`javascript
-function hello() {
-  console.log('Hello World!');
-}
-\`\`\`
-  `,
-  type: '技术',
-  metadata: {
-    tags: ['示例', '教程', '前端'],
-    category: '技术',
-    viewCount: 100,
-    likeCount: 50,
-    commentCount: 3,
-    status: 'published',
-  },
-  creator: {
-    id: '1',
-    nickname: '示例作者',
-    avatar: '/favicon.webp'
-  },
-  createdAt: new Date().toISOString(),
-  Comment: {
-    content: JSON.stringify([
-      {
-        userInfoId: '1',
-        content: '这是一条示例评论',
-        createdAt: new Date().toISOString()
-      },
-      {
-        userInfoId: '2',
-        content: '文章写得很好!',
-        createdAt: new Date().toISOString()
-      }
-    ])
-  },
-  commentId: '1'
-};
+import { getArticleDetailApi, postCommentApi } from "@/service/article";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Avatar } from "@arco-design/web-react";
+import { apiConfig } from "@/config";
+import { ICommentForm } from "@/types/article";
+import { toastMessage } from "@/components/toast";
 
 export default function Page() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const articleId = String(searchParams.get('id'));
 
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(DEMO_ARTICLE.metadata.likeCount);
+  const [likeCount, setLikeCount] = useState(0);
 
   const handleLike = () => {
     if (isLiked) {
@@ -78,17 +29,29 @@ export default function Page() {
     setIsLiked(!isLiked);
   };
 
-  const { data, isLoading, isSuccess} = useQuery({
-    queryKey: ["article", searchParams.get('id')],
-    queryFn: () => getArticleDetail(String(searchParams.get('id'))).then((res) => res.data.data),
+  const { data } = useQuery({
+    queryKey: ["article", articleId],
+    queryFn: async () => {
+      const res = await getArticleDetailApi(articleId);
+      return res.data.data;
+    },
+  });
+
+  const { mutateAsync: submitComment } = useMutation({
+    mutationFn: (data: ICommentForm) => postCommentApi(data),
+    onSuccess: () => {
+      toastMessage.success("评论发布成功");
+      // 刷新文章详情数据
+      queryClient.invalidateQueries({ queryKey: ["article", articleId] });
+    },
   });
 
   const article = data;
 
 
   return (
-    <div className="w-full h-full">
-      <Card className="flex flex-col gap-4">
+    <div className="w-full h-full p-6">
+      <Card className="flex flex-col gap-4 max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center">
           <Tooltip label="返回">
             <ActionIcon
@@ -100,7 +63,7 @@ export default function Page() {
           </Tooltip>
           
           <Group>
-            {article?.metadata.tags.map((tag: string) => (
+            {Array.isArray(article?.metadata.tags) && article?.metadata.tags.map((tag: string) => (
               <Badge key={tag} variant="light">
                 {tag}
               </Badge>
@@ -109,17 +72,18 @@ export default function Page() {
         </div>
 
         <div className="flex items-center gap-4 mb-4">
-          <UserAvatar 
-            src={article?.creator.avatar}
-            size="medium"
-            disabled={true}
-          />
+        <Avatar>
+            <img
+              alt='avatar'
+              src={`${apiConfig.baseUrl}/uploads/avatars/${article?.creator.id}.png`}
+            />
+          </Avatar>
           <div>
             <Text size="sm" fw={500}>{article?.creator.username}</Text>
             <Group gap="xs" mt={4}>
               <Clock size={14} className="text-gray-500" />
               <Text size="xs" c="dimmed">
-                {formatISODate(article?.createdAt || '')}
+                {String(article?.createdAt)}
               </Text>
             </Group>
           </div>
@@ -140,7 +104,7 @@ export default function Page() {
             leftSection={<ThumbsUp size={18} />}
             onClick={handleLike}
           >
-            {article?.metadata.likeCount}
+            {article?.metadata.likeCount || likeCount}
           </Button>
           
           <Group gap="xs">
@@ -165,8 +129,9 @@ export default function Page() {
         </Group>
 
         <CommentBox
-          commentId={DEMO_ARTICLE.commentId}
-          content={DEMO_ARTICLE.Comment.content}
+          comments={Array.isArray(article?.comments) ? article?.comments : []}
+          articleId={String(article?.id)}
+          onSubmitComment={submitComment}
         />
       </Card>
     </div>

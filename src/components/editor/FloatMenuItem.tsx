@@ -2,7 +2,7 @@
 import { Editor } from "@tiptap/react";
 import { FC } from "react";
 import clsx from "clsx";
-import { Button, Tooltip } from "@mantine/core";
+import { Tooltip } from "@mantine/core";
 export interface IFloatMenuItemProps {
   Icon: any;
   tooltip: string;
@@ -19,7 +19,6 @@ const FloatMenuItem: FC<IFloatMenuItemProps> = ({
   Icon,
   tooltip,
   onClick,
-  disabled,
   className,
   active,
   editor,

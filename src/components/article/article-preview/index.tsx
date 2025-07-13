@@ -24,9 +24,7 @@ const ArticlePreview: FC<IProps> = ({
   className,
   editable = false,
   showMenu = false,
-  showEdit = false,
   title,
-  type,
 }) => {
   const editor = useAritcleEditor(content, editable);
   const editorRef = useRef(null);

@@ -28,7 +28,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
       // 确保菜单不会超出屏幕边界
       const x = Math.min(event.clientX, window.innerWidth - 160);
       const y = Math.min(event.clientY, window.innerHeight - 100);
-      setContextMenu({ x, y, messageId: message.id });
+      setContextMenu({ x, y, messageId: String(message.id)});
     },
     []
   );
@@ -68,7 +68,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
 
   return (
     <Card
-      ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined}
+      ref={messagesEndRef as any}
       className={clsx(
         "flex flex-col gap-8 px-4 overflow-y-auto rounded-none border-x-0 border-b-0 shadow-none",
         className,

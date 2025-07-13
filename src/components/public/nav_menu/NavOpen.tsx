@@ -30,7 +30,7 @@ export const NavOpen = (props: IProps) => {
         }
       )}
     >
-      <AppLogo className={clsx("ml-4 dark:text-gray-600", { hidden: open })} />
+      <AppLogo title="logo" subtitle="logo" size="small"  />
       <div
         className={clsx(
           "flex absolute z-50 top-2 right-4 text-gray-600 hover:text-dark dark:text-gray-400 dark:hover:text-gray-200",

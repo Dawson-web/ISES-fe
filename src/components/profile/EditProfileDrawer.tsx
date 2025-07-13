@@ -159,7 +159,6 @@ const renderFormItem = (config: FormItemConfig) => {
     label,
     field,
     type,
-    required,
     placeholder,
     rules,
     maxLength,
@@ -283,7 +282,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       setAvatarUrl(apiConfig.baseUrl + res.data.data.avatar);
       onSuccess();
     }).catch((err) => {
-      onError();
+      onError(err);
     });
   };
 

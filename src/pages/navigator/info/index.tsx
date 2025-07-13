@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { Table, Tag, Button, Input } from '@arco-design/web-react';
-import { IconRight } from '@arco-design/web-react/icon';
 import SalaryCalculator from '@/components/salary-calculator';
 import salaryGIF from '@/assets/salary.gif';
 import './style.css';
-import { Tabs, Typography } from '@arco-design/web-react';
-import { title } from 'process';
-const TabPane = Tabs.TabPane;
 
 interface CompanySchedule {
   id: number;
@@ -108,7 +104,6 @@ const mockData: CompanySchedule[] = [
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState('发动态');
 
 
   const columns = [

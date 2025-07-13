@@ -1,11 +1,11 @@
-import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs, Result, Skeleton } from '@arco-design/web-react';
+import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs, Result } from '@arco-design/web-react';
 import {  IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArticleCategoryType, ArticleCategoryTypeColor, IArticle } from "@/types/article";
 import HotList from './components/hotlist';
 import { getArticleList } from '@/service/article';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ISESSkeleton from '@/components/skeleton';
 
 const { Title, Text } = Typography;
@@ -17,14 +17,28 @@ export default function ArticleList() {
   const [type, setType] = useState<string>('');
   const [activeTab, setActiveTab] = useState('发动态');
 
+  const queryClient = useQueryClient();
+
   const handleArticleClick = (id: number) => {
     navigate(`/navigator/articles/detail?id=${id}`);
   };
 
-  const { data, isLoading, isSuccess} = useQuery({
-    queryKey: ["articles"],
-    queryFn: () => getArticleList(),
+  const { data, isLoading} = useQuery({
+    queryKey: ["getArticleList"],
+    queryFn: () => getArticleList(searchTerm).then(res => res.data.data),
   });
+
+
+  const { mutateAsync: searchArticle } = useMutation({
+    mutationFn: () => getArticleList(searchTerm),
+    onSuccess: () => {
+      // 刷新文章详情数据
+      queryClient.invalidateQueries({ queryKey: ["getArticleList"] });
+    },
+  }); 
+
+  const articles = data?.articles || [];
+
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#17171A]">
@@ -36,7 +50,8 @@ export default function ArticleList() {
               placeholder="搜索感兴趣的内容..."
               style={{ width: 320 }}
               value={searchTerm}
-              onChange={setSearchTerm}
+              onChange={(value) => setSearchTerm(value)}
+              onSearch={() => searchArticle()}
               allowClear
               size="large"
               className="shadow-sm"
@@ -79,9 +94,9 @@ export default function ArticleList() {
             onChange={setActiveTab}
             className="article-tabs"
           >
-            <TabPane key="发动态" title={<span className="px-2">发动态</span>} />
-            <TabPane key="写文章" title={<span className="px-2">写文章</span>} />
-            <TabPane key="发内推" title={<span className="px-2">发内推</span>} />
+            <TabPane key="动态" title={<span className="px-2">动态</span>} />
+            <TabPane key="文章" title={<span className="px-2">文章</span>} />
+            <TabPane key="内推" title={<span className="px-2">内推</span>} />
           </Tabs>
 
           <div className="mt-4">
@@ -90,7 +105,7 @@ export default function ArticleList() {
                 <ISESSkeleton count={3} type="list-info" className="w-full" />
               ) : (
                 <>
-                  {data?.data.data.articles.map((article: IArticle) => (
+                  {articles.map((article: IArticle) => (
                     <Grid.Col key={article.id} span={24}>
                       <Card
                         className="group hover:bg-[#F8FAFD] dark:hover:bg-[#2B2B2D] transition-colors cursor-pointer border-none rounded-none"
@@ -166,7 +181,7 @@ export default function ArticleList() {
                               </Space>
                               <Space className="text-xs">
                                 <IconMessage />
-                                <span>{article.metadata.commentCount}</span>
+                                <span>{article.comments.length}</span>
                               </Space>
                             </Space>
                           </div>
@@ -175,7 +190,7 @@ export default function ArticleList() {
                     </Grid.Col>
                   ))}
 
-                  {data?.data.data.articles.length === 0 && (
+                  {articles.length === 0 && (
                     <Grid.Col span={24}>
                       <div className="text-center py-16">
                         <Result

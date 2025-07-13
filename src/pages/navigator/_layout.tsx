@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layout, Menu, Avatar, Message, Tag } from '@arco-design/web-react';
+import { Layout, Menu, Avatar, Tag } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
@@ -8,6 +8,7 @@ import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, Pencil
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/service/user';
 import userStore from '@/store/User';
+import { IUserInfo } from '@/types/user';
 
 
 const Sider = Layout.Sider;
@@ -74,16 +75,22 @@ const _Layout = () => {
   }, []);
 
    //获取信息
-   const { data } = useQuery({
+   const { data,isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: () => getUserInfo().then((res) => res.data.data),
   });
 
-  if (data) {
-  userStore.setUserInfo(data);
-  }else{
-    return <div>加载中...</div>
-  }
+  useEffect(() => {
+    if (isLoading) {
+      return ;
+    }
+    if (data) {
+      userStore.setUserInfo(data);
+    } else {
+      navigate('/login');
+    }
+  }, [data, isLoading]);
+
 
   return (
     <Layout className='h-screen w-full'>

@@ -16,6 +16,7 @@ class User {
   circles?: string[] = [];
   major?: string = "";
   techDirection?: string[] = [];
+  hitokoto?: string = "";
   
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });

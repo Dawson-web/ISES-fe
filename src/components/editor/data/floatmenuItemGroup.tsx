@@ -12,16 +12,10 @@ import {
   MessageSquareQuote,
   MinusIcon,
   Pilcrow,
-  Redo2Icon,
-  RemoveFormatting,
   StrikethroughIcon,
-  Undo2Icon,
-  WrapTextIcon,
 } from "lucide-react";
 import { Editor } from "@tiptap/react";
 import { ReactElement } from "react";
-import { toast } from "sonner";
-import { apiConfig } from "@/config";
 import { toastMessage } from "@/components/toast";
 
 export interface IClickMenuItemButtonProps {

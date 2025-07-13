@@ -15,7 +15,7 @@ const News: FC<IProps> = ({ className }) => {
       )}
     >
       <div className="flex flex-col items-start justify-center  gap-4">
-        <AppLogo className="text-5xl  opacity-80 " />
+        <AppLogo title="logo" subtitle="logo" size="small" />
         <Text className=" font-bold text-sm  ">封闭开发中,敬请期待！</Text>
       </div>
     </div>

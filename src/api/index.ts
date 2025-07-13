@@ -22,6 +22,7 @@ $axios.interceptors.request.use(
 $axios.interceptors.response.use(
   (response) => {
     const code = response.status; // 注意这里使用 response.status 获取 HTTP 状态码
+    
     switch (true) {
       case code >= 200 && code < 300: {
         if (!response.data.status) {

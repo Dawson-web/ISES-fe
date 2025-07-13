@@ -1,6 +1,6 @@
 import { FC } from "react";
 import clsx from "clsx";
-import { CloudMoon, Sun, ToggleLeft, ToggleRight } from "lucide-react";
+import { CloudMoon, Sun} from "lucide-react";
 import { useMantineColorScheme } from "@mantine/core";
 
 interface IProps {

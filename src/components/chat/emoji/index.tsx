@@ -60,7 +60,7 @@ interface IProps {
   className?: string;
 }
 
-const EmojiContainer: FC<IProps> = ({ onEmojiClick, onClose, className }) => {
+const EmojiContainer: FC<IProps> = ({ onEmojiClick, className }) => {
   const emoji = document.getElementById("emoji");
   Emoji.forEach((item) => {
     const span = document.createElement("span");

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Input, Button, Space, Message, Avatar, Tag, Dropdown, Menu, Upload, Select } from '@arco-design/web-react';
 import { 
   IconImage, 
@@ -17,11 +17,10 @@ import {
   IconMore,
   IconDelete
 } from '@arco-design/web-react/icon';
-import { useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+// import { useSearchParams } from 'react-router-dom';
 
 import './style.css';
-import { createArticle } from '@/service/article';
+// import { createArticle } from '@/service/article';
 import { IArticleForm } from '@/types/article';
 
 const CATEGORY = [
@@ -60,8 +59,8 @@ const formatTools = [
 ];
 
 export default function ArticleEditPage() {
-  const [searchParams] = useSearchParams();
-  const articleId = searchParams.get('id');
+  // const [searchParams] = useSearchParams();
+  // const articleId = searchParams.get('id');
   const [form, setForm] = useState<IArticleForm>({
     title: '',
     content: '',
@@ -72,32 +71,32 @@ export default function ArticleEditPage() {
     tags: [],
     excerpt: ''
   });
-  const [isDraft, setIsDraft] = useState(true);
+  const [isDraft] = useState(true);
   const [wordCount, setWordCount] = useState(0);
   const editorRef = useRef<any>(null);
 
-  const { isSuccess, data } = useQuery({
-    queryKey: [articleId],
-    // queryFn: () => getArticleDetail(articleId as string),
-    enabled: !!articleId
-  });
+  // const { isSuccess, data } = useQuery({
+  //   queryKey: [articleId],
+  //   queryFn: () => getArticleDetailApi(articleId as string),
+  //   enabled: !!articleId
+  // });
 
-  useEffect(() => {
-    if (isSuccess && data?.data?.data) {
-      const { title, content, type, cover, category, contentType, tags, excerpt } = data.data.data;
-      setForm({
-        title,
-        content,
-        type,
-        cover,
-        category,
-        contentType,
-        tags,
-        excerpt
-      });
-      setWordCount(content.length);
-    }
-  }, [isSuccess, data]);
+  // useEffect(() => {
+  //   if (isSuccess && data?.data?.data) {
+  //     const { title, content, type, cover, category, contentType, tags, excerpt } = data.data.data;
+  //     setForm({
+  //       title,
+  //       content,
+  //       type,
+  //       cover,
+  //       category,
+  //       contentType,
+  //       tags,
+  //       excerpt
+  //     });
+  //     setWordCount(content.length);
+  //   }
+  // }, [isSuccess, data]);
 
   const handleEditorChange = (value: string) => {
     setForm(prev => ({
@@ -107,32 +106,32 @@ export default function ArticleEditPage() {
     setWordCount(value.length);
   };
 
-  const handleSave = async (isDraft = true) => {
-    if (!form.title.trim()) {
-      Message.error('请输入文章标题');
-      return;
-    }
-    if (!form.content.trim()) {
-      Message.error('请输入文章内容');
-      return;
-    }
-    if (!form.category) {
-      Message.error('请选择文章分类');
-      return;
-    }
-    if (!form.contentType) {
-      Message.error('请选择内容类型');
-      return;
-    }
-   await createArticle(form).then((res) => {
-    if (res.data.status) {
-      Message.success('发布成功');
-    } else {
-      Message.error('发布失败');
-    }
-   })
-    // TODO: 实现保存逻辑
-  };
+  // const handleSave = async () => {
+  //   if (!form.title.trim()) {
+  //     Message.error('请输入文章标题');
+  //     return;
+  //   }
+  //   if (!form.content.trim()) {
+  //     Message.error('请输入文章内容');
+  //     return;
+  //   }
+  //   if (!form.category) {
+  //     Message.error('请选择文章分类');
+  //     return;
+  //   }
+  //   if (!form.contentType) {
+  //     Message.error('请选择内容类型');
+  //     return;
+  //   }
+  //  await createArticle(form).then((res) => {
+  //   if (res.data.status) {
+  //     Message.success('发布成功');
+  //   } else {
+  //     Message.error('发布失败');
+  //   }
+  //  })
+  //   // TODO: 实现保存逻辑
+  // };
 
   const handleFormat = (type: string) => {
     if (!editorRef.current) return;
@@ -215,14 +214,14 @@ export default function ArticleEditPage() {
             <Button 
               type="secondary"
               icon={<IconSave />}
-              onClick={() => handleSave(true)}
+              // onClick={() => handleSave(true)}
             >
               保存草稿
             </Button>
             <Button 
               type="primary"
               icon={<IconSend />}
-              onClick={() => handleSave(false)}
+              // onClick={() => handleSave(false)}
             >
               发布文章
             </Button>

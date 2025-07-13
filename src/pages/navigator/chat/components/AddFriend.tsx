@@ -3,14 +3,12 @@ import UserAvatar from "@/components/public/user_avatar";
 import { toastMessage } from "@/components/toast";
 import { createChatRoom } from "@/service/chat";
 import { searchUsers } from "@/service/user";
-import avatarSplice from "@/utils/avatar";
 import { Button, Card, Input, Modal, ModalHeader } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 // import classes from "./UserCardImage.module.css";
 

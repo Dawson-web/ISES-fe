@@ -4,12 +4,27 @@ import { IconSearch, IconEye, IconHeart } from '@arco-design/web-react/icon';
 
 import CampusCalander from './components/campuscalander';
 import CompanyAlumni from './components/companyalumni';
+import userStore from '@/store/User';
 
 const { Title, Text } = Typography;
+
+const hitokotos = [
+  '悲观者永远正确 乐观者永远前行 ~ 🥰',
+  '你当像鸟飞往你的山',
+  '我的冲锋是堂吉柯德的冲锋，名为生活的大风车，我要与你大战300回合！',
+  '用代码表达言语的魅力，用代码书写山河的壮丽',
+  '他们朝我扔泥巴,我拿泥巴种荷花',
+  '如果我们觉得我们已错过了春天，那么夏天、秋天和冬天里仍会有机会和时间',
+  '除了脚下的路，没有别的路可以走，这条路以死亡为终点，也无法回头……我们尽力而为'
+]
+
+
 
 const Home: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
+  const userInfo = userStore;
+
 
   // 文章数据
   const articles = [
@@ -185,6 +200,9 @@ const Home: React.FC = () => {
   // 初始化显示所有文章
   useEffect(() => {
     setFilteredArticles(articles);
+    if (!userInfo.hitokoto || userInfo.hitokoto === "") {
+      userInfo.hitokoto = hitokotos[Math.floor(Math.random() * hitokotos.length)]
+    }
   }, []);
 
 
@@ -192,16 +210,17 @@ const Home: React.FC = () => {
     console.log('查看文章:', articleId);
   };
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 头部 */}
       <div className="bg-white border-b border-gray-200">
         <div className="flex flex-col px-6 py-2">
           <div className="flex items-center justify-between w-full">
-            <div className="text-2xl font-bold">Aigei</div>
+            <div className="text-2xl font-bold">{userInfo.username || 'Aigei'}</div>
             <Button type="primary" size="small" className="ml-2">发布文章</Button>
           </div>
-          <Text className="text-gray-500 text-sm">悲观者永远正确 乐观者永远前行 ~ 🥰</Text>
+          <Text className="text-gray-500 text-sm">{userInfo.hitokoto}</Text>
         </div>
       </div>
 

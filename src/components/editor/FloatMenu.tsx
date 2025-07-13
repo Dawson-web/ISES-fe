@@ -11,7 +11,7 @@ interface IEditorClickMenuProps {
   id: string;
 }
 
-const FloatMenu: FC<IEditorClickMenuProps> = ({ editor, className, id }) => {
+const FloatMenu: FC<IEditorClickMenuProps> = ({ editor }) => {
   if (!editor) {
     return <>悬浮菜单Not Fount......</>;
   }

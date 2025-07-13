@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getValidUid } from "@/api/token";
 import { apiConfig } from "@/config";
 import clsx from "clsx";
 import { Button, Card, Input, Badge, Avatar, Text, Box } from "@mantine/core";

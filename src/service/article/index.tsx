@@ -4,6 +4,7 @@ import {
   IArticle,
   IArticleForm,
   IArticleList,
+  ICommentForm,
 } from "@/types/article";
 
 export const createArticle = async (data: IArticleForm) => {
@@ -18,14 +19,22 @@ export const createArticle = async (data: IArticleForm) => {
     });
 };
 
-export const getArticleList = async () => {
-  return await $axios.get<ApiOk<IArticleList>>("/articles");
+export const getArticleList = async (searchTerm:string) => {
+  return await $axios.get<ApiOk<IArticleList>>("/articles", {
+    params: {
+      title:searchTerm,
+    },
+  });
 }
 
-export const getArticleDetail = async (id: string) => {
+export const getArticleDetailApi = async (id: string) => {
   return await $axios.get<ApiOk<IArticle>>(`/articles/detail/${id}`);
 }
 
-export const getHotArticles = () => {
-  return $axios.get('/api/articles/hot');
+export const getHotArticlesApi = () => {
+  return $axios.get<ApiOk<IArticle[]>>('/articles/hot-list');
+};
+
+export const postCommentApi = (data: ICommentForm) => {
+  return $axios.post('/articles/comment', data);
 };

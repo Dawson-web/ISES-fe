@@ -5,7 +5,7 @@ import {
   NavigationMenuList,
 } from "@radix-ui/react-navigation-menu";
 import { LogOutIcon } from "lucide-react";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { DarkMode } from "./DarkMode";
 import { NavOpen } from "./NavOpen";
 import UserAvatar from "../user_avatar";
@@ -19,11 +19,9 @@ import {
   Card,
   Text,
   UnstyledButton,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { Menu } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import darkFunction from "@/utils/dark";
+import { useDisclosure } from "@mantine/hooks"; 
 
 interface OptionData {
   name: string;
@@ -46,7 +44,6 @@ const NavMenu: FC<IProps> = ({
   options,
   darkMode,
   avatar_show,
-  className,
   avatar_src,
   userName,
   vercel,
@@ -120,10 +117,9 @@ const NavMenu: FC<IProps> = ({
             })}
           >
             <AppLogo
-              className={clsx(
-                "ml-[40px]  text-[35px] dark:text-gray-600 font-bold  mb-1 ",
-                { "absolute left-0 h-full": vercel && !mobileOpen }
-              )}
+              title="logo"
+              subtitle="logo"
+              size="small"
             />
             {(!vercel || mobileOpen) && (
               <div className="mx-auto px-10 mt-[40px] flex flex- items-end gap-2">
@@ -210,7 +206,7 @@ const NavMenu: FC<IProps> = ({
 
                 <Menu.Dropdown className="_sm border-2 ">
                   <Menu.Item>
-                    <AppLogo className="dark:text-gray-600" />
+                    <AppLogo title="logo" subtitle="logo" size="small" />
                   </Menu.Item>
                   <Menu.Divider />
 

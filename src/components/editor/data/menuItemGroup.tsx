@@ -20,9 +20,6 @@ import {
 } from "lucide-react";
 import { Editor } from "@tiptap/react";
 import { ReactElement } from "react";
-import { toast } from "sonner";
-import { uploadImage } from "@/service/article";
-import { apiConfig } from "@/config";
 import { toastMessage } from "@/components/toast";
 
 export interface IMenuItemButtonProps {

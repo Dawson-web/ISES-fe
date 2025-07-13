@@ -1,6 +1,6 @@
-import { Avatar, Button, Result, Tag } from "@arco-design/web-react";
+import { Avatar, Result, Tag } from "@arco-design/web-react";
 import Text from "@arco-design/web-react/es/Typography/text";
-import { IconMessage, IconUser } from "@arco-design/web-react/icon";
+import { IconUser } from "@arco-design/web-react/icon";
 import { useNavigate } from "react-router-dom";
 
 // 公司校友数据

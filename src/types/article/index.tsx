@@ -21,6 +21,27 @@ export interface IArticleForm {
   excerpt?: string;
 }
 
+export interface ICommentForm {
+  content: string,
+  targetType: string,
+  targetId: string,
+}
+
+export interface IComment {
+  id: string,
+  content: string,
+  userInfoId: string,
+  targetType: string,
+  targetId: string,
+  createdAt: string,
+  updatedAt: string,
+  author: {
+    id: string,
+    username: string,
+    avatar: string,
+  }
+}
+
 export interface IArticle {
   id: number;
   title: string;
@@ -43,7 +64,7 @@ export interface IArticle {
     username: string;
     avatar: string;
   };
-  // comments:string[]
+  comments:IComment[]
 }
 
 export interface IArticleList {
