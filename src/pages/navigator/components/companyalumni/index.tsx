@@ -30,14 +30,16 @@ const CompanyAlumni = () => {
                             key={alumni.id}
                             className=" flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                             style={{ border: '1px solid transparent' }}
+                            onClick={() => {
+                                navigate(`/navigator/profile?id=${alumni.id}`)
+                            }}
                         >
                             <div className="flex items-center space-x-3 w-full">
                                 <Avatar size={32} style={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                     color: 'white',
                                     fontWeight: 'bold'
                                 }}>
-                                    {alumni.username.charAt(0)}
+                                    {alumni.avatar ?  <img src={alumni.avatar} alt="avatar" />:alumni.username.charAt(0)}
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <Text className="w-full font-medium text-gray-900 text-sm truncate flex items-center justify-between">

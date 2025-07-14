@@ -24,6 +24,8 @@ class User {
   }
 
   setUserInfo = (u: IUserInfo) => {
+    this.id = u.id;
+    // this.userId = u.userId;
     this.username = u.username;
     this.introduce = u.introduce;
     this.school = u.school;

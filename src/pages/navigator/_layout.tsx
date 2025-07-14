@@ -6,7 +6,7 @@ import { isMobile } from '@/utils';
 import '@/styles/home.css';
 import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { getUserInfo } from '@/service/user';
+import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
 
 
@@ -75,8 +75,8 @@ const _Layout = () => {
 
    //获取信息
    useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUserInfo().then((res) => {
+    queryKey: ["initUserStore"],
+    queryFn: () => getUserInfoApi().then((res) => {
       userStore.setUserInfo(res.data.data);
       return res.data.data
     }),
@@ -99,7 +99,9 @@ const _Layout = () => {
           <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
             navigate('/navigator/profile');
           }}>
-            <Avatar size={collapsed ? 28 : 32}>A</Avatar>
+            <Avatar size={collapsed ? 28 : 32}>
+              <img src={userStore.avatar} alt="avatar" />
+            </Avatar>
           </div>
           {menuList.map((item) => (
             <MenuItem 

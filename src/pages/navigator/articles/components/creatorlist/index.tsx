@@ -31,11 +31,10 @@ const CreatorList = () => {
                     >
                         <div className="flex items-center space-x-3 w-full">
                             <Avatar size={32} style={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                 color: 'white',
                                 fontWeight: 'bold'
                             }}>
-                                {creator.creator.username.charAt(0)}
+                                {creator.creator.avatar ? <img src={creator.creator.avatar} alt="avatar" /> : creator.creator.username.charAt(0)}
                             </Avatar>
                             <div className="flex-1 min-w-0">
                                 <Text className="w-full font-medium text-gray-900 text-sm truncate flex items-center justify-between">

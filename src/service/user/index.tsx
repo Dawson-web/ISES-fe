@@ -2,7 +2,7 @@ import { $axios } from "../../api";
 import { ApiOk } from "../../api/types";
 import { IUpdateUserForm, IUserFormData, IUserInfo } from "../../types/user";
 
-export const getUserInfo = async (id: string) => {
+export const getUserInfoApi = async (id?: string) => {
   return await $axios.get<ApiOk<IUserInfo>>("/user/info", {
     params: { userInfoId: id },
   });
