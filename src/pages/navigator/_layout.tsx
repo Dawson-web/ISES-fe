@@ -8,7 +8,6 @@ import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, Pencil
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/service/user';
 import userStore from '@/store/User';
-import { IUserInfo } from '@/types/user';
 
 
 const Sider = Layout.Sider;
@@ -49,7 +48,7 @@ const menuList = [
   },
 ];
 
-const _Layout = () => {
+const _Layout = () => { 
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,21 +74,13 @@ const _Layout = () => {
   }, []);
 
    //获取信息
-   const { data,isLoading } = useQuery({
+   useQuery({
     queryKey: ["user"],
-    queryFn: () => getUserInfo().then((res) => res.data.data),
+    queryFn: () => getUserInfo().then((res) => {
+      userStore.setUserInfo(res.data.data);
+      return res.data.data
+    }),
   });
-
-  useEffect(() => {
-    if (isLoading) {
-      return ;
-    }
-    if (data) {
-      userStore.setUserInfo(data);
-    } else {
-      navigate('/login');
-    }
-  }, [data, isLoading]);
 
 
   return (

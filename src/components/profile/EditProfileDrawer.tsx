@@ -43,6 +43,7 @@ interface CompanyFormItemConfig {
   placeholder?: string;
   required?: boolean;
   gridCol?: number; // 1 或 2，表示占据几列
+  rules?: any[];
 }
 
 const GradeOptions = ["大一", "大二", "大三", "大四", "研究生", "博士", "毕业"];
@@ -130,25 +131,29 @@ const companyFormItemConfigs: CompanyFormItemConfig[] = [
   {
     label: "部门",
     field: "department",
+    required: true,
     placeholder: "请输入部门",
     gridCol: 1,
   },
   {
     label: "工作地点",
     field: "location",
+    required: true,
     placeholder: "请输入工作地点",
     gridCol: 1,
   },
   {
     label: "开始日期",
     field: "startDate",
+    required: true,
     placeholder: "如：2023-06-01",
     gridCol: 1,
   },
   {
     label: "结束日期",
     field: "endDate",
-    placeholder: "如：2024-01-20",
+    required: true,
+    placeholder: "若仍在职请填：至今",
     gridCol: 1,
   },
 ];
@@ -198,20 +203,18 @@ const renderCompanyFormItem = (
   index: number,
   updateCompany: (index: number, field: keyof ICompany, value: string) => void
 ) => {
-  const { label, field, placeholder, required } = config;
+  const { label, field, placeholder, rules ,required=false} = config;
 
   return (
-    <div key={field}>
+    <Form.Item key={field} label={label} field={field} rules={rules} required={required}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <Input
         placeholder={placeholder}
         value={company[field] as string}
         onChange={(value) => updateCompany(index, field, value)}
       />
-    </div>
+    </Form.Item >
   );
 };
 

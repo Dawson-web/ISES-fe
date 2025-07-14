@@ -36,3 +36,7 @@ export const searchUsers = async (data: { searchKey: string }) => {
     ...data,
   });
 };
+
+export const getUserCompanyAlumni = async () => {
+  return await $axios.get<ApiOk<IUserInfo[]>>("/user/company-alumni");
+}

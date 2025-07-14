@@ -13,6 +13,7 @@ class User {
   online?: boolean = false;
   grade?: string = "";
   company?: ICompany[];
+  currentCompany?: ICompany;
   circles?: string[] = [];
   major?: string = "";
   techDirection?: string[] = [];
@@ -31,6 +32,7 @@ class User {
     this.online = u.online;
     this.grade = u.grade;
     this.company = u.company;
+    this.currentCompany = u.currentCompany;
     this.circles = u.circles;
     this.major = u.major;
     this.techDirection = u.techDirection;

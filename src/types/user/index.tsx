@@ -32,7 +32,7 @@ export interface IUserInfo {
   avatar?: string;
   online?: boolean;
   grade?: string;
-  currentCompany?: ICurrentCompany;
+  currentCompany?: ICompany;
   company?: ICompany[];
   circles?: string[];
   major?: string;
