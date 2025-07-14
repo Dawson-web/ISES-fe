@@ -2,6 +2,7 @@ import { Button } from "@arco-design/web-react";
 import Text from "@arco-design/web-react/es/Typography/text";
 import { IconCalendar } from "@arco-design/web-react/icon";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
   // 招聘季节数据
   const recruitmentSeasons = [
@@ -21,6 +22,8 @@ import clsx from "clsx";
   };
 
 const CampusCalander = () => {
+  const navigate = useNavigate();
+
   return        <div className="bg-white rounded-lg border border-gray-200 p-4">
   {/* 招聘季节进度条 */}
   <div className="mb-4">
@@ -72,10 +75,10 @@ const CampusCalander = () => {
 
   {/* 快速导航 */}
   <div className="space-y-2">
-    <Button type="primary" long>
+    <Button type="primary" long onClick={() => navigate('/navigator/info')}>
       内推详情
     </Button>
-    <Button type="secondary" long>
+    <Button type="secondary" long onClick={() => navigate('/navigator/info')}>
       公司爆料
     </Button>
   </div>

@@ -5,9 +5,10 @@ import {
   IArticleForm,
   IArticleList,
   ICommentForm,
+  ICreator,
 } from "@/types/article";
 
-export const createArticle = async (data: IArticleForm) => {
+export const createArticleApi = async (data: IArticleForm) => {
   return await $axios.post<ApiOk<any>>("/articles", {
       title: data.title,
       content: data.content,
@@ -37,4 +38,12 @@ export const getHotArticlesApi = () => {
 
 export const postCommentApi = (data: ICommentForm) => {
   return $axios.post('/articles/comment', data);
+};
+
+export const getSelfArticleListApi = () => {
+    return $axios.get<ApiOk<IArticle[]>>('/articles/self');
+};
+
+export const getCreatorListApi = () => {
+  return $axios.get<ApiOk<ICreator[]>>('/articles/creator-list');
 };

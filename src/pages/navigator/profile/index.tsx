@@ -23,6 +23,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userStore from "@/store/User";
 import homeBG from "@/assets/home-bg.png";
 import { observer } from "mobx-react-lite";
+import { useSearchParams } from "react-router-dom";
 
 const { Title, Paragraph, Text } = Typography;
 const { Row, Col } = Grid;
@@ -35,6 +36,7 @@ const roleMap = {
 
 const Page = observer(() => {
   const [editDrawerVisible, setEditDrawerVisible] = useState(false);
+  // const [searchParams] = useSearchParams()
   const queryClient = useQueryClient();
 
   //修改信息

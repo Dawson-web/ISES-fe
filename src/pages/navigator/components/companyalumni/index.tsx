@@ -67,7 +67,7 @@ const CompanyAlumni = () => {
                         subTitle='未填写个人公司信息，或公司暂无校友'
                         extra={
                             <Text className='text-blue-500 cursor-pointer' onClick={() => {
-                                navigate('/profile')
+                                navigate('/navigator/profile')
                             }}>
                                 前往填写
                             </Text>

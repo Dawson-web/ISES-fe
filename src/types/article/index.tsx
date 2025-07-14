@@ -10,6 +10,12 @@ export const ArticleCategoryTypeColor = {
   life: '#00b42a'
 }
 
+export const LifeContentTypeColor = {
+  '动态': '#00b42a',
+  '技术': '#165dff',
+  '分享': '#f53f3f'
+}
+
 export interface IArticleForm {
   title: string;
   content: string;
@@ -74,4 +80,17 @@ export interface IArticleList {
     pageSize: number;
     total: number;
   };
+}
+
+export interface ICreator {
+  articleCount: number;
+  creator: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
+  creatorId: string;
+  totalComments: number;
+  totalLikes: number;
+  totalViews: number;
 }

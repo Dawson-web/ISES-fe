@@ -5,6 +5,11 @@ import { IconSearch, IconEye, IconHeart } from '@arco-design/web-react/icon';
 import CampusCalander from './components/campuscalander';
 import CompanyAlumni from './components/companyalumni';
 import userStore from '@/store/User';
+import { observer } from 'mobx-react-lite';
+import { getSelfArticleListApi } from '@/service/article';
+import { useQuery } from '@tanstack/react-query';
+import { LifeContentTypeColor } from '@/types/article';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -20,10 +25,11 @@ const hitokotos = [
 
 
 
-const Home: React.FC = () => {
+const Home: React.FC = observer(() => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
   const userInfo = userStore;
+  const navigate = useNavigate();
 
 
   // 文章数据
@@ -205,9 +211,13 @@ const Home: React.FC = () => {
     }
   }, []);
 
+  const { data: selfArticles } = useQuery({
+    queryKey: ['articles'],
+    queryFn: () => getSelfArticleListApi().then(res => res.data.data),
+  });
 
   const handleArticleClick = (articleId: number) => {
-    console.log('查看文章:', articleId);
+    navigate(`/navigator/articles/detail?id=${articleId}`);
   };
 
 
@@ -218,7 +228,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col px-6 py-2">
           <div className="flex items-center justify-between w-full">
             <div className="text-2xl font-bold">{userInfo.username || 'Aigei'}</div>
-            <Button type="primary" size="small" className="ml-2">发布文章</Button>
+            <Button type="primary" size="small" className="ml-2" onClick={() => navigate('/navigator/articles/edit')}>发布文章</Button>
           </div>
           <Text className="text-gray-500 text-sm">{userInfo.hitokoto}</Text>
         </div>
@@ -233,24 +243,23 @@ const Home: React.FC = () => {
           <div className="flex-1">
             <div className="h-full bg-white rounded-lg border border-gray-200 p-6">
               {/* 搜索框 */}
-              <div className="mb-6">
+              <div className="mb-6 flex items-center justify-between">
                 <Input.Search
                   placeholder="搜索文章、技术、面试..."
                   prefix={<IconSearch />}
                   value={searchValue}
                   onChange={setSearchValue}
                   onSearch={handleSearch}
-                  className="mb-4"
                   style={{ maxWidth: '400px' }}
                 />
                 <Text className="text-sm text-gray-500">
-                  {searchValue ? `找到 ${filteredArticles.length} 篇相关文章` : `共 ${articles.length} 篇文章`}
+                  {searchValue ? `找到 ${filteredArticles.length} 篇相关文章` : `共发布 ${articles.length} 篇文章`}
                 </Text>
               </div>
 
               {/* 文章列表 */}
               <div className="space-y-3 ">
-                {filteredArticles.map((article) => (
+                {selfArticles?.map((article) => (
                   <Card
                     key={article.id}
                     className="cursor-pointer hover-lift article-card border-0 shadow-sm hover:shadow-md transition-all duration-300"
@@ -258,45 +267,35 @@ const Home: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Tag
-                            color="blue"
-                            size="small"
-                            className="rounded-full px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 border-blue-200"
-                          >
-                            {article.category}
-                          </Tag>
-                          {article.featured && (
-                            <Badge
-                              count="精选"
-                              style={{
-                                backgroundColor: '#f53f3f',
-                                borderColor: '#f53f3f',
-                                fontSize: '10px',
-                                height: '18px',
-                                lineHeight: '18px'
-                              }}
-                            />
-                          )}
-                        </div>
-
                         <Title
                           heading={6}
-                          className="mb-0 hover:text-blue-600 transition-colors leading-relaxed font-medium text-gray-900"
+                          className="mb-0 hover:text-blue-600 transition-colors leading-relaxed font-medium text-gray-900 flex items-center gap-4"
                           style={{ fontSize: '16px', lineHeight: '1.5' }}
                         >
                           {article.title}
+                            <Tag
+                              color={LifeContentTypeColor[article.contentType as keyof typeof LifeContentTypeColor]}
+                              style={{
+                                border: 'none',
+                                // padding: '0 8px',
+                                height: '20px',
+                                fontSize: '12px',
+                                borderRadius: '10px'
+                              }}
+                            >
+                              {article.contentType}
+                            </Tag>
                         </Title>
                       </div>
 
                       <div className="flex items-center space-x-3 text-gray-400 ml-4 flex-shrink-0">
                         <div className="flex items-center space-x-1">
                           <IconEye className="text-sm" />
-                          <Text className="text-xs font-medium">{article.views}</Text>
+                          <Text className="text-xs font-medium">{article.metadata.viewCount}</Text>
                         </div>
                         <div className="flex items-center space-x-1">
                           <IconHeart className="text-sm" />
-                          <Text className="text-xs font-medium">{article.likes}</Text>
+                          <Text className="text-xs font-medium">{article.metadata.likeCount}</Text>
                         </div>
                       </div>
                     </div>
@@ -327,6 +326,6 @@ const Home: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Home;
