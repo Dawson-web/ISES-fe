@@ -111,53 +111,6 @@ const formSections = [
     fields: ["techDirection", "circles"],
   },
 ];
-
-// 公司表单项配置数据
-const companyFormItemConfigs: CompanyFormItemConfig[] = [
-  {
-    label: "公司名称",
-    field: "name",
-    placeholder: "请输入公司名称",
-    required: true,
-    gridCol: 1,
-  },
-  {
-    label: "职位",
-    field: "position",
-    placeholder: "请输入职位",
-    required: true,
-    gridCol: 1,
-  },
-  {
-    label: "部门",
-    field: "department",
-    required: true,
-    placeholder: "请输入部门",
-    gridCol: 1,
-  },
-  {
-    label: "工作地点",
-    field: "location",
-    required: true,
-    placeholder: "请输入工作地点",
-    gridCol: 1,
-  },
-  {
-    label: "开始日期",
-    field: "startDate",
-    required: true,
-    placeholder: "如：2023-06-01",
-    gridCol: 1,
-  },
-  {
-    label: "结束日期",
-    field: "endDate",
-    required: true,
-    placeholder: "若仍在职请填：至今",
-    gridCol: 1,
-  },
-];
-
 // 渲染表单项的通用函数
 const renderFormItem = (config: FormItemConfig) => {
   const {
@@ -197,26 +150,6 @@ const renderFormItem = (config: FormItemConfig) => {
 };
 
 // 渲染公司表单项的通用函数
-const renderCompanyFormItem = (
-  config: CompanyFormItemConfig,
-  company: ICompany,
-  index: number,
-  updateCompany: (index: number, field: keyof ICompany, value: string) => void
-) => {
-  const { label, field, placeholder, rules ,required=false} = config;
-
-  return (
-    <Form.Item key={field} label={label} field={field} rules={rules} required={required}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-      </label>
-      <Input
-        placeholder={placeholder}
-        value={company[field] as string}
-        onChange={(value) => updateCompany(index, field, value)}
-      />
-    </Form.Item >
-  );
-};
 
 const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   visible,
@@ -227,7 +160,121 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(userInfo.avatar || "");
-  const [companies, setCompanies] = useState<ICompany[]>(userInfo.company || []);
+  const companies = Form.useWatch("companies", form) || [];
+  const renderCompanyFormItem = (
+    config: CompanyFormItemConfig,
+    index: number
+  ) => {
+    const { label, field, placeholder, rules, required = false } = config;
+    const fieldPath = `companies.${index}.${field}`;
+    return (
+      <Form.Item
+        key={field}
+        label={label}
+        field={fieldPath}
+        rules={rules}
+        required={required}
+      >
+        {/*
+        <label className="block text-sm font-medium text-gray-700 mb-1"></label>
+        */}
+        <Input
+          placeholder={placeholder}
+          //onChange={(value) => {
+          //  form.setFieldsValue({ [fieldPath]: value });
+          //}}
+        />
+      </Form.Item>
+    );
+  };
+  const startRule = (index: number) => ({
+    validator: async (value, callback) => {
+      // 日期格式校验
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        callback("格式应为 YYYY-MM-DD");
+        return;
+      }
+
+      // 不能晚于今天
+      if (new Date(value).getTime() > Date.now()) {
+        callback("开始日期不能大于今天");
+        return;
+      }
+
+      callback();
+    },
+  });
+
+  const endRule = (index: number) => ({
+    validator: async (value, callback) => {
+      const companies = form.getFieldValue("companies") || [];
+      const start = companies[index]?.startDate;
+      if (new Date(value) <= new Date(start)) {
+        callback("结束日期必须晚于开始日期");
+        return;
+      }
+      if (new Date(value).getTime() > Date.now()) {
+        callback("开始日期不能大于今天");
+        return;
+      }
+      if (value === "至今") {
+        const cnt = companies.filter((item) => item?.endDate === "至今").length;
+        if (cnt > 1) {
+          callback("只能有一个实习经历的结束时间为“至今”");
+          return;
+        }
+        callback(); // 当前通过
+        return;
+      }
+      callback();
+    },
+  });
+  const companyFormItemConfigs = (index: number): CompanyFormItemConfig[] => [
+    {
+      label: "公司名称",
+      field: "name",
+      placeholder: "请输入公司名称",
+      required: true,
+      gridCol: 1,
+    },
+    {
+      label: "职位",
+      field: "position",
+      placeholder: "请输入职位",
+      required: true,
+      gridCol: 1,
+    },
+    {
+      label: "部门",
+      field: "department",
+      required: true,
+      placeholder: "请输入部门",
+      gridCol: 1,
+    },
+    {
+      label: "工作地点",
+      field: "location",
+      required: true,
+      placeholder: "请输入工作地点",
+      gridCol: 1,
+    },
+    {
+      label: "开始日期",
+      field: "startDate",
+      required: true,
+      placeholder: "如：2023-06-01",
+      gridCol: 1,
+      rules: [{ required: true, message: "请输入开始日期" }, startRule(index)],
+    },
+    {
+      label: "结束日期",
+      field: "endDate",
+      required: true,
+      placeholder: "若仍在职请填：至今",
+      gridCol: 1,
+      rules: [{ required: true, message: "请输入结束日期" }, endRule(index)],
+    },
+  ];
 
   useEffect(() => {
     if (visible && userInfo) {
@@ -237,17 +284,19 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         school: userInfo.school,
         major: userInfo.major,
         grade: userInfo.grade,
-        techDirection: Array.isArray(userInfo.techDirection) ? userInfo.techDirection : [],
+        techDirection: Array.isArray(userInfo.techDirection)
+          ? userInfo.techDirection
+          : [],
         circles: Array.isArray(userInfo.circles) ? userInfo.circles : [],
+        companies: userInfo.company || [],
       });
       setAvatarUrl(userInfo.avatar || "");
-      setCompanies(userInfo.company || []);
     }
-
   }, [visible, userInfo, form]);
-
+  console.log(form.getFieldValue("companies"));
   const handleSave = async () => {
     try {
+      //await form.validate(["companies"]);
       await form.validate();
       setLoading(true);
 
@@ -281,12 +330,14 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
     const formData = new FormData();
     formData.append("avatar", file);
-    await uploadAvatar(formData).then((res) => {
-      setAvatarUrl(apiConfig.baseUrl + res.data.data.avatar);
-      onSuccess();
-    }).catch((err) => {
-      onError(err);
-    });
+    await uploadAvatar(formData)
+      .then((res) => {
+        setAvatarUrl(apiConfig.baseUrl + res.data.data.avatar);
+        onSuccess();
+      })
+      .catch((err) => {
+        onError(err);
+      });
   };
 
   const addCompany = () => {
@@ -300,23 +351,25 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       location: "",
       description: "",
     };
-    setCompanies([...companies, newCompany]);
+    const curCompany = form.getFieldValue("companies") || [];
+    form.setFieldValue("companies", [...curCompany, newCompany]);
   };
 
   const removeCompany = (index: number) => {
-    const newCompanies = companies.filter((_, i) => i !== index);
-    setCompanies(newCompanies);
+    const curCompany = form.getFieldValue("companies") || [];
+    const newCompanies = curCompany.filter((_, i) => i !== index);
+    form.setFieldValue("companies", newCompanies);
   };
 
-  const updateCompany = (
-    index: number,
-    field: keyof ICompany,
-    value: string
-  ) => {
-    const newCompanies = [...companies];
-    newCompanies[index] = { ...newCompanies[index], [field]: value };
-    setCompanies(newCompanies);
-  };
+  //const updateCompany = (
+  //  index: number,
+  //  field: keyof ICompany,
+  //  value: string
+  //) => {
+  // const newCompanies = [...companies];
+  // newCompanies[index] = { ...newCompanies[index], [field]: value };
+  // setCompanies(newCompanies);
+  //};
 
   return (
     <Drawer
@@ -403,8 +456,8 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {companyFormItemConfigs.map((config) =>
-                    renderCompanyFormItem(config, company, index, updateCompany)
+                  {companyFormItemConfigs(index).map((config) =>
+                    renderCompanyFormItem(config, index)
                   )}
                 </div>
               </div>
