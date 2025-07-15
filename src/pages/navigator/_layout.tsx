@@ -4,7 +4,7 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BookText, Building2, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
+import { BookText, Building2, Check, CheckCircle, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -45,6 +45,11 @@ const menuList = [
     key: '/navigator/chat',
     icon: <MessageSquareText size={16} />,
     label: '消息',
+  },
+  {
+    key: '/navigator/approve',
+    icon: <CheckCircle size={16} />,
+    label: '审批',
   },
 ];
 

@@ -4,6 +4,9 @@ import SalaryCalculator from '@/components/salary-calculator';
 import CompanyFormModal from '@/components/company-form-modal';
 import salaryGIF from '@/assets/salary.gif';
 import './style.css';
+import { getCompanyListApi } from '@/service/company';
+import { useQuery } from '@tanstack/react-query';
+import { ICompany } from '@/types/company';
 
 interface CompanySchedule {
   id: number;
@@ -107,86 +110,82 @@ const Info = () => {
   const [calculatorVisible, setCalculatorVisible] = useState(false);
   const [companyFormVisible, setCompanyFormVisible] = useState(false);
 
+  const {data: companyList} = useQuery({
+    queryKey: ['companyList'],
+    queryFn: () => getCompanyListApi().then(res => res.data),
+  })
+
+
 
   const columns = [
     {
       title: '公司',
-      dataIndex: 'company',
-      render: (_: any, record: CompanySchedule) => (
+      dataIndex: 'name',
+      render: (_: any, record: ICompany) => (
         <div className="company-cell">
-          <img src={record.logo} alt={record.name} className="company-logo" />
+          <img src={record.logo || ''} alt={record.name} className="company-logo" />
           <span>{record.name}</span>
         </div>
       ),
     },
     {
-      title: '内推',
-      dataIndex: 'internal',
-      render: (internal: CompanySchedule['internal']) => (
+      title:'规模',
+      dataIndex: 'employeeCount',
+      render: (employeeCount: string) => (
         <div className="schedule-cell">
-          <div>{internal.date}</div>
-          {internal.link && (
-            <Button type="text" className="link-button">
-              {internal.link}
-            </Button>
-          )}
+          <div>{employeeCount}</div>
         </div>
       ),
     },
     {
-      title:'工作地点',
-      dataIndex: 'location',
-      render: (location: string) => (
+      title:'办公地点',
+      dataIndex: 'address',
+      render: (address: string[]) => (
         <div className="schedule-cell">
-          <div>{location}</div>
+          {address.length > 0 && Array.isArray(address) ? address?.map((item) => (
+            <div >{item}</div>
+          )) : '暂无'}
         </div>
       ),
     },
     {
-      title:'招聘类型',
-      dataIndex: 'type',
-      render: (type: string) => (
+      title:'技术岗位',
+      dataIndex: 'mainBusiness',
+      render: (mainBusiness: string) => (
         <div className="schedule-cell">
-          <div>{type}</div>
-        </div>
+        {mainBusiness.length > 0 && Array.isArray(mainBusiness) ? mainBusiness?.map((item) => (
+          <div >{item}</div>
+        )) : '暂无'}
+      </div>
       ),
     },
     {
-      title:'招聘对象',
-      dataIndex: 'object',
-      render: (object: string) => (
+      title:'状态',
+      dataIndex: 'status',
+      render: (status: boolean) => (
         <div className="schedule-cell">
-          <div>{object}</div>
-        </div>
-      ),
-    },
-    {
-      title:'岗位',
-      dataIndex: 'job',
-      render: (job: string) => (
-        <div className="schedule-cell">
-          <div>{job}</div>
-        </div>
-      ),
-    },
-    {
-      title:'更新时间',
-      dataIndex: 'time',
-      render: (time: string) => (
-        <div className="schedule-cell">
-          <div>{time}</div>
-        </div>
-      ),
-    },
-    {
-      title:'投递链接',
-      dataIndex: 'link',
-      render: (link: string) => (
-        <div className="schedule-cell">
-          <div>{link}</div>
+          <Tag color={status ? 'green' : 'red'}>{status ? '已认证' : '未认证'}</Tag>
         </div>
       ),
     }
+    // {
+    //   title:'更新时间',
+    //   dataIndex: 'updatedAt',
+    //   render: (updatedAt: string) => (
+    //     <div className="schedule-cell">
+    //       <div>{updatedAt}</div>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title:'投递链接',
+    //   dataIndex: 'metadata',
+    //   render: (metadata: string) => (
+    //     <div className="schedule-cell">
+    //       <div>{metadata}</div>
+    //     </div>
+    //   ),
+    // }
 
   ];
 
@@ -233,8 +232,8 @@ const Info = () => {
                 onClick={() => setCompanyFormVisible(true)}
               >
                 <div className="button-content">
-                  <span>添加公司</span>
-                  <span className="sub">添加公司信息</span>
+                  <span>公司未收录</span>
+                  <span className="sub">前往添加公司信息</span>
                 </div>
               </Button>
               <Button className="tool-button small">
@@ -261,7 +260,7 @@ const Info = () => {
 
       <Table
         columns={columns}
-        data={mockData}
+        data={companyList?.companies || []}
         pagination={false}
         className="schedule-table"
         rowKey="id"

@@ -7,6 +7,7 @@ export type Path =
   | `/`
   | `/login`
   | `/navigator`
+  | `/navigator/approve`
   | `/navigator/articles`
   | `/navigator/articles/components/creatorlist`
   | `/navigator/articles/components/hotlist`
