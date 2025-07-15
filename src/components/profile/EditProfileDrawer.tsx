@@ -180,19 +180,31 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         */}
         <Input
           placeholder={placeholder}
-          //onChange={(value) => {
-          //  form.setFieldsValue({ [fieldPath]: value });
-          //}}
+        //onChange={(value) => {
+        //  form.setFieldsValue({ [fieldPath]: value });
+        //}}
         />
       </Form.Item>
     );
   };
   const startRule = (index: number) => ({
-    validator: async (value, callback) => {
+    validator: async (value: any, callback: Function) => {
       // 日期格式校验
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
         callback("格式应为 YYYY-MM-DD");
         return;
+      }
+      else {
+        // 不能与其他实习经历的开始日期相同
+        const companies = form.getFieldValue("companies") || [];
+        companies.map((item: ICompany, _index: number) => {
+          if(_index !== index && new Date(item.startDate) <= new Date(value) && (new Date(item.endDate) >= new Date(value) || item.endDate === "至今")){
+            // console.log(123,item.endDate,item.startDate,value)
+            callback("开始日期不能与其他实习经历的日期重叠");
+            return;
+          }
+        });
+
       }
 
       // 不能晚于今天
@@ -206,7 +218,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
   });
 
   const endRule = (index: number) => ({
-    validator: async (value, callback) => {
+    validator: async (value: any, callback: Function) => {
       const companies = form.getFieldValue("companies") || [];
       const start = companies[index]?.startDate;
       if (new Date(value) <= new Date(start)) {
@@ -218,7 +230,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         return;
       }
       if (value === "至今") {
-        const cnt = companies.filter((item) => item?.endDate === "至今").length;
+        const cnt = companies.filter((item: ICompany) => item?.endDate === "至今").length;
         if (cnt > 1) {
           callback("只能有一个实习经历的结束时间为“至今”");
           return;
@@ -226,9 +238,14 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
         callback(); // 当前通过
         return;
       }
-      callback();
+      else if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        callback("格式应为 YYYY-MM-DD");
+        return;
+      }
+
     },
   });
+
   const companyFormItemConfigs = (index: number): CompanyFormItemConfig[] => [
     {
       label: "公司名称",
@@ -293,7 +310,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       setAvatarUrl(userInfo.avatar || "");
     }
   }, [visible, userInfo, form]);
-  console.log(form.getFieldValue("companies"));
+  // console.log(form.getFieldValue("companies"));
   const handleSave = async () => {
     try {
       //await form.validate(["companies"]);
@@ -357,7 +374,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
 
   const removeCompany = (index: number) => {
     const curCompany = form.getFieldValue("companies") || [];
-    const newCompanies = curCompany.filter((_, i) => i !== index);
+    const newCompanies = curCompany.filter((_: ICompany, i: number) => i !== index);
     form.setFieldValue("companies", newCompanies);
   };
 
@@ -435,7 +452,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
           </div>
         ) : (
           <div className="space-y-6">
-            {companies.map((company, index) => (
+            {companies.map((company: ICompany, index: number) => (
               <div
                 key={company.id || index}
                 className="border border-gray-200 rounded-md p-4 relative"
