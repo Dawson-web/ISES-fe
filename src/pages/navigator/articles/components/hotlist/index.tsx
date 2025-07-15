@@ -1,6 +1,6 @@
 import ISESSkeleton from '@/components/skeleton';
 import { getHotArticlesApi } from '@/service/article';
-import { Button, Typography, Avatar, Card } from '@arco-design/web-react';
+import {  Typography, Card } from '@arco-design/web-react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';

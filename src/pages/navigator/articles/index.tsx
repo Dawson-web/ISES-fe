@@ -1,24 +1,21 @@
-import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs, Result } from '@arco-design/web-react';
+import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result } from '@arco-design/web-react';
 import {  IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ArticleCategoryType, ArticleCategoryTypeColor, IArticle, LifeContentTypeColor } from "@/types/article";
+import {  IArticle, LifeContentTypeColor } from "@/types/article";
 import HotList from './components/hotlist';
 import { getArticleList } from '@/service/article';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ISESSkeleton from '@/components/skeleton';
-import { CONTENT_TYPE } from './edit';
 import CreatorList from './components/creatorlist';
 
 const { Title, Text } = Typography;
-const CONTENT_TYPE_LIFE = ['全部',...CONTENT_TYPE.life]
 
 
 
 export default function ArticleList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [type, setType] = useState<string>('');
 
   const queryClient = useQueryClient();
 

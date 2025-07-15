@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Input, Button, Typography, Card, Tag, Badge } from '@arco-design/web-react';
+import { Input, Button, Typography, Card, Tag } from '@arco-design/web-react';
 import { IconSearch, IconEye, IconHeart } from '@arco-design/web-react/icon';
 
 import CampusCalander from './components/campuscalander';
