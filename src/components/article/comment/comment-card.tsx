@@ -53,7 +53,7 @@ const CommentCard: FC<IProps> = ({ comment, className, createdAt }) => {
       <Comment
         actions={actions}
         align='right'
-        author={<span className="font-medium text-gray-900 dark:text-gray-100">{comment.userInfoId}</span>}
+        author={<span className="font-medium text-gray-900 dark:text-gray-100">{comment.author.username}</span>}
         avatar={
           <Avatar className="border-2 border-gray-100 dark:border-gray-700">
             <img

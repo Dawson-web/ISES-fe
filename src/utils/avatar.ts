@@ -1,7 +1,7 @@
 import { apiConfig } from "@/config";
 
-const avatarSplice = (userInfoId: string) => {
-  return apiConfig.baseUrl + `/uploads/avatars/${userInfoId}.png`;
+const avatarSplice = (src: string) => {
+  return apiConfig.baseUrl + `${src}`;
 };
 
 export default avatarSplice;

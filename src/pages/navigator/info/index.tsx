@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Table, Tag, Button, Input } from '@arco-design/web-react';
 import SalaryCalculator from '@/components/salary-calculator';
+import CompanyFormModal from '@/components/company-form-modal';
 import salaryGIF from '@/assets/salary.gif';
 import './style.css';
 
@@ -104,6 +105,7 @@ const mockData: CompanySchedule[] = [
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
+  const [companyFormVisible, setCompanyFormVisible] = useState(false);
 
 
   const columns = [
@@ -188,6 +190,11 @@ const Info = () => {
 
   ];
 
+  const handleCompanySubmit = (values: any) => {
+    console.log('提交的公司信息:', values);
+    // TODO: 这里添加提交到后端的逻辑
+  };
+
   return (
     <div className="info-container">
 
@@ -221,10 +228,13 @@ const Info = () => {
               </div>
             </Button>
             <div className="tool-group">
-              <Button className="tool-button small">
+              <Button 
+                className="tool-button small"
+                onClick={() => setCompanyFormVisible(true)}
+              >
                 <div className="button-content">
-                  <span>找真题</span>
-                  <span className="sub">5K+名企应届真题</span>
+                  <span>添加公司</span>
+                  <span className="sub">添加公司信息</span>
                 </div>
               </Button>
               <Button className="tool-button small">
@@ -241,6 +251,12 @@ const Info = () => {
       <SalaryCalculator
         visible={calculatorVisible}
         onClose={() => setCalculatorVisible(false)}
+      />
+
+      <CompanyFormModal
+        visible={companyFormVisible}
+        onClose={() => setCompanyFormVisible(false)}
+        onSubmit={handleCompanySubmit}
       />
 
       <Table

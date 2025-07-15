@@ -8,6 +8,7 @@ export type Path =
   | `/login`
   | `/navigator`
   | `/navigator/articles`
+  | `/navigator/articles/components/creatorlist`
   | `/navigator/articles/components/hotlist`
   | `/navigator/articles/detail`
   | `/navigator/articles/edit`

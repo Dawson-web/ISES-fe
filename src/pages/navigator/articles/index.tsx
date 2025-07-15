@@ -1,21 +1,21 @@
-import { Input, Select, Button, Typography, Space, Avatar, Card, Tag, Grid, Tabs, Result } from '@arco-design/web-react';
+import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result } from '@arco-design/web-react';
 import {  IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ArticleCategoryType, ArticleCategoryTypeColor, IArticle } from "@/types/article";
+import {  IArticle, LifeContentTypeColor } from "@/types/article";
 import HotList from './components/hotlist';
 import { getArticleList } from '@/service/article';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ISESSkeleton from '@/components/skeleton';
+import CreatorList from './components/creatorlist';
 
 const { Title, Text } = Typography;
-const TabPane = Tabs.TabPane;
+
+
 
 export default function ArticleList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [type, setType] = useState<string>('');
-  const [activeTab, setActiveTab] = useState('发动态');
 
   const queryClient = useQueryClient();
 
@@ -56,21 +56,23 @@ export default function ArticleList() {
               size="large"
               className="shadow-sm"
             />
-            <Select
+            {/* <Select
               placeholder="选择文章类型"
               value={type}
               onChange={val => setType(val || '')}
-              style={{ width: 140 }}
+              style={{ width: 200 }}
               allowClear
               size="large"
               className="shadow-sm"
+              defaultValue="全部"
+              mode='multiple'
             >
-              {['日常', '分享', '感悟', '学习', '技术'].map(option => (
+              {CONTENT_TYPE_LIFE.map(option => (
                 <Select.Option key={option} value={option}>
                   {option}
                 </Select.Option>
               ))}
-            </Select>
+            </Select> */}
             <Button 
               type="primary" 
               icon={<IconPlus />} 
@@ -85,21 +87,11 @@ export default function ArticleList() {
       </div>
 
       {/* 主体内容区域 */}
-      <div className=" mx-auto px-6 py-4 flex gap-6 md:flex-nowrap flex-wrap">
+      <div className=" mx-auto px-6 py-4 flex gap-4 md:flex-nowrap flex-wrap">
         
         {/* 左侧内容区 */}
         <div className="flex-1">
-          <Tabs 
-            activeTab={activeTab} 
-            onChange={setActiveTab}
-            className="article-tabs"
-          >
-            <TabPane key="动态" title={<span className="px-2">动态</span>} />
-            <TabPane key="文章" title={<span className="px-2">文章</span>} />
-            <TabPane key="内推" title={<span className="px-2">内推</span>} />
-          </Tabs>
-
-          <div className="mt-4">
+          <div className="">
             <Grid.Row gutter={[0, 1]}>
               {isLoading ? (
                 <ISESSkeleton count={3} type="list-info" className="w-full" />
@@ -158,9 +150,9 @@ export default function ArticleList() {
                                   fontSize: '12px',
                                   borderRadius: '10px'
                                 }}
-                                color={ArticleCategoryTypeColor[article.metadata.category as keyof typeof ArticleCategoryTypeColor]}
+                                color={LifeContentTypeColor[article.contentType as keyof typeof LifeContentTypeColor]}
                               >
-                                {ArticleCategoryType[article.metadata.category as keyof typeof ArticleCategoryType]}
+                                {article.contentType}
                               </Tag>
                             </div>
 
@@ -216,8 +208,10 @@ export default function ArticleList() {
         </div>
 
         {/* 右侧热榜区域 */}
+        <div className="flex flex-col gap-4 w-full md:w-[300px]">
         <HotList />
-      
+        <CreatorList />
+      </div>
       </div>
     </div>
   );

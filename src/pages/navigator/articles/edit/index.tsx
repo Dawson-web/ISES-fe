@@ -22,6 +22,7 @@ import {
 import './style.css';
 // import { createArticle } from '@/service/article';
 import { IArticleForm } from '@/types/article';
+import {  createArticleApi } from '@/service/article';
 
 const CATEGORY = [
   {
@@ -38,7 +39,7 @@ const CATEGORY = [
   }
 ]
 
-const CONTENT_TYPE = {
+export const CONTENT_TYPE = {
   'life': ['动态','技术','分享'],
   'campus': ['内推'],
   'company': ['信息']
@@ -106,32 +107,32 @@ export default function ArticleEditPage() {
     setWordCount(value.length);
   };
 
-  // const handleSave = async () => {
-  //   if (!form.title.trim()) {
-  //     Message.error('请输入文章标题');
-  //     return;
-  //   }
-  //   if (!form.content.trim()) {
-  //     Message.error('请输入文章内容');
-  //     return;
-  //   }
-  //   if (!form.category) {
-  //     Message.error('请选择文章分类');
-  //     return;
-  //   }
-  //   if (!form.contentType) {
-  //     Message.error('请选择内容类型');
-  //     return;
-  //   }
-  //  await createArticle(form).then((res) => {
-  //   if (res.data.status) {
-  //     Message.success('发布成功');
-  //   } else {
-  //     Message.error('发布失败');
-  //   }
-  //  })
-  //   // TODO: 实现保存逻辑
-  // };
+  const handleSave = async () => {
+    if (!form.title.trim()) {
+      Message.error('请输入文章标题');
+      return;
+    }
+    if (!form.content.trim()) {
+      Message.error('请输入文章内容');
+      return;
+    }
+    if (!form.category) {
+      Message.error('请选择文章分类');
+      return;
+    }
+    if (!form.contentType) {
+      Message.error('请选择内容类型');
+      return;
+    }
+   await createArticleApi(form).then((res) => {
+    if (res.data.status) {
+      Message.success('发布成功');
+    } else {
+      Message.error('发布失败');
+    }
+   })
+    // TODO: 实现保存逻辑
+  };
 
   const handleFormat = (type: string) => {
     if (!editorRef.current) return;
@@ -221,7 +222,7 @@ export default function ArticleEditPage() {
             <Button 
               type="primary"
               icon={<IconSend />}
-              // onClick={() => handleSave(false)}
+              onClick={() => handleSave()}
             >
               发布文章
             </Button>
