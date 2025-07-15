@@ -158,7 +158,7 @@ export default function ArticleList() {
 
                             {/* 文章内容 */}
                             <Text className="text-[#515767] dark:text-[#A4A4A4] text-[14px] leading-relaxed line-clamp-2 mb-3">
-                              {article.content}
+                              {article.metadata.excerpt}
                             </Text>
                             
                             {/* 文章数据 */}

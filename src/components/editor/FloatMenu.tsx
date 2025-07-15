@@ -19,20 +19,20 @@ const FloatMenu: FC<IEditorClickMenuProps> = ({ editor }) => {
 
   return (
     <BubbleMenu
-      className="bubble-menu flex flex-row flex-nowrap  bg-theme_gray rounded-md  shadow-xl"
+      className="bubble-menu flex flex-row flex-nowrap  rounded-md  shadow-xl p-1"
       tippyOptions={{ duration: 100 }}
       editor={editor}
     >
       {menuItemGroups.map((group) => {
         return (
-          <div key={group[0].tooltip} className="flex flex-row flex-nowrap">
+          <div key={group[0].tooltip} className="flex flex-row flex-nowrap gap-1">
             {group.map((itemProps, i) => (
               <FloatMenuItem
                 {...itemProps}
                 key={itemProps.tooltip + i}
                 editor={editor}
                 className={
-                  "bg-theme_gray hover:bg-gray-700  rounded-md flex justify-center items-center p-1 hover:"
+                  "  rounded-md flex justify-center items-center p-1 "
                 }
               />
             ))}

@@ -32,7 +32,7 @@ const FloatMenuItem: FC<IFloatMenuItemProps> = ({
   return (
     <Tooltip label={tooltip}>
       <div
-        className={clsx([className, isActive ? "bg-emerald-500 " : ""])}
+        className={clsx([className, isActive ? "bg-blue-600 text-white" : "text-black"])}
         onClick={onClick}
         key={tooltip}
         aria-label={tooltip}

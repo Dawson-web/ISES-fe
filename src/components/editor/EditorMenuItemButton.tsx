@@ -2,7 +2,7 @@
 import { Editor } from "@tiptap/react";
 import { FC } from "react";
 import clsx from "clsx";
-import { Button, Tooltip } from "@mantine/core";
+import { Button, Tooltip } from "@arco-design/web-react";
 export interface IMenuItemButtonProps {
   Icon: any;
   tooltip: string;
@@ -31,10 +31,10 @@ const MenuItemButton: FC<IMenuItemButtonProps> = ({
   const isActive = active && editor!.isActive(...(arg as TActive));
 
   return (
-    <Tooltip label={tooltip}>
+    <Tooltip content={tooltip}>
       <Button
-        variant="light"
-        className={clsx([className, " ", isActive ? "bg-blue-600/50 " : ""])}
+        type={isActive ? "primary" : "default"}
+        className={clsx([className])}
         onClick={onClick}
         key={tooltip}
         disabled={disabled}
