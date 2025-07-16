@@ -20,10 +20,12 @@ export const createArticleApi = async (data: IArticleForm) => {
     });
 };
 
-export const getArticleList = async (searchTerm:string) => {
+export const getArticleList = async (searchTerm:string,page?:number,pageSize?:number) => {
   return await $axios.get<ApiOk<IArticleList>>("/articles", {
     params: {
       title:searchTerm,
+      page,
+      pageSize,
     },
   });
 }

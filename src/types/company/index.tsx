@@ -2,26 +2,29 @@ export interface ICompany {
     id?: string;
     name: string;
     address: string[];
-    logo?: string;
+    logo?: string | null;
     description?: string;
     establishedDate?: Date;
     mainBusiness: string[];
     employeeCount?: string;
     scaleRating?: number;
-    status?: 'pending' | 'approved' | 'rejected';
     isVerified?: boolean;
-    metadata?: string;
+    status?: 'pending' | 'approved' | 'rejected';
+    metadata?: {
+        internalCode?: string;
+        website?: string;
+    };
     createdAt?: string;
     updatedAt?: string;
 }
 
-export interface ICompanyList {
-    companies: ICompany[]
-    total: number;
-}
-
 export interface ICompanyStatus {
     companyId: string;
-    status: 'pending' | 'approved' | 'rejected';
+    status: 'approved' | 'rejected';
     isVerified: boolean;
+}
+
+export interface ICompanyList {
+    companies: ICompany[];
+    total: number;
 }

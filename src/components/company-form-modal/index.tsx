@@ -27,6 +27,10 @@ interface CompanyFormData {
   scaleRating?: number;
   isVerified?: boolean;
   status: 'pending' | 'approved' | 'rejected';
+  metadata?: {
+    internalCode?: string;
+    website?: string;
+  };
 }
 
 const EMPLOYEE_COUNT_OPTIONS = [
@@ -48,7 +52,12 @@ const CompanyFormModal = observer(({ visible, onClose, onSubmit }: CompanyFormMo
       if (fileList.length > 0 && fileList[0].url) {
         values.logo = fileList[0].url;
       }
-     await registerCompanyApi({
+      // 处理metadata
+      values.metadata = {
+        internalCode: values.metadata?.internalCode,
+        website: values.metadata?.website
+      };
+      await registerCompanyApi({
         ...values,
         status: 'pending' // 新提交的公司信息默认为pending状态
       }).then(() => {
@@ -170,6 +179,23 @@ const CompanyFormModal = observer(({ visible, onClose, onSubmit }: CompanyFormMo
             showWordLimit
             autoSize={{ minRows: 3, maxRows: 6 }}
           />
+        </FormItem>
+
+        <FormItem label="内推码" field="metadata.internalCode">
+          <Input placeholder="请输入内推码" />
+        </FormItem>
+
+        <FormItem 
+          label="官网链接" 
+          field="metadata.website"
+          rules={[
+            {
+              type: 'url',
+              message: '请输入有效的URL'
+            }
+          ]}
+        >
+          <Input placeholder="请输入官网链接" />
         </FormItem>
       </Form>
     </Modal>

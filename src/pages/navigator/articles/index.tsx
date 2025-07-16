@@ -1,4 +1,4 @@
-import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result } from '@arco-design/web-react';
+import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result, Pagination } from '@arco-design/web-react';
 import {  IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -16,6 +16,8 @@ const { Title, Text } = Typography;
 export default function ArticleList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
 
@@ -24,20 +26,21 @@ export default function ArticleList() {
   };
 
   const { data, isLoading} = useQuery({
-    queryKey: ["getArticleList"],
-    queryFn: () => getArticleList(searchTerm).then(res => res.data.data),
+    queryKey: ["getArticleList", searchTerm, currentPage, pageSize],
+    queryFn: () => getArticleList(searchTerm, currentPage, pageSize).then(res => res.data.data),
   });
 
 
   const { mutateAsync: searchArticle } = useMutation({
-    mutationFn: () => getArticleList(searchTerm),
+    mutationFn: () => getArticleList(searchTerm, currentPage, pageSize),
     onSuccess: () => {
       // 刷新文章详情数据
-      queryClient.invalidateQueries({ queryKey: ["getArticleList"] });
+      queryClient.invalidateQueries({ queryKey: ["getArticleList", searchTerm, currentPage, pageSize] });
     },
   }); 
 
   const articles = data?.articles || [];
+  const total = data?.pagination?.total || 0;
 
 
   return (
@@ -197,6 +200,26 @@ export default function ArticleList() {
                             发布相关内容
                           </Text>
                           </>}
+                        />
+                      </div>
+                    </Grid.Col>
+                  )}
+
+                  {/* 添加分页组件 */}
+                  {total > 0 && (
+                    <Grid.Col span={24}>
+                      <div className="flex justify-center mt-4">
+                        <Pagination
+                          total={total}
+                          current={currentPage}
+                          pageSize={pageSize}
+                          onChange={(page, pageSize) => {
+                            setCurrentPage(page);
+                            setPageSize(pageSize);
+                          }}
+                          showTotal
+                          sizeCanChange
+                          sizeOptions={[10, 20, 50]}
                         />
                       </div>
                     </Grid.Col>

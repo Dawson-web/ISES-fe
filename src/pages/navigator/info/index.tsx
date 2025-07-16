@@ -8,109 +8,13 @@ import { getCompanyListApi } from '@/service/company';
 import { useQuery } from '@tanstack/react-query';
 import { ICompany } from '@/types/company';
 
-interface CompanySchedule {
-  id: number;
-  logo: string;
-  name: string;
-  internal: {
-    date: string;
-    link?: string;
-  };
-  online: {
-    date: string;
-    link?: string;
-  };
-  written: {
-    date: string;
-    note?: string;
-  };
-  interview: {
-    date: string;
-    note?: string;
-  };
-  offer: {
-    date: string;
-    note?: string;
-  };
-}
-
-const mockData: CompanySchedule[] = [
-  {
-    id: 1,
-    logo: 'https://static.nowcoder.com/images/res/logo/kuaishou.png',
-    name: '快手',
-    internal: {
-      date: '内推',
-      link: '投递链接'
-    },
-    online: {
-      date: '网申',
-      link: '投递链接'
-    },
-    written: {
-      date: '笔试',
-    },
-    interview: {
-      date: '面试',
-    },
-    offer: {
-      date: 'offer'
-    }
-  },
-  {
-    id: 2,
-    logo: 'https://static.nowcoder.com/images/res/logo/jd.png',
-    name: '京东',
-    internal: {
-      date: '内推',
-      link: '投递链接'
-    },
-    online: {
-      date: '网申',
-      link: '投递链接'
-    },
-    written: {
-      date: '笔试',
-      note: '简历通过后触发'
-    },
-    interview: {
-      date: '面试',
-      note: '测评/笔试后'
-    },
-    offer: {
-      date: 'offer',
-      note: '审批通过后随时...'
-    }
-  },
-  {
-    id: 3,
-    logo: 'https://static.nowcoder.com/images/res/logo/hyundai.png',
-    name: '现代汽车中国',
-    internal: {
-      date: '内推',
-    },
-    online: {
-      date: '7月9日起',
-      link: '投递链接'
-    },
-    written: {
-      date: '7月21日',
-    },
-    interview: {
-      date: '无',
-    },
-    offer: {
-      date: '决赛通过后'
-    }
-  }
-];
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
   const [companyFormVisible, setCompanyFormVisible] = useState(false);
 
-  const {data: companyList} = useQuery({
+  const { data: companyList } = useQuery({
     queryKey: ['companyList'],
     queryFn: () => getCompanyListApi().then(res => res.data),
   })
@@ -121,51 +25,54 @@ const Info = () => {
     {
       title: '公司',
       dataIndex: 'name',
+      width: 100,
       render: (_: any, record: ICompany) => (
         <div className="company-cell">
           <img src={record.logo || ''} alt={record.name} className="company-logo" />
-          <span>{record.name}</span>
+          <span className=' line-clamp-1'>{record.name}</span>
         </div>
       ),
     },
     {
-      title:'规模',
+      title: '人数规模',
+      width: 120,
       dataIndex: 'employeeCount',
       render: (employeeCount: string) => (
-        <div className="schedule-cell">
-          <div>{employeeCount}</div>
-        </div>
+        <span className="schedule-cell  line-clamp-1">
+          {employeeCount}
+        </span>
       ),
     },
     {
-      title:'办公地点',
+      title: '办公地点',
+      width: 120,
       dataIndex: 'address',
       render: (address: string[]) => (
-        <div className="schedule-cell">
-          {address.length > 0 && Array.isArray(address) ? address?.map((item) => (
-            <div >{item}</div>
-          )) : '暂无'}
-        </div>
+        <span className="schedule-cell line-clamp-1">
+          {address.length > 0 && Array.isArray(address) ?
+            <> {address.join(',')}</>
+            : '暂无'}
+        </span>
       ),
     },
     {
-      title:'技术岗位',
-      dataIndex: 'mainBusiness',
+      title: '技术岗位',
+      width: 120,
+        dataIndex: 'mainBusiness',
       render: (mainBusiness: string) => (
-        <div className="schedule-cell">
-        {mainBusiness.length > 0 && Array.isArray(mainBusiness) ? mainBusiness?.map((item) => (
-          <div >{item}</div>
-        )) : '暂无'}
-      </div>
+        <span className="schedule-cell line-clamp-1">
+          {mainBusiness.length > 0 && Array.isArray(mainBusiness) ?
+            <> {mainBusiness.join(',')}</>
+            : '暂无'}
+        </span>
       ),
     },
     {
-      title:'状态',
+      title: '状态',
+      width: 120,
       dataIndex: 'status',
       render: (status: boolean) => (
-        <div className="schedule-cell">
-          <Tag color={status ? 'green' : 'red'}>{status ? '已认证' : '未认证'}</Tag>
-        </div>
+        <Tag color={status ? 'green' : 'red'}>{status ? '已认证' : '未认证'}</Tag>
       ),
     }
     // {
@@ -204,7 +111,7 @@ const Info = () => {
             value={searchValue}
             onChange={setSearchValue}
             className="search-input"
-            style={{paddingRight: '0px !important'}}
+            style={{ paddingRight: '0px !important' }}
             suffix={<Button type="primary" className="absolute right-0 top-0">GO→</Button>}
           />
           <div className="search-tags">
@@ -227,7 +134,7 @@ const Info = () => {
               </div>
             </Button>
             <div className="tool-group">
-              <Button 
+              <Button
                 className="tool-button small"
                 onClick={() => setCompanyFormVisible(true)}
               >
