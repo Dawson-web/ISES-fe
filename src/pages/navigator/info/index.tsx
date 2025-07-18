@@ -7,12 +7,13 @@ import './style.css';
 import { getCompanyListApi } from '@/service/company';
 import { useQuery } from '@tanstack/react-query';
 import { ICompany } from '@/types/company';
-
+import { useNavigate } from 'react-router-dom';
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
   const [companyFormVisible, setCompanyFormVisible] = useState(false);
+  const navigate = useNavigate();
 
   const { data: companyList } = useQuery({
     queryKey: ['companyList'],
@@ -27,7 +28,7 @@ const Info = () => {
       dataIndex: 'name',
       width: 100,
       render: (_: any, record: ICompany) => (
-        <div className="company-cell">
+        <div className="company-cell" onClick={() => navigate(`/navigator/info/company?${record.id}`)}>
           <img src={record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
