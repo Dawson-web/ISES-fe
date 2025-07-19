@@ -1,62 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Card, Tag, Image, Tabs } from '@arco-design/web-react';
-import { ICompany } from '@/types/company';
+import { Card, Tag, Image, Tabs, Empty, Grid } from '@arco-design/web-react';
+import { ICompany, ICompanyEmployee } from '@/types/company';
+import { IUserInfo } from '@/types/user';
 import { SalaryReportList } from '@/components/salary-report';
+import { useQuery } from '@tanstack/react-query';
+import { getCompanyEmployeesApi, getCompanyDetailApi } from '@/service/company';
+import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 const TabPane = Tabs.TabPane;
+const { Row, Col } = Grid;
 
-const CompanyDetailPage = () => {
-    const [company, setCompany] = useState<ICompany | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('1');
+// 公司基本信息组件
+const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
+    if (!company) return null;
 
-    useEffect(() => {
-        // TODO: 这里需要调用API获取公司详情数据
-        // 暂时使用模拟数据
-        const mockCompany: ICompany = {
-            name: "示例科技有限公司",
-            address: ["上海市", "浦东新区", "张江高科技园区"],
-            logo: "https://example.com/logo.png",
-            description: "这是一家专注于人工智能和大数据的科技公司，致力于为企业提供智能化解决方案。我们拥有一支优秀的研发团队，具备强大的技术创新能力和丰富的行业经验。",
-            establishedDate: new Date("2020-01-01"),
-            mainBusiness: ["人工智能", "大数据分析", "云计算服务", "企业数字化转型", "IoT解决方案"],
-            employeeCount: "500-1000",
-            scaleRating: 4,
-            isVerified: true,
-            status: 'approved',
-            metadata: {
-                website: "https://example.com",
-                internalCode: "TECH001"
-            }
-        };
-
-        setCompany(mockCompany);
-        setLoading(false);
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-primary-300 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-600">加载公司信息中...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!company) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-600">
-                <h3 className="text-xl font-medium mb-2">未找到公司信息</h3>
-                <p>请检查公司ID是否正确</p>
-            </div>
-        );
-    }
-
-    // 公司基本信息组件
-    const CompanyBasicInfo = () => (
+    return (
         <>
             {/* 快速信息卡片 */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-6">
@@ -119,15 +78,128 @@ const CompanyDetailPage = () => {
             </div>
         </>
     );
+};
 
-    // 在职员工组件（待实现）
-    const CompanyEmployees = () => (
-        <div className="py-8">
-            <div className="text-center text-gray-500">
-                <p>员工信息模块开发中...</p>
+  // 在职员工组件
+  const CompanyEmployees = ({ companyId }: { companyId: string }) => {
+    const { data, isLoading } = useQuery({
+        queryKey: ['getCompanyEmployeesApi', companyId],
+        queryFn: () => getCompanyEmployeesApi({ companyId }).then(res => res.data)
+    });
+
+    const employees = data?.employees || [];
+    console.log(data)
+    
+    if (isLoading) {
+        return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 py-8">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                    <Card key={i} className="w-full">
+                        <div className="animate-pulse flex space-x-4">
+                            <div className="rounded-full bg-gray-200 h-12 w-12"></div>
+                            <div className="flex-1 space-y-4 py-1">
+                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                <div className="space-y-2">
+                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                ))}
             </div>
+        );
+    }
+
+    if (!employees?.length) {
+        return (
+            <div className="py-8">
+                <Empty description="暂无在职员工信息" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="py-8">
+            <Row gutter={[16, 16]}>
+                {employees.map((employee: ICompanyEmployee) => (
+                    <Col xs={24} sm={12} lg={8} key={employee.id}>
+                        <Card 
+                            className="hover:shadow-lg transition-shadow"
+                            bordered={false}
+                        >
+                            <div className="flex items-start space-x-4">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-lg font-medium">
+                                    {employee.username?.[0] || '未'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg font-medium text-gray-900 truncate">
+                                            {employee.username}
+                                        </span>
+                                    </div>
+                                    <div className="mt-1 text-sm text-gray-500">
+                                        {employee.currentCompany.position || '职位未设置'}
+                                    </div>
+                                    {employee.currentCompany.department && (
+                                        <div className="mt-1 text-sm text-gray-500">
+                                            {employee.currentCompany.department}
+                                        </div>
+                                    )}
+                             
+                                    {employee.currentCompany.joinDate && (
+                                        <div className="mt-2 text-xs text-gray-400">
+                                            加入时间：{dayjs(employee.currentCompany.joinDate).format('YYYY-MM-DD')}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
         </div>
     );
+  }
+
+const CompanyDetailPage = () => {
+    const [activeTab, setActiveTab] = useState('1');
+    const [searchParams] = useSearchParams();
+    const companyId = searchParams.get('companyId') || '';
+
+    const { data: company, isLoading } = useQuery({
+        queryKey: ['getCompanyDetailApi', companyId],
+        queryFn: () => getCompanyDetailApi(companyId).then(res => res.data)
+    });
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <Card className="overflow-hidden bg-white shadow-xl rounded-2xl">
+                        <div className="relative pb-6">
+                            <div className="px-6 pt-8">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
+                                        <Image
+                                            src="/default-company-logo.png"
+                                            alt="Loading"
+                                            error="/default-company-logo.png"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h1 className="text-2xl font-bold">加载中...</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -139,24 +211,24 @@ const CompanyDetailPage = () => {
                             <div className="flex items-center gap-6">
                                 <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
                                     <Image
-                                        src={company.logo || '/default-company-logo.png'}
-                                        alt={company.name}
+                                        src={company?.logo || '/default-company-logo.png'}
+                                        alt={company?.name}
                                         error="/default-company-logo.png"
                                         className="w-full h-full object-contain"
                                     />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h1 className="text-2xl font-bold">{company.name}</h1>
-                                        {company.isVerified && (
+                                        <h1 className="text-2xl font-bold">{company?.name}</h1>
+                                        {company?.isVerified && (
                                             <Tag color="blue" className="bg-blue-400/20">已认证</Tag>
                                         )}
-                                        <Tag color={company.status === 'approved' ? 'green' : 'orange'} 
-                                             className={company.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
-                                            {company.status === 'approved' ? '已批准' : '审核中'}
+                                        <Tag color={company?.status === 'approved' ? 'green' : 'orange'} 
+                                             className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
+                                            {company?.status === 'approved' ? '已批准' : '审核中'}
                                         </Tag>
                                     </div>
-                                    <p className="text-sm max-w-2xl text-gray-600">{company.description}</p>
+                                    <p className="text-sm max-w-2xl text-gray-600">{company?.description}</p>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +241,7 @@ const CompanyDetailPage = () => {
                         className="px-6"
                     >
                         <TabPane key="1" title="公司介绍">
-                            <CompanyBasicInfo />
+                            <CompanyBasicInfo company={company} />
                         </TabPane>
                         <TabPane key="2" title="薪资爆料">
                             <SalaryReportList 
@@ -178,7 +250,7 @@ const CompanyDetailPage = () => {
                             />
                         </TabPane>
                         <TabPane key="3" title="在职员工">
-                            <CompanyEmployees />
+                            {company?.id && <CompanyEmployees companyId={company.id} />}
                         </TabPane>
                     </Tabs>
                 </Card>

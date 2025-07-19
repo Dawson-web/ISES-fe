@@ -19,6 +19,23 @@ export interface ISalaryReport {
     };
 }
 
+export interface ISalaryReportList {
+    reports: ISalaryReport[];
+    total: number;
+}
+
+export interface ISalaryReportForm {
+    companyId: string;
+    education: string;
+    graduationDate: string;
+    recruitmentType: string;
+    companyName: string;
+    position: string;
+    salary: string;
+    city: string;
+    remark?: string;
+}
+
 export const RECRUITMENT_TYPE_MAP = {
     campus: '校招',
     social: '社招',
