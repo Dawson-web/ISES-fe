@@ -26,7 +26,7 @@ export default function ArticleList() {
   };
 
   const { data, isLoading} = useQuery({
-    queryKey: ["getArticleList", searchTerm, currentPage, pageSize],
+    queryKey: ["getArticleList", currentPage, pageSize],
     queryFn: () => getArticleList(searchTerm, currentPage, pageSize).then(res => res.data.data),
   });
 
@@ -35,7 +35,7 @@ export default function ArticleList() {
     mutationFn: () => getArticleList(searchTerm, currentPage, pageSize),
     onSuccess: () => {
       // 刷新文章详情数据
-      queryClient.invalidateQueries({ queryKey: ["getArticleList", searchTerm, currentPage, pageSize] });
+      queryClient.invalidateQueries({ queryKey: ["getArticleList", currentPage, pageSize] });
     },
   }); 
 

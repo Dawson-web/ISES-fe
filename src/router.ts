@@ -19,6 +19,7 @@ export type Path =
   | `/navigator/components/campuscalander`
   | `/navigator/components/companyalumni`
   | `/navigator/info`
+  | `/navigator/info/company`
   | `/navigator/profile`
   | `/register`
   | `/seekback`

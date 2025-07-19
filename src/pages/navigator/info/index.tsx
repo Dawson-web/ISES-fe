@@ -7,12 +7,13 @@ import './style.css';
 import { getCompanyListApi } from '@/service/company';
 import { useQuery } from '@tanstack/react-query';
 import { ICompany } from '@/types/company';
-
+import { useNavigate } from 'react-router-dom';
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
   const [calculatorVisible, setCalculatorVisible] = useState(false);
   const [companyFormVisible, setCompanyFormVisible] = useState(false);
+  const navigate = useNavigate();
 
   const { data: companyList } = useQuery({
     queryKey: ['companyList'],
@@ -27,7 +28,7 @@ const Info = () => {
       dataIndex: 'name',
       width: 100,
       render: (_: any, record: ICompany) => (
-        <div className="company-cell">
+        <div className="company-cell" onClick={() => navigate(`/navigator/info/company?${record.id}`)}>
           <img src={record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
@@ -128,7 +129,7 @@ const Info = () => {
               onClick={() => setCalculatorVisible(true)}
             >
               <div className="button-content">
-                <span className=' font-bold '>查薪资</span>
+                <span className=' font-bold '>薪资计算器</span>
                 <span className="">在线计算真实到手薪资💰</span>
                 <img src={salaryGIF} alt="salary" className="tool-icon w-20 h-20 absolute right-0 top-0" />
               </div>
@@ -139,7 +140,7 @@ const Info = () => {
                 onClick={() => setCompanyFormVisible(true)}
               >
                 <div className="button-content">
-                  <span>公司未收录</span>
+                  <span>公司收录</span>
                   <span className="sub">前往添加公司信息</span>
                 </div>
               </Button>
