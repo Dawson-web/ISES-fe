@@ -1,21 +1,36 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { getDraft, saveDraft } from "@/utils/indexDB";
+import { useState, useEffect, useCallback } from "react";
+import { getDraft, saveDraft, deleteDraft } from "@/utils/indexDB";
 import { useLocation } from "react-router-dom";
 
 export function useDraft({
   getEditorContent,
   setEditorContent,
-  getOtherFields,
-  setOtherFields,
-}: {
+}: //getOtherFields,
+//setOtherFields,
+{
   getEditorContent: () => any;
   setEditorContent: (data: any) => void;
-  getOtherFields?: () => any; // 获取其他字段（如标题、标签等）
-  setOtherFields?: (fields: any) => void;
+  //getOtherFields?: () => any; // 获取其他字段（如标题、标签等）
+  //setOtherFields?: (fields: any) => void;
 }) {
   const [hasDraft, setHasDraft] = useState(false);
   const pathname = useLocation().pathname;
-
+  //const isSaved = useRef(false);
+  //const isEditPage = pathname.endsWith("/edit");
+  //console.log(isEditPage);
+  const handleRouteChange = async () => {
+    if (!window.location.pathname.endsWith("/edit")) {
+      if (window.confirm("保存草稿?")) {
+        await saveDraft({
+          id: "articleid",
+          content: getEditorContent(),
+          //...getOtherFields?.(),
+        });
+      } else {
+        await deleteDraft();
+      }
+    }
+  };
 // 检查是否存在草稿
   useEffect(() => {
     const CheckDraft = async () => {
@@ -26,16 +41,6 @@ export function useDraft({
     };
     CheckDraft();
   }, []);
-
-  const handleRouteChange = async () => {
-    if (window.confirm("保存草稿?")) {
-      await saveDraft({
-        content: getEditorContent(),
-        ...getOtherFields?.(),
-      });
-    }
-  };
-
   // 保存草稿
   useEffect(() => {
     const handleBeforeUnload = (e: any) => {
@@ -43,11 +48,10 @@ export function useDraft({
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [getEditorContent, setEditorContent, getOtherFields]);
+  }, [getEditorContent, setEditorContent]);
 
   useEffect(() => {
     return () => {
@@ -58,11 +62,12 @@ export function useDraft({
   // 导入草稿
   const importDraft = useCallback(async () => {
     const draft = await getDraft();
+    const { content } = draft;
     if (draft) {
-      setEditorContent(draft.content);
-      setOtherFields?.(draft);
+      setEditorContent(content);
+      //setOtherFields?.(otherFields);
     }
-  }, [setEditorContent, setOtherFields]);
+  }, [setEditorContent]);
 
   const deleteDraft = useCallback(async () => {
     await deleteDraft();

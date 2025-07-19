@@ -42,8 +42,14 @@ export const postCommentApi = (data: ICommentForm) => {
   return $axios.post('/articles/comment', data);
 };
 
-export const getSelfArticleListApi = () => {
-    return $axios.get<ApiOk<IArticle[]>>('/articles/self');
+export const getSelfArticleListApi = (searchValue: string, page?: number, pageSize?: number) => {
+    return $axios.get<ApiOk<IArticleList>>('/articles/self', {
+      params: {
+        title: searchValue,
+        page,
+        pageSize
+      }
+    });
 };
 
 export const getCreatorListApi = () => {

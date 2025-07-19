@@ -35,6 +35,9 @@ export async function getDraft() {
     const text = db.transaction("draft", "readwrite");
     const req = text.objectStore("draft").get("articleid");
     req.onerror = () => reject(req.error);
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      //console.log(req.result);
+      resolve(req.result);
+    };
   });
 }
