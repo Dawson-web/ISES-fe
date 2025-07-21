@@ -1,3 +1,5 @@
+import { ICurrentCompany, IUserInfo } from "../user";
+
 export interface ICompany {
     id?: string;
     name: string;
@@ -26,5 +28,17 @@ export interface ICompanyStatus {
 
 export interface ICompanyList {
     companies: ICompany[];
+    total: number;
+}
+
+export interface ICompanyEmployee {
+    avatar: string;
+    currentCompany:ICurrentCompany;
+    id:string;
+    username:string;
+}
+
+export interface ICompanyEmployeeList {
+    employees:ICompanyEmployee[];
     total: number;
 }

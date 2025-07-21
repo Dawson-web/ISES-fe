@@ -1,6 +1,8 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
-import { ICompanyList, ICompanyStatus } from "@/types/company";
+import { ICompany, ICompanyEmployee, ICompanyEmployeeList, ICompanyList, ICompanyStatus } from "@/types/company";
+import { ISalaryReport, ISalaryReportForm, ISalaryReportList } from "@/types/salary";
+import { IUserInfo } from "@/types/user";
 
 
 export const getCompanyListApi = async () => {
@@ -24,5 +26,34 @@ export const updateCompanyStatusApi = async (data: ICompanyStatus) => {
 // 注册公司
 export const registerCompanyApi = async (data: any) => {
     const res = await $axios.post('/companies/register', data);
+    return res.data;
+};
+
+// 获取公司详情
+export const getCompanyDetailApi = async (companyId: string) => {
+    const res = await $axios.get<ApiOk<ICompany>>(`/companies/detail`, {
+        params: {
+            companyId
+        }
+    });
+    return res.data;
+};
+
+// 获取公司薪资爆料
+export const getCompanySalaryReportApi = async (data: any) => {
+    const res = await $axios.post<ApiOk<ISalaryReportList>>(`/companies/salary-reports`, data);
+    return res.data;
+};
+
+
+// 发布薪资爆料
+export const publishSalaryReportApi = async (data: ISalaryReportForm) => {
+    const res = await $axios.post<ApiOk<any>>(`/companies/salary-reports/add`, data);
+    return res.data;
+};
+
+// 在职用户列表
+export const getCompanyEmployeesApi = async (data: { companyId: string }) => {
+    const res = await $axios.post<ApiOk<ICompanyEmployeeList>>(`/companies/employees`, data);
     return res.data;
 };

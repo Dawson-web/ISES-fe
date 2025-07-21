@@ -28,7 +28,7 @@ const Info = () => {
       dataIndex: 'name',
       width: 100,
       render: (_: any, record: ICompany) => (
-        <div className="company-cell" onClick={() => navigate(`/navigator/info/company?${record.id}`)}>
+        <div className="company-cell" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
           <img src={record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
