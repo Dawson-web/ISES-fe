@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getDraft, saveDraft, deleteDraft } from "@/utils/indexDB";
 import { useLocation } from "react-router-dom";
+
 export function useDraft({
   getEditorContent,
   setEditorContent,
@@ -30,6 +31,7 @@ export function useDraft({
       }
     }
   };
+// 检查是否存在草稿
   useEffect(() => {
     const CheckDraft = async () => {
       const draft = await getDraft();
@@ -39,7 +41,7 @@ export function useDraft({
     };
     CheckDraft();
   }, []);
-
+  // 保存草稿
   useEffect(() => {
     const handleBeforeUnload = (e: any) => {
       e.preventDefault();
@@ -57,6 +59,7 @@ export function useDraft({
     };
   }, [pathname]);
 
+  // 导入草稿
   const importDraft = useCallback(async () => {
     const draft = await getDraft();
     const { content } = draft;
