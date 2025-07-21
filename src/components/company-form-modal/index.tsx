@@ -1,11 +1,10 @@
-import { Modal, Form, Input, Upload, DatePicker, Radio, Message, Select, Rate } from '@arco-design/web-react';
-import { IconUpload } from '@arco-design/web-react/icon';
-import type { UploadItem } from '@arco-design/web-react/es/Upload';
-import { useState } from 'react';
+import { Modal, Form, Input, DatePicker, Radio, Select, Rate, Space, Button } from '@arco-design/web-react';
+import { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/store/User';
-import { registerCompanyApi } from '@/service/company';
+import { registerCompanyApi, uploadCompanyLogoApi } from '@/service/company';
 import { toast } from 'sonner';
+import { ICompany } from '@/types/company';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -13,24 +12,8 @@ const TextArea = Input.TextArea;
 interface CompanyFormModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (values: CompanyFormData) => void;
-}
-
-interface CompanyFormData {
-  name: string;
-  address: string[];
-  logo?: string;
-  description?: string;
-  establishedDate?: Date;
-  mainBusiness: string[];
-  employeeCount?: string;
-  scaleRating?: number;
-  isVerified?: boolean;
-  status: 'pending' | 'approved' | 'rejected';
-  metadata?: {
-    internalCode?: string;
-    website?: string;
-  };
+  onSubmit: (values: ICompany,file:File|null) => void;
+  initialValues?: ICompany;
 }
 
 const EMPLOYEE_COUNT_OPTIONS = [
@@ -40,53 +23,113 @@ const EMPLOYEE_COUNT_OPTIONS = [
   { label: '9999人以上', value: '9999+' }
 ];
 
-const CompanyFormModal = observer(({ visible, onClose, onSubmit }: CompanyFormModalProps) => {
-  const [form] = Form.useForm<CompanyFormData>();
-  const [fileList, setFileList] = useState<UploadItem[]>([]);
+const CompanyFormModal = observer(({ visible, onClose, onSubmit, initialValues }: CompanyFormModalProps) => {
+  const [form] = Form.useForm<ICompany>();
+  const [uploading, setUploading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isAdmin = userStore.role === 1;
+  const isEdit = !!initialValues;
+
+  useEffect(() => {
+    if (visible && initialValues) {
+      const formValues = {
+        ...initialValues,
+        establishedDate: initialValues.establishedDate ? new Date(initialValues.establishedDate) : undefined
+      };
+      form.setFieldsValue(formValues);
+    } else if (!visible) {
+      form.resetFields();
+    }
+  }, [visible, initialValues, form]);
   
+  const uploadLogo = async (companyId:string,file:File) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+   await uploadCompanyLogoApi(formData, companyId)
+}
+
+
   const handleSubmit = async () => {
     try {
+      setUploading(true);
       const values = await form.validate();
-      // 如果有上传logo，使用第一个文件的URL
-      if (fileList.length > 0 && fileList[0].url) {
-        values.logo = fileList[0].url;
+
+      if (isEdit) {
+        await onSubmit(values,file);
+      } else {
+        // 注册模式
+        await registerCompanyApi({
+          ...values,
+          status: 'pending'
+        }).then((res) => {
+          if (file) {
+            uploadLogo(res.data.id,file)
+          }
+          toast.success('提交成功');
+          form.resetFields();
+          onClose();
+        }).catch(() => {
+          toast.error('提交失败');
+        });
       }
-      // 处理metadata
-      values.metadata = {
-        internalCode: values.metadata?.internalCode,
-        website: values.metadata?.website
-      };
-      await registerCompanyApi({
-        ...values,
-        status: 'pending' // 新提交的公司信息默认为pending状态
-      }).then(() => {
-        toast.success('提交成功');
-      }).catch(()=>{
-        toast.error('提交失败')
-      }).finally(() => {
-        form.resetFields();
-        setFileList([]);
-        onClose();
-      })
     } catch (error) {
-      toast.error('表单验证失败，请检查必填项');
+      toast.error('操作失败，请检查表单内容');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);  
+      console.log(selectedFile)
+    }
+  };
+
+  const handleClearFile = () => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
   return (
     <Modal
-      title="添加公司信息"
+      title={isEdit ? "编辑公司信息" : "添加公司信息"}
       visible={visible}
       onOk={handleSubmit}
       onCancel={() => {
         form.resetFields();
-        setFileList([]);
         onClose();
       }}
+      confirmLoading={uploading}
       autoFocus={false}
       maskClosable={false}
     >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              accept="image/*"
+              style={{ display: 'none' }}
+            />
+            <Space>
+              <Button onClick={() => fileInputRef.current?.click()}>
+                选择文件
+              </Button>
+              {file && (
+                <>
+                  <span>{file.name}</span>
+                  <Button type="text" status="danger" onClick={handleClearFile}>
+                    清除
+                  </Button>
+                </>
+              )}
+            </Space>
+          </Space>
       <Form
         form={form}
         layout="vertical"
@@ -99,23 +142,7 @@ const CompanyFormModal = observer(({ visible, onClose, onSubmit }: CompanyFormMo
         >
           <Input placeholder="请输入公司名称" />
         </FormItem>
-
-        <FormItem label="公司logo" field="logo">
-          <Upload
-            listType="picture-card"
-            limit={1}
-            fileList={fileList}
-            onChange={(fileList) => setFileList(fileList)}
-          >
-            <div className="arco-upload-trigger-picture">
-              <div className="arco-upload-trigger-picture-text">
-                <IconUpload />
-                <div style={{ marginTop: 10 }}>上传Logo</div>
-              </div>
-            </div>
-          </Upload>
-        </FormItem>
-
+   
         <FormItem 
           label="公司地址" 
           field="address"

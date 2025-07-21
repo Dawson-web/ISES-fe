@@ -1,8 +1,7 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
-import { ICompany, ICompanyEmployee, ICompanyEmployeeList, ICompanyList, ICompanyStatus } from "@/types/company";
-import { ISalaryReport, ISalaryReportForm, ISalaryReportList } from "@/types/salary";
-import { IUserInfo } from "@/types/user";
+import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyStatus } from "@/types/company";
+import { ISalaryReportForm, ISalaryReportList } from "@/types/salary";
 
 
 export const getCompanyListApi = async () => {
@@ -55,5 +54,21 @@ export const publishSalaryReportApi = async (data: ISalaryReportForm) => {
 // 在职用户列表
 export const getCompanyEmployeesApi = async (data: { companyId: string }) => {
     const res = await $axios.post<ApiOk<ICompanyEmployeeList>>(`/companies/employees`, data);
+    return res.data;
+};
+
+// 更新公司信息
+export const updateCompanyApi = async (data: ICompany) => {
+    const res = await $axios.post<ApiOk<any>>(`/companies/update`, data);
+    return res.data;
+};
+
+// 上传公司logo
+export const uploadCompanyLogoApi = async (formData: FormData,companyId:string) => {
+    const res = await $axios.post<ApiOk<{ logo: string }>>(`/companies/upload-logo`, formData,{
+        params: {
+            companyId
+        }
+    });
     return res.data;
 };

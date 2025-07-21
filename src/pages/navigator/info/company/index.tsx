@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Card, Tag, Image, Tabs, Empty, Grid } from '@arco-design/web-react';
+import {  useState } from 'react';
+import { Card, Tag, Image, Tabs, Empty, Grid, Button } from '@arco-design/web-react';
 import { ICompany, ICompanyEmployee } from '@/types/company';
-import { IUserInfo } from '@/types/user';
 import { SalaryReportList } from '@/components/salary-report';
 import { useQuery } from '@tanstack/react-query';
-import { getCompanyEmployeesApi, getCompanyDetailApi } from '@/service/company';
+import { getCompanyEmployeesApi, getCompanyDetailApi, updateCompanyApi, uploadCompanyLogoApi } from '@/service/company';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import CompanyFormModal from '@/components/company-form-modal';
+import { observer } from 'mobx-react-lite';
+import userStore from '@/store/User';
+import { toast } from 'sonner';
 
 const TabPane = Tabs.TabPane;
 const { Row, Col } = Grid;
@@ -161,15 +164,44 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
     );
   }
 
-const CompanyDetailPage = () => {
+const CompanyDetailPage = observer(() => {
     const [activeTab, setActiveTab] = useState('1');
     const [searchParams] = useSearchParams();
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const companyId = searchParams.get('companyId') || '';
+    const isAdmin = userStore.role === 1;
 
-    const { data: company, isLoading } = useQuery({
+    const { data: company, isLoading, refetch } = useQuery({
         queryKey: ['getCompanyDetailApi', companyId],
         queryFn: () => getCompanyDetailApi(companyId).then(res => res.data)
     });
+
+
+    const uploadLogo = async (file:File) => {
+        const formData = new FormData();
+        formData.append('logo', file);
+       await uploadCompanyLogoApi(formData, companyId)
+    }
+
+    const handleEditSubmit = async (values: any,file:File|null) => {
+        try {
+            // 更新公司信息
+            await updateCompanyApi({
+                ...values,
+                id: companyId,
+            }).then(async res => {
+                if (file) {
+                    await uploadLogo(file)
+                }
+                toast.success('更新成功');
+            })
+            refetch(); // 刷新公司信息
+            setIsEditModalVisible(false);
+        } catch (error) {
+            toast.error('更新失败');
+        }
+    };
+
 
     if (isLoading) {
         return (
@@ -208,28 +240,35 @@ const CompanyDetailPage = () => {
                     {/* 公司头部信息 */}
                     <div className="relative pb-6">
                         <div className="px-6 pt-8">
-                            <div className="flex items-center gap-6">
-                                <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
-                                    <Image
-                                        src={company?.logo || '/default-company-logo.png'}
-                                        alt={company?.name}
-                                        error="/default-company-logo.png"
-                                        className="w-full h-full object-contain"
-                                    />
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h1 className="text-2xl font-bold">{company?.name}</h1>
-                                        {company?.isVerified && (
-                                            <Tag color="blue" className="bg-blue-400/20">已认证</Tag>
-                                        )}
-                                        <Tag color={company?.status === 'approved' ? 'green' : 'orange'} 
-                                             className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
-                                            {company?.status === 'approved' ? '已批准' : '审核中'}
-                                        </Tag>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
+                                        <Image
+                                            src={company?.logo || '/default-company-logo.png'}
+                                            alt={company?.name}
+                                            error="/default-company-logo.png"
+                                            className="w-full h-full object-contain"
+                                        />
                                     </div>
-                                    <p className="text-sm max-w-2xl text-gray-600">{company?.description}</p>
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h1 className="text-2xl font-bold">{company?.name}</h1>
+                                            {company?.isVerified && (
+                                                <Tag color="blue" className="bg-blue-400/20">已认证</Tag>
+                                            )}
+                                            <Tag color={company?.status === 'approved' ? 'green' : 'orange'} 
+                                                 className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
+                                                {company?.status === 'approved' ? '已批准' : '审核中'}
+                                            </Tag>
+                                        </div>
+                                        <p className="text-sm max-w-2xl text-gray-600">{company?.description}</p>
+                                    </div>
                                 </div>
+                                {isAdmin && (
+                                    <Button type="primary" onClick={() => setIsEditModalVisible(true)}>
+                                        编辑公司信息
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -255,8 +294,16 @@ const CompanyDetailPage = () => {
                     </Tabs>
                 </Card>
             </div>
+
+            {/* 编辑公司信息弹窗 */}
+            <CompanyFormModal
+                visible={isEditModalVisible}
+                onClose={() => setIsEditModalVisible(false)}
+                onSubmit={handleEditSubmit}
+                initialValues={company}
+            />
         </div>
     );
-};
+});
 
 export default CompanyDetailPage;
