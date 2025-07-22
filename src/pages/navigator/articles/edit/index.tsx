@@ -6,6 +6,8 @@ import {
   Avatar,
   Tag,
   Select,
+  Modal,
+  List,
 } from "@arco-design/web-react";
 import { IconSave, IconSend } from "@arco-design/web-react/icon";
 // import { useSearchParams } from 'react-router-dom';
@@ -53,27 +55,73 @@ export default function ArticleEditPage() {
 
   const [isDraft] = useState(true);
   const editor = useAritcleEditor("");
-  const { hasDraft, importDraft, deleteDraft } = useDraft({
+  const [draftModalVisible, setDraftModalVisible] = useState(false);
+  const [drafts, setDrafts] = useState<
+    Array<{
+      id: number;
+      content: any;
+      title: string;
+      category: string;
+      excerpt: string;
+      contentType: string;
+      tags: string[];
+    }>
+  >([]);
+  //调用钩子
+  const { importDraft, deleteDraft, fetchAllDrafts, toSaveDraft } = useDraft({
     getEditorContent: () => editor?.getJSON(),
     setEditorContent: (content) => editor?.commands.setContent(content),
-    //getOtherFields: () => ({
-    // title: form.title,
-    //tags: form.tags,
-    //category: form.category,
-    //contentType: form.contentType,
-    //excerpt: form.excerpt,
-    //}),
-    //setOtherFields: (fields) => {
-    //  setForm((prev) => ({
-    //    ...prev,
-    //    title: fields.title || prev.title,
-    //    tags: fields.tags || prev.tags,
-    //   category: fields.category || prev.category,
-    //  contentType: fields.contentType || prev.contentType,
-    //  excerpt: fields.excerpt || prev.excerpt,
-    //  }));
-    //},
+    getOtherFields: () => ({
+      title: form.title,
+      tags: form.tags,
+      category: form.category,
+      contentType: form.contentType,
+      excerpt: form.excerpt,
+    }),
+    setOtherFields: (fields: any) => {
+      setForm((prev) => ({
+        ...prev,
+        title: fields.title || prev.title,
+        tags: fields.tags || prev.tags,
+        category: fields.category || prev.category,
+        contentType: fields.contentType || prev.contentType,
+        excerpt: fields.excerpt || prev.excerpt,
+      }));
+    },
   });
+  //模块框功能
+
+  const handleOpenDraftModal = async () => {
+    setDraftModalVisible(true);
+    const draft = await fetchAllDrafts();
+    setDrafts(draft);
+  };
+
+  const handleImportDraft = (id: number) => {
+    importDraft(id);
+    setDraftModalVisible(false);
+  };
+
+  const handleDeleteDraft = (id: number) => {
+    Modal.confirm({
+      title: "确认删除？",
+      content: "删除后将无法恢复",
+      onOk: () => {
+        //await deleteDraft(id);
+        //setDrafts(drafts.filter((draft) => draft.id !== id));
+        //setDraftModalVisible(false);
+        try {
+          deleteDraft(id);
+          setDrafts(drafts.filter((draft) => draft.id !== id)); // 更新列表
+        } catch (e) {
+          console.error("删除失败", e);
+          Message.error("删除失败，请重试");
+          throw e;
+        }
+      },
+    });
+    setDraftModalVisible(false);
+  };
 
   const handleSave = async () => {
     if (!form.title.trim()) {
@@ -123,19 +171,17 @@ export default function ArticleEditPage() {
             </Tag>
           </div>
           <div className="header-right">
-            {hasDraft && (
-              <Button
-                type="secondary"
-                icon={<IconSave />}
-                onClick={importDraft}
-              >
-                导入草稿
-              </Button>
-            )}
             <Button
               type="secondary"
               icon={<IconSave />}
-              // onClick={() => handleSave(true)}
+              onClick={handleOpenDraftModal}
+            >
+              导入草稿
+            </Button>
+            <Button
+              type="secondary"
+              icon={<IconSave />}
+              onClick={() => toSaveDraft()}
             >
               保存草稿
             </Button>
@@ -273,6 +319,69 @@ export default function ArticleEditPage() {
         </div>
         </div> */}
       </main>
+
+      <Modal
+        title="选择草稿"
+        visible={draftModalVisible}
+        onCancel={() => setDraftModalVisible(false)}
+        footer={null}
+        style={{ width: 600 }}
+      >
+        {drafts.length === 0 ? (
+          <div className="text-center py-10 text-gray-400">暂无草稿</div>
+        ) : (
+          <List
+            bordered={false}
+            dataSource={drafts}
+            render={(draft) => (
+              <List.Item
+                actions={[
+                  <Button
+                    type="text"
+                    onClick={() => handleImportDraft(draft.id)}
+                  >
+                    导入
+                  </Button>,
+                  <Button
+                    type="text"
+                    status="danger"
+                    onClick={() => handleDeleteDraft(draft.id)}
+                  >
+                    删除
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <div className="flex items-center">
+                      <span className="font-medium mr-2">
+                        {draft.title || "无标题草稿"}
+                      </span>
+                    </div>
+                  }
+                  description={
+                    <div>
+                      <div className="text-xs text-gray-500">
+                        {
+                          //new Date(draft.id).toLocaleString()
+                          new Date(draft.id).toLocaleString("zh-CN", {
+                            timeZone: "Asia/Shanghai",
+                          })
+                        }
+                      </div>
+                      {draft.excerpt && (
+                        <div className="mt-1 text-gray-600 line-clamp-1">
+                          {draft.excerpt}
+                        </div>
+                      )}
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
