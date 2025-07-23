@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Modal, Form, Select, Input, Message, Card, Empty, Skeleton } from '@arco-design/web-react';
-import { ISalaryReport, RECRUITMENT_TYPE_MAP } from '@/types/salary';
+import { ISalaryReport, ISalaryReportForm, RECRUITMENT_TYPE_MAP } from '@/types/salary';
 import dayjs from 'dayjs';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getCompanySalaryReportApi, publishSalaryReportApi } from '@/service/company';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -27,63 +29,25 @@ const RECRUITMENT_TYPE_OPTIONS = Object.entries(RECRUITMENT_TYPE_MAP).map(([key,
 export const SalaryReportList: React.FC<SalaryReportListProps> = ({ companyId, companyName }) => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const queryClient = useQueryClient();
     const [form] = Form.useForm();
-    const [reports, setReports] = useState<ISalaryReport[]>([
-        {
-            id: '1',
-            education: '本科',
-            graduationDate: '2023',
-            recruitmentType: 'campus',
-            companyName: '示例科技有限公司',
-            position: '前端开发工程师',
-            salary: '25k*14+期权',
-            city: '上海',
-            remark: '🎉 福利待遇：\n- 五险一金全额缴纳\n- 每年14薪\n- 期权激励\n- 免费三餐\n- 无限量零食饮料\n\n💪 晋升空间：\n- 完善的职级体系\n- 导师制培养\n- 定期技术分享\n\n🏢 办公环境：\n- 人体工学椅\n- 4K显示器\n- MacBook Pro',
-            userInfoId: 'user1',
-            createdAt: new Date('2024-01-15'),
-            user: {
-                id: 'user1',
-                nickname: '前端小王',
-                avatar: 'https://example.com/avatar1.jpg'
-            }
-        },
-        {
-            id: '2',
-            education: '硕士',
-            graduationDate: '2024',
-            recruitmentType: 'campus',
-            companyName: '示例科技有限公司',
-            position: '算法工程师',
-            salary: '35k*15',
-            city: '上海',
-            remark: '部门氛围很好，技术栈新颖，主要做大模型相关研发。有完善的培训体系，入职后会有专门的导师带，晋升通道清晰。',
-            userInfoId: 'user2',
-            createdAt: new Date('2024-01-20'),
-            user: {
-                id: 'user2',
-                nickname: '算法小李',
-                avatar: 'https://example.com/avatar2.jpg'
-            }
-        },
-        {
-            id: '3',
-            education: '本科',
-            graduationDate: '2022',
-            recruitmentType: 'social',
-            companyName: '示例科技有限公司',
-            position: '产品经理',
-            salary: '30k*13',
-            city: '上海',
-            remark: '工作强度适中，周末双休，很少加班。产品线比较有趣，主要面向To B市场。公司有健身房，每月有团建经费。',
-            userInfoId: 'user3',
-            createdAt: new Date('2024-01-25'),
-            user: {
-                id: 'user3',
-                nickname: '产品小张',
-                avatar: 'https://example.com/avatar3.jpg'
-            }
+
+    const { data } = useQuery({
+        queryKey: ['getCompanySalaryReportApi', companyId],
+        queryFn: () => getCompanySalaryReportApi({ companyId }).then(res => res.data)
+    });
+
+    const { mutate: publishSalaryReport } = useMutation({
+        mutationFn: (data: ISalaryReportForm) => publishSalaryReportApi(data),
+        onSuccess: () => {
+            Message.success('发布成功');
+            setVisible(false);
+            form.resetFields();
+            queryClient.invalidateQueries({ queryKey: ['getCompanySalaryReportApi', companyId] });
         }
-    ]);
+    });
+
+    const reports = data?.reports || [];
 
     const handleSubmit = async () => {
         try {
@@ -96,13 +60,9 @@ export const SalaryReportList: React.FC<SalaryReportListProps> = ({ companyId, c
                 companyId,
                 companyName: companyName || values.companyName
             };
-            
-            Message.success('发布成功');
-            setVisible(false);
-            form.resetFields();
-            // 重新加载数据
-            // loadReports();
-            
+
+            publishSalaryReport(newReport);
+
         } catch (error) {
             console.error('提交失败:', error);
         } finally {
