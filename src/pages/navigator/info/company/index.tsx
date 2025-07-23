@@ -10,6 +10,7 @@ import CompanyFormModal from '@/components/company-form-modal';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/store/User';
 import { toast } from 'sonner';
+import { apiConfig } from '@/config';
 
 const TabPane = Tabs.TabPane;
 const { Row, Col } = Grid;
@@ -191,6 +192,7 @@ const CompanyDetailPage = observer(() => {
                 id: companyId,
             }).then(async res => {
                 if (file) {
+                    console.log(res)
                     await uploadLogo(file)
                 }
                 toast.success('更新成功');
@@ -244,7 +246,7 @@ const CompanyDetailPage = observer(() => {
                                 <div className="flex items-center gap-6">
                                     <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
                                         <Image
-                                            src={company?.logo || '/default-company-logo.png'}
+                                            src={apiConfig.baseUrl + company?.logo || '/default-company-logo.png'}
                                             alt={company?.name}
                                             error="/default-company-logo.png"
                                             className="w-full h-full object-contain"

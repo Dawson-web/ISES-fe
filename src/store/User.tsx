@@ -1,3 +1,4 @@
+import { apiConfig } from "@/config";
 import { ICompany, IUserInfo } from "@/types/user";
 import { makeAutoObservable } from "mobx";
 
@@ -30,7 +31,7 @@ class User {
     this.username = u.username;
     this.introduce = u.introduce;
     this.school = u.school;
-    this.avatar = u.avatar;
+    this.avatar = apiConfig.baseUrl + u.avatar;
     this.banner = u.banner;
     this.online = u.online;
     this.grade = u.grade;

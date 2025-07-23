@@ -1,4 +1,4 @@
-import { ICurrentCompany, IUserInfo } from "../user";
+import { ICurrentCompany } from "../user";
 
 export interface ICompany {
     id?: string;

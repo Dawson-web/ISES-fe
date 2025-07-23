@@ -1,5 +1,5 @@
 import { Table, Button, Card, Tag, Space, Typography, Divider, Grid, Input, Modal, Form } from '@arco-design/web-react';
-import { IconCheckCircle, IconCloseCircle, IconCalendar, IconApps, IconUserGroup, IconEdit, IconLink } from '@arco-design/web-react/icon';
+import { IconCheckCircle, IconCloseCircle, IconCalendar, IconUserGroup, IconEdit } from '@arco-design/web-react/icon';
 import { getCompanyApproveListApi, updateCompanyStatusApi } from '@/service/company';
 import './style.css';
 

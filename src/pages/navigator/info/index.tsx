@@ -8,6 +8,7 @@ import { getCompanyListApi } from '@/service/company';
 import { useQuery } from '@tanstack/react-query';
 import { ICompany } from '@/types/company';
 import { useNavigate } from 'react-router-dom';
+import { apiConfig } from '@/config';
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -29,7 +30,7 @@ const Info = () => {
       width: 100,
       render: (_: any, record: ICompany) => (
         <div className="company-cell" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
-          <img src={record.logo || ''} alt={record.name} className="company-logo" />
+          <img src={apiConfig.baseUrl + record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
       ),

@@ -4,7 +4,7 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BookText, Building2, Check, CheckCircle, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
+import { BookText, Building2, CheckCircle, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -105,7 +105,7 @@ const _Layout = () => {
             navigate('/navigator/profile');
           }}>
             <Avatar size={collapsed ? 28 : 32}>
-              <img src={userStore.avatar} alt="avatar" />
+              <img src={ userStore.avatar} alt="avatar" />
             </Avatar>
           </div>
           {menuList.map((item) => (

@@ -4,6 +4,7 @@ import { Avatar, Card } from "@arco-design/web-react";
 import Text from "@arco-design/web-react/es/Typography/text";
 import Title from "@arco-design/web-react/es/Typography/title";
 import { useNavigate } from "react-router-dom";
+import { apiConfig } from "@/config";
 
 const CreatorList = () => {
     const navigate = useNavigate();
@@ -34,7 +35,7 @@ const CreatorList = () => {
                                 color: 'white',
                                 fontWeight: 'bold'
                             }}>
-                                {creator.creator.avatar ? <img src={creator.creator.avatar} alt="avatar" /> : creator.creator.username.charAt(0)}
+                                {creator.creator.avatar ? <img src={apiConfig.baseUrl + creator.creator.avatar} alt="avatar" /> : creator.creator.username.charAt(0)}
                             </Avatar>
                             <div className="flex-1 min-w-0">
                                 <Text className="w-full font-medium text-gray-900 text-sm truncate flex items-center justify-between">

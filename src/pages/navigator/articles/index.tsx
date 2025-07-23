@@ -8,6 +8,7 @@ import { getArticleList } from '@/service/article';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ISESSkeleton from '@/components/skeleton';
 import CreatorList from './components/creatorlist';
+import { apiConfig } from '@/config';
 
 const { Title, Text } = Typography;
 
@@ -112,7 +113,7 @@ export default function ArticleList() {
                             <Avatar size={40}>
                               {article.creator.avatar ? (
                                 <img 
-                                  src={article.creator.avatar} 
+                                  src={apiConfig.baseUrl + article.creator.avatar} 
                                   alt={article.creator.username}
                                   className="w-full h-full object-cover"
                                 />
