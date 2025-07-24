@@ -269,10 +269,10 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({
       gridCol: 1,
     },
     {
-      label: "工作地点",
+      label: "办公地点",
       field: "location",
       required: true,
-      placeholder: "请输入工作地点",
+      placeholder: "请输入办公地点",
       gridCol: 1,
     },
     {

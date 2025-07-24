@@ -32,7 +32,7 @@ const basicInfo = (company: ICompany) => {
         },
         {
             label: '投递链接',
-            value: company?.metadata?.website
+            value: company?.metadata?.website || '暂无'
         },
         {
             label: '内推码',
@@ -51,9 +51,9 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
     return (
         <>
             {/* 快速信息卡片 */}
-            <div className="flex flex-wrap gap-6 mt-6 justify-between">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex justify-between gap-4 mt-6">
                 {basicInfo(company).map((item) => (
-                    <div className="">
+                    <div className="w-full">
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 mb-1">{item.label}</span>
                             <span className={`font-semibold text-gray-900 line-clamp-1 ${item.label === '投递链接' ? '!text-blue-600 cursor-pointer' : ''}`} onClick={() => {
@@ -67,7 +67,7 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
             </div>
 
             {/* 主营业务 */}
-            <div className="mt-8 flex gap-2">
+            <div className="mt-8 flex gap-2 flex-col">
                 <h2 className=" font-bold text-gray-900 text-nowrap ">主营业务</h2>
                 <div className="flex flex-wrap gap-2">
                     {company.mainBusiness.map((business, index) => (
@@ -83,8 +83,8 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
             </div>
 
             {/* 详细地址 */}
-            <div className="mt-8 flex gap-2">
-                <h2 className="font-bold text-gray-900 text-nowrap ">详细地址</h2>
+            <div className="mt-8 flex gap-2 flex-col">
+                <h2 className="font-bold text-gray-900 text-nowrap ">办公地点</h2>
                 <div className="flex flex-wrap gap-2">
                 {
                     company.address.map((address, index) => (
@@ -250,7 +250,7 @@ const CompanyDetailPage = observer(() => {
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <Card className="overflow-hidden bg-white shadow-xl rounded-2xl">
+                <Card className="overflow-hidden bg-white shadow-xl rounded-2xl min-h-[calc(100vh-64px)]">
                     {/* 公司头部信息 */}
                     <div className="relative pb-6">
                         <div className="px-6 pt-8">

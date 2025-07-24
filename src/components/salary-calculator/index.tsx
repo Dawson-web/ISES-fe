@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Input, Select, Button, Radio, InputNumber, Table, Tabs } from '@arco-design/web-react';
+import { Modal, Input, Select, Button, Radio, InputNumber, Table, Tabs, Message } from '@arco-design/web-react';
 import { IconEye } from '@arco-design/web-react/icon';
 
 const RadioGroup = Radio.Group;
@@ -66,70 +66,80 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
   const [housingBase, setHousingBase] = useState<string>('2490');
   const [housingRate, setHousingRate] = useState<string>('12');
   const [activeTab, setActiveTab] = useState<string>('result');
-
+  const [socialType, setSocialType] = useState<string>('standard');
   const [afterTaxMonthly, setAfterTaxMonthly] = useState<number>(0);
   const [socialInsurance, setSocialInsurance] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
   const [housingFund, setHousingFund] = useState<number>(0);
   const [insuranceDetails, setInsuranceDetails] = useState<InsuranceDetail[]>([]);
+  const [afterTaxBonus, setAfterTaxBonus] = useState<number>(0);
 
   // 计算社保公积金明细
   const calculateInsuranceDetails = (salary: number): InsuranceDetail[] => {
-    const base = Math.min(Math.max(salary, SOCIAL_INSURANCE_BASE.min), SOCIAL_INSURANCE_BASE.max);
+    // 根据缴纳类型确定社保基数
+    let actualSocialBase = socialType === 'standard' 
+      ? Math.min(Math.max(salary, SOCIAL_INSURANCE_BASE.min), SOCIAL_INSURANCE_BASE.max)
+      : Math.min(Math.max(Number(socialBase), SOCIAL_INSURANCE_BASE.min), SOCIAL_INSURANCE_BASE.max);
+
+    // 根据缴纳类型确定公积金基数
+    let actualHousingBase = socialType === 'standard'
+      ? Math.min(Math.max(salary, HOUSING_FUND_BASE.min), HOUSING_FUND_BASE.max)
+      : Math.min(Math.max(Number(housingBase), HOUSING_FUND_BASE.min), HOUSING_FUND_BASE.max);
+
     const details: InsuranceDetail[] = [
       {
         name: '养老保险',
-        base,
+        base: actualSocialBase,
         personalRate: 0.08,
-        personalAmount: base * 0.08,
+        personalAmount: actualSocialBase * 0.08,
         companyRate: 0.16,
-        companyAmount: base * 0.16,
-        total: Number((base * (0.08 + 0.16)).toFixed(2))
+        companyAmount: actualSocialBase * 0.16,
+        total: Number((actualSocialBase * (0.08 + 0.16)).toFixed(2))
       },
       {
         name: '医疗保险',
-        base,
+        base: actualSocialBase,
         personalRate: 0.02,
-        personalAmount: base * 0.02 + 3, // 包含大病医疗3元
+        personalAmount: actualSocialBase * 0.02 + 3,
         companyRate: 0.09,
-        companyAmount: base * 0.09,
-        total: Number((base * (0.02 + 0.09) + 3).toFixed(2))
+        companyAmount: actualSocialBase * 0.09,
+        total: Number((actualSocialBase * (0.02 + 0.09) + 3).toFixed(2))
       },
       {
         name: '失业保险',
-        base,
+        base: actualSocialBase,
         personalRate: 0.002,
-        personalAmount: base * 0.002,
+        personalAmount: actualSocialBase * 0.002,
         companyRate: 0.008,
-        companyAmount: base * 0.008,
-        total: Number((base * (0.002 + 0.008)).toFixed(2))
+        companyAmount: actualSocialBase * 0.008,
+        total: Number((actualSocialBase * (0.002 + 0.008)).toFixed(2))
       },
       {
         name: '工伤保险',
-        base,
+        base: actualSocialBase,
         personalRate: 0,
         personalAmount: 0,
-        companyRate: 0.004, // 假设为中等风险行业
-        companyAmount: base * 0.004,
-        total: Number((base * 0.004).toFixed(2))
+        companyRate: 0.004,
+        companyAmount: actualSocialBase * 0.004,
+        total: Number((actualSocialBase * 0.004).toFixed(2))
       },
       {
         name: '生育保险',
-        base,
+        base: actualSocialBase,
         personalRate: 0,
         personalAmount: 0,
         companyRate: 0.008,
-        companyAmount: base * 0.008,
-        total: Number((base * 0.008).toFixed(2))
+        companyAmount: actualSocialBase * 0.008,
+        total: Number((actualSocialBase * 0.008).toFixed(2))
       },
       {
         name: '住房公积金',
-        base: Math.min(Math.max(salary, HOUSING_FUND_BASE.min), HOUSING_FUND_BASE.max),
+        base: actualHousingBase,
         personalRate: Number(housingRate) / 100,
-        personalAmount: base * Number(housingRate) / 100,
+        personalAmount: actualHousingBase * Number(housingRate) / 100,
         companyRate: Number(housingRate) / 100,
-        companyAmount: base * Number(housingRate) / 100,
-        total: Number((base * Number(housingRate) / 50).toFixed(2))
+        companyAmount: actualHousingBase * Number(housingRate) / 100,
+        total: Number((actualHousingBase * Number(housingRate) / 50).toFixed(2))
       }
     ];
     return details;
@@ -145,24 +155,66 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     return 0;
   };
 
+  // 计算年终奖个税
+  const calculateBonusTax = (bonusAmount: number): number => {
+    // 年终奖按月份平均后对应的税率和速算扣除数
+    const monthlyBonus = bonusAmount / 12;
+    for (let i = TAX_BRACKETS.length - 1; i >= 0; i--) {
+      if (monthlyBonus > TAX_BRACKETS[i].threshold) {
+        return bonusAmount * TAX_BRACKETS[i].rate - TAX_BRACKETS[i].deduction;
+      }
+    }
+    return 0;
+  };
+
   const handleCalculate = () => {
     const salary = Number(preTaxSalary) || 0;
+    
+    // 如果工资低于社保最低基数，给出提示
+    if (salary < SOCIAL_INSURANCE_BASE.min) {
+      Message.warning(`您的工资${salary}元低于社保最低基数${SOCIAL_INSURANCE_BASE.min}元，将按最低基数缴纳社保`);
+    }
+
     const details = calculateInsuranceDetails(salary);
     
     // 计算社保公积金总额
     const totalInsurance = Number(details.reduce((sum, item) => sum + item.personalAmount, 0).toFixed(2));
     
-    // 计算应纳税所得额
-    const taxableIncome = Number((salary - totalInsurance - TAX_THRESHOLD).toFixed(2));
+    // 计算应纳税所得额（如果扣除五险一金后低于个税起征点，则不需要缴纳个税）
+    const afterInsurance = salary - totalInsurance;
+    const taxableIncome = Math.max(0, afterInsurance - TAX_THRESHOLD);
     
     // 计算个税
-    const taxAmount = Number(calculateTax(Math.max(0, taxableIncome)).toFixed(2));
+    const taxAmount = Number(calculateTax(taxableIncome).toFixed(2));
+
+    // 计算年终奖
+    let bonusAfterTax = 0;
+    if (bonus) {
+      const bonusAmount = salary * Number(bonus);
+      if (taxType === 'separate') {
+        // 单独计税
+        const bonusTax = calculateBonusTax(bonusAmount);
+        bonusAfterTax = Number((bonusAmount - bonusTax).toFixed(2));
+      } else {
+        // 并入年薪计税
+        const yearlyIncome = salary * 12;
+        const yearlyTaxableIncome = Math.max(0, yearlyIncome - totalInsurance * 12 - TAX_THRESHOLD * 12);
+        const totalTaxableIncome = yearlyTaxableIncome + bonusAmount;
+        const totalTax = calculateTax(totalTaxableIncome);
+        const normalTax = calculateTax(yearlyTaxableIncome);
+        bonusAfterTax = Number((bonusAmount - (totalTax - normalTax)).toFixed(2));
+      }
+    }
 
     setInsuranceDetails(details);
     setSocialInsurance(Number((totalInsurance - details[5].personalAmount).toFixed(2))); // 不包含公积金
     setHousingFund(Number(details[5].personalAmount.toFixed(2)));
     setTax(taxAmount);
-    setAfterTaxMonthly(Number((salary - totalInsurance - taxAmount).toFixed(2)));
+    
+    // 确保税后工资不会出现负数
+    const finalAfterTax = Math.max(0, afterInsurance - taxAmount);
+    setAfterTaxMonthly(Number(finalAfterTax.toFixed(2)));
+    setAfterTaxBonus(bonusAfterTax);
   };
 
   return (
@@ -179,6 +231,12 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
           <div className="text-center mb-5">
             <span className="block text-base text-gray-600 mb-2">税后月薪</span>
             <span className="text-3xl font-bold ">¥ {afterTaxMonthly.toFixed(1)}</span>
+            {afterTaxBonus > 0 && (
+              <div className="mt-2">
+                <span className="block text-sm text-gray-600">税后年终奖</span>
+                <span className="text-xl font-bold text-[#165DFF]">¥ {afterTaxBonus.toFixed(1)}</span>
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-4 ">
             <div className="bg-white p-4 rounded-lg flex justify-between items-center md:flex-col md:text-center md:p-3">
@@ -239,44 +297,69 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                       <IconEye className="ml-1 text-[#86909c] cursor-pointer" />
                     </div>
                     <Select 
-                      defaultValue="standard" 
+                      value={socialType}
+                      onChange={setSocialType}
                       className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
                     >
                       <Option value="standard">按照工资</Option>
                       <Option value="base">按照基数</Option>
                     </Select>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm text-gray-600 mb-2">社保缴纳基数</div>
-                    <InputNumber
-                      value={socialBase}
-                      onChange={val => setSocialBase(String(val))}
-                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
-                    />
-                  </div>
+                  {socialType === 'base' && (
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 mb-2">社保缴纳基数</div>
+                      <InputNumber
+                        value={socialBase}
+                        onChange={val => setSocialBase(String(val))}
+                        min={SOCIAL_INSURANCE_BASE.min}
+                        max={SOCIAL_INSURANCE_BASE.max}
+                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4 ">
-                  <div className="flex-1">
-                    <div className="text-sm text-gray-600 mb-2">公积金缴纳基数</div>
-                    <InputNumber
-                      value={housingBase}
-                      onChange={val => setHousingBase(String(val))}
-                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
-                    />
+                {socialType === 'base' && (
+                  <div className="grid grid-cols-2 gap-4 mb-4 ">
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 mb-2">公积金缴纳基数</div>
+                      <InputNumber
+                        value={housingBase}
+                        onChange={val => setHousingBase(String(val))}
+                        min={HOUSING_FUND_BASE.min}
+                        max={HOUSING_FUND_BASE.max}
+                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 mb-2">公积金缴纳比例</div>
+                      <Select
+                        value={housingRate}
+                        onChange={setHousingRate}
+                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      >
+                        <Option value="12">12%</Option>
+                        <Option value="10">10%</Option>
+                        <Option value="8">8%</Option>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm text-gray-600 mb-2">公积金缴纳比例</div>
-                    <Select
-                      value={housingRate}
-                      onChange={setHousingRate}
-                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
-                    >
-                      <Option value="12">12%</Option>
-                      <Option value="10">10%</Option>
-                      <Option value="8">8%</Option>
-                    </Select>
+                )}
+                {socialType === 'standard' && (
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 mb-2">公积金缴纳比例</div>
+                      <Select
+                        value={housingRate}
+                        onChange={setHousingRate}
+                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      >
+                        <Option value="12">12%</Option>
+                        <Option value="10">10%</Option>
+                        <Option value="8">8%</Option>
+                      </Select>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="mb-6">

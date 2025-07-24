@@ -1,10 +1,11 @@
-import { Modal, Form, Input, DatePicker, Radio, Select, Rate, Space, Button } from '@arco-design/web-react';
+import { Modal, Form, Input, DatePicker, Radio, Select, Rate, Space, Button, Avatar } from '@arco-design/web-react';
 import { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/store/User';
 import { registerCompanyApi, uploadCompanyLogoApi } from '@/service/company';
 import { toast } from 'sonner';
 import { ICompany } from '@/types/company';
+import { IconUpload } from '@arco-design/web-react/icon';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -116,16 +117,23 @@ const CompanyFormModal = observer(({ visible, onClose, onSubmit, initialValues }
               accept="image/*"
               style={{ display: 'none' }}
             />
+            
             <Space>
               <Button onClick={() => fileInputRef.current?.click()}>
-                选择文件
+                上传公司logo
               </Button>
               {file && (
                 <>
+                <Avatar size={40} shape="square" >
+                  <img src={URL.createObjectURL(file)} alt="logo" />
+                </Avatar>
+                <div>
+                  
                   <span>{file.name}</span>
                   <Button type="text" status="danger" onClick={handleClearFile}>
-                    清除
+                    删除
                   </Button>
+                </div>
                 </>
               )}
             </Space>
@@ -151,7 +159,7 @@ const CompanyFormModal = observer(({ visible, onClose, onSubmit, initialValues }
           <Select
             mode="multiple"
             allowCreate
-            placeholder="请输入公司地址，可多选"
+            placeholder="请输入公司地址，可多选(第一项为总部地址)"
             allowClear
           />
         </FormItem>

@@ -9,6 +9,8 @@ import { useQuery } from '@tanstack/react-query';
 import { ICompany } from '@/types/company';
 import { useNavigate } from 'react-router-dom';
 import { apiConfig } from '@/config';
+import { IconSubscribeAdd } from '@arco-design/web-react/icon';
+import dayjs from 'dayjs';
 
 const Info = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -29,7 +31,7 @@ const Info = () => {
       dataIndex: 'name',
       width: 100,
       render: (_: any, record: ICompany) => (
-        <div className="company-cell" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
+        <div className="company-cell hover:cursor-pointer hover:text-blue-600" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
           <img src={apiConfig.baseUrl + record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
@@ -46,6 +48,16 @@ const Info = () => {
       ),
     },
     {
+      title: '成立时间',
+      width: 120,
+      dataIndex: 'establishedDate',
+      render: (establishedDate: string) => (
+        <span className="schedule-cell  line-clamp-1">
+          {establishedDate ? dayjs(establishedDate).format('YYYY-MM-DD') : '暂无'}
+        </span>
+      ),
+    },
+    {
       title: '办公地点',
       width: 120,
       dataIndex: 'address',
@@ -58,7 +70,7 @@ const Info = () => {
       ),
     },
     {
-      title: '技术岗位',
+      title: '主营业务',
       width: 120,
         dataIndex: 'mainBusiness',
       render: (mainBusiness: string) => (
@@ -141,7 +153,7 @@ const Info = () => {
                 onClick={() => setCompanyFormVisible(true)}
               >
                 <div className="button-content">
-                  <span>公司收录</span>
+                  <span>公司收录 <IconSubscribeAdd/></span>
                   <span className="sub">前往添加公司信息</span>
                 </div>
               </Button>
