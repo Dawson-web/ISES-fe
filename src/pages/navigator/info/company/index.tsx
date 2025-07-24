@@ -1,10 +1,10 @@
-import {  useState } from 'react';
-import { Card, Tag, Image, Tabs, Empty, Grid, Button } from '@arco-design/web-react';
+import { useState } from 'react';
+import { Card, Tag, Image, Tabs, Empty, Grid, Button, Avatar } from '@arco-design/web-react';
 import { ICompany, ICompanyEmployee } from '@/types/company';
 import { SalaryReportList } from '@/components/salary-report';
 import { useQuery } from '@tanstack/react-query';
 import { getCompanyEmployeesApi, getCompanyDetailApi, updateCompanyApi, uploadCompanyLogoApi } from '@/service/company';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import CompanyFormModal from '@/components/company-form-modal';
 import { observer } from 'mobx-react-lite';
@@ -15,85 +15,98 @@ import { apiConfig } from '@/config';
 const TabPane = Tabs.TabPane;
 const { Row, Col } = Grid;
 
+
+const basicInfo = (company: ICompany) => {
+    return [
+        {
+            label: '公司规模',
+            value: company?.employeeCount
+        },
+        {
+            label: '成立时间',
+            value: company?.establishedDate ? dayjs(company.establishedDate).format('YYYY年MM月') : '未知'
+        },
+        {
+            label: '总部地址',
+            value: company?.address[0]
+        },
+        {
+            label: '投递链接',
+            value: company?.metadata?.website
+        },
+        {
+            label: '内推码',
+            value: company?.metadata?.internalCode || '暂无'
+        }
+
+    ]
+}
+
 // 公司基本信息组件
 const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
+
+
     if (!company) return null;
 
     return (
         <>
             {/* 快速信息卡片 */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-6">
-                <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div className="flex flex-col">
-                        <span className="text-sm text-gray-500 mb-1">公司规模</span>
-                        <span className="text-lg font-semibold text-gray-900">{company.employeeCount}人</span>
+            <div className="flex flex-wrap gap-6 mt-6 justify-between">
+                {basicInfo(company).map((item) => (
+                    <div className="">
+                        <div className="flex flex-col">
+                            <span className="text-sm text-gray-500 mb-1">{item.label}</span>
+                            <span className={`font-semibold text-gray-900 line-clamp-1 ${item.label === '投递链接' ? '!text-blue-600 cursor-pointer' : ''}`} onClick={() => {
+                                if (item.label === '投递链接') {
+                                    window.open(item.value, '_blank');
+                                }
+                            }}>{item.value}</span>
+                        </div>
                     </div>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div className="flex flex-col">
-                        <span className="text-sm text-gray-500 mb-1">成立时间</span>
-                        <span className="text-lg font-semibold text-gray-900">
-                            {company.establishedDate ? dayjs(company.establishedDate).format('YYYY年MM月') : '未知'}
-                        </span>
-                    </div>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div className="flex flex-col">
-                        <span className="text-sm text-gray-500 mb-1">总部地址</span>
-                        <span className="text-lg font-semibold text-gray-900">{company.address[0]}</span>
-                    </div>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div className="flex flex-col">
-                        <span className="text-sm text-gray-500 mb-1">官方网站</span>
-                        <a 
-                            href={company.metadata?.website} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-lg font-semibold text-blue-600 hover:text-blue-800"
-                        >
-                            访问
-                        </a>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* 主营业务 */}
-            <div className="mt-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">主营业务</h2>
+            <div className="mt-8 flex gap-2">
+                <h2 className=" font-bold text-gray-900 text-nowrap ">主营业务</h2>
                 <div className="flex flex-wrap gap-2">
                     {company.mainBusiness.map((business, index) => (
-                        <span 
+                        <Tag
                             key={index}
-                            className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors"
+                            color="blue"
+                            className="text-gray-700"
                         >
                             {business}
-                        </span>
+                        </Tag>
                     ))}
                 </div>
             </div>
 
             {/* 详细地址 */}
-            <div className="mt-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">详细地址</h2>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-700">{company.address.join(' ')}</p>
-                </div>
+            <div className="mt-8 flex gap-2">
+                <h2 className="font-bold text-gray-900 text-nowrap ">详细地址</h2>
+                <div className="flex flex-wrap gap-2">
+                {
+                    company.address.map((address, index) => (
+                        <Tag key={index} color="blue" className="text-gray-700">{address}</Tag>
+                    ))
+                }
+                 </div>
             </div>
         </>
     );
 };
 
-  // 在职员工组件
-  const CompanyEmployees = ({ companyId }: { companyId: string }) => {
+// 在职员工组件
+const CompanyEmployees = ({ companyId }: { companyId: string }) => {
+    const navigate = useNavigate();
     const { data, isLoading } = useQuery({
         queryKey: ['getCompanyEmployeesApi', companyId],
         queryFn: () => getCompanyEmployeesApi({ companyId }).then(res => res.data)
     });
 
     const employees = data?.employees || [];
-    console.log(data)
-    
+
     if (isLoading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 py-8">
@@ -127,14 +140,19 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
             <Row gutter={[16, 16]}>
                 {employees.map((employee: ICompanyEmployee) => (
                     <Col xs={24} sm={12} lg={8} key={employee.id}>
-                        <Card 
-                            className="hover:shadow-lg transition-shadow"
+                        <Card
+                            className="cursor-pointer shadow-lg rounded-md"
                             bordered={false}
+                            onClick={() => {
+                                navigate(`/navigator/profile?id=${employee.id}`);
+                            }}
                         >
                             <div className="flex items-start space-x-4">
-                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-lg font-medium">
-                                    {employee.username?.[0] || '未'}
-                                </div>
+                                <Avatar>
+                                    <img
+                                        alt='avatar'
+                                        src={apiConfig.baseUrl + employee.avatar} />
+                                </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <span className="text-lg font-medium text-gray-900 truncate">
@@ -142,14 +160,8 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
                                         </span>
                                     </div>
                                     <div className="mt-1 text-sm text-gray-500">
-                                        {employee.currentCompany.position || '职位未设置'}
+                                    {employee.currentCompany.department} - {employee.currentCompany.position || '职位未设置'}
                                     </div>
-                                    {employee.currentCompany.department && (
-                                        <div className="mt-1 text-sm text-gray-500">
-                                            {employee.currentCompany.department}
-                                        </div>
-                                    )}
-                             
                                     {employee.currentCompany.joinDate && (
                                         <div className="mt-2 text-xs text-gray-400">
                                             加入时间：{dayjs(employee.currentCompany.joinDate).format('YYYY-MM-DD')}
@@ -163,7 +175,7 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
             </Row>
         </div>
     );
-  }
+}
 
 const CompanyDetailPage = observer(() => {
     const [activeTab, setActiveTab] = useState('1');
@@ -178,13 +190,13 @@ const CompanyDetailPage = observer(() => {
     });
 
 
-    const uploadLogo = async (file:File) => {
+    const uploadLogo = async (file: File) => {
         const formData = new FormData();
         formData.append('logo', file);
-       await uploadCompanyLogoApi(formData, companyId)
+        await uploadCompanyLogoApi(formData, companyId)
     }
 
-    const handleEditSubmit = async (values: any,file:File|null) => {
+    const handleEditSubmit = async (values: any, file: File | null) => {
         try {
             // 更新公司信息
             await updateCompanyApi({
@@ -242,9 +254,9 @@ const CompanyDetailPage = observer(() => {
                     {/* 公司头部信息 */}
                     <div className="relative pb-6">
                         <div className="px-6 pt-8">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-24 h-24 bg-white rounded-xl shadow-lg p-2 flex items-center justify-center">
+                            <div className="flex items-center justify-between flex-wrap">
+                                <div className="flex flex-wrap items-center gap-6">
+                                    <div className="w-16 h-16 rounded-md">
                                         <Image
                                             src={apiConfig.baseUrl + company?.logo || '/default-company-logo.png'}
                                             alt={company?.name}
@@ -253,25 +265,26 @@ const CompanyDetailPage = observer(() => {
                                         />
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h1 className="text-2xl font-bold">{company?.name}</h1>
+                                        <div className="flex flex-wrap items-center gap-3 mb-2">
+                                            <h1 className="text-2xl font-bold text-nowrap">{company?.name}</h1>
                                             {company?.isVerified && (
                                                 <Tag color="blue" className="bg-blue-400/20">已认证</Tag>
                                             )}
-                                            <Tag color={company?.status === 'approved' ? 'green' : 'orange'} 
-                                                 className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
+                                            <Tag color={company?.status === 'approved' ? 'green' : 'orange'}
+                                                className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
                                                 {company?.status === 'approved' ? '已批准' : '审核中'}
                                             </Tag>
+                                            {isAdmin && (
+                                                <Button type="primary" size="mini" onClick={() => setIsEditModalVisible(true)}>
+                                                    更新信息
+                                                </Button>
+                                            )}
                                         </div>
                                         <p className="text-sm max-w-2xl text-gray-600">{company?.description}</p>
                                     </div>
                                 </div>
-                                {isAdmin && (
-                                    <Button type="primary" onClick={() => setIsEditModalVisible(true)}>
-                                        编辑公司信息
-                                    </Button>
-                                )}
                             </div>
+
                         </div>
                     </div>
 
@@ -285,8 +298,8 @@ const CompanyDetailPage = observer(() => {
                             <CompanyBasicInfo company={company} />
                         </TabPane>
                         <TabPane key="2" title="薪资爆料">
-                            <SalaryReportList 
-                                companyId={company?.id} 
+                            <SalaryReportList
+                                companyId={company?.id}
                                 companyName={company?.name}
                             />
                         </TabPane>

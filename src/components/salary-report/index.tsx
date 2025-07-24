@@ -26,6 +26,74 @@ const RECRUITMENT_TYPE_OPTIONS = Object.entries(RECRUITMENT_TYPE_MAP).map(([key,
     value: key
 }));
 
+const config = (report: ISalaryReport) => {
+     return [
+    {
+        label: '岗位',
+        value: report.position
+    },
+    {
+        label: '薪资',
+        value: report.salary
+    },
+    {
+        label: '招聘类型',
+        value: RECRUITMENT_TYPE_MAP[report.recruitmentType]
+    },
+    {
+        label: '工作城市',
+        value: report.city
+    },
+    {
+        label: '学历',
+        value: report.education
+    }
+
+]
+}
+
+const renderSalaryCard = (report: ISalaryReport) => (
+        
+    <Card
+        key={report.id}
+        className="hover:shadow-lg transition-shadow"
+        bordered={false}
+    >
+        <div className="flex items-start justify-between">
+            <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium">
+                            {report.user?.nickname?.[0] || '匿'}
+                        </div>
+                        <span className="font-medium">{report.user?.nickname || '匿名用户'}</span>
+                    </div>
+                    <span className="text-gray-400">·</span>
+                    <span className="text-gray-500 text-sm">
+                        {dayjs(report.createdAt).format('YYYY-MM-DD')}
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:flex justify-between gap-4 mb-4">
+                    {config(report).map((item, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                            <div className="">{item.label}: </div>
+                            <div className="text-black">{item.value}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {report.remark && (
+                    <div className="mt-4 bg-gray-50 p-3 rounded-lg">
+                        <div className="text-gray-500 text-sm mb-1">补充说明</div>
+                        <div className="text-gray-700 text-sm whitespace-pre-wrap">{report.remark}</div>
+                    </div>
+                )}
+            </div>
+        </div>
+    </Card>
+);
+
 export const SalaryReportList: React.FC<SalaryReportListProps> = ({ companyId, companyName }) => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -70,70 +138,13 @@ export const SalaryReportList: React.FC<SalaryReportListProps> = ({ companyId, c
         }
     };
 
-    const renderSalaryCard = (report: ISalaryReport) => (
-        <Card
-            key={report.id}
-            className="hover:shadow-lg transition-shadow"
-            bordered={false}
-        >
-            <div className="flex items-start justify-between">
-                <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium">
-                                {report.user?.nickname?.[0] || '匿'}
-                            </div>
-                            <span className="font-medium">{report.user?.nickname || '匿名用户'}</span>
-                        </div>
-                        <span className="text-gray-400">·</span>
-                        <span className="text-gray-500 text-sm">
-                            {dayjs(report.createdAt).format('YYYY-MM-DD')}
-                        </span>
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">岗位</div>
-                            <div className="font-medium">{report.position}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">薪资</div>
-                            <div className="font-bold text-red-500">{report.salary}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">招聘类型</div>
-                            <div>{RECRUITMENT_TYPE_MAP[report.recruitmentType]}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">工作城市</div>
-                            <div>{report.city}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">学历要求</div>
-                            <div>{report.education}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">毕业时间</div>
-                            <div>{report.graduationDate}</div>
-                        </div>
-                    </div>
-
-                    {report.remark && (
-                        <div className="mt-4 bg-gray-50 p-3 rounded-lg">
-                            <div className="text-gray-500 text-sm mb-1">补充说明</div>
-                            <div className="text-gray-700 text-sm whitespace-pre-wrap">{report.remark}</div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </Card>
-    );
 
     return (
         <div className="mt-8">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">薪资爆料</h2>
-                <Button type="primary" onClick={() => setVisible(true)}>
+                <h2 className="text-lg font-bold text-gray-900">薪资爆料</h2>
+                <Button type="primary" size="small" onClick={() => setVisible(true)}>
                     发布薪资
                 </Button>
             </div>
