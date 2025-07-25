@@ -33,18 +33,18 @@ const ArticlePreview: FC<IProps> = ({
     <Card
       className={clsx(
         className,
-        "rounded-lg border-0 shadow-none flex flex-col gap-4"
+        "rounded-lg border-0 shadow-none flex flex-col gap-4 px-0"
       )}
     >
       <div className="flex-auto flex flex-col gap-4">
 
         {title == "" ? (
-          <Badge className="text-[1rem] bg-theme_blue p-2">文章</Badge>
+          <Badge className="text-[1rem] bg-theme_blue p-2">&nbsp;#&nbsp;暂无标题</Badge>
         ) : (
-          <div className="text-2xl font-bold">文章:&nbsp;{title}</div>
+          <div className="text-2xl font-bold">&nbsp;#&nbsp;{title}</div>
         )}
         {showMenu && <MenuBar editor={editor} />}
-        <Card className="overflow-visible  rounded-lg w-full mx-0 p-0 h-full flex flex-col flex-1 gap-2 [&>Card]:flex-1 [&>div>div]:flex-1">
+        {/* <Card className="overflow-visible  rounded-lg w-full mx-0 p-0 h-full flex flex-col flex-1 gap-2 [&>Card]:flex-1 [&>div>div]:flex-1"> */}
           <EditorContent
             id="edit"
             editor={editor}
@@ -52,7 +52,7 @@ const ArticlePreview: FC<IProps> = ({
             ref={editorRef}
           />
           {editor && <FloatMenu editor={editor} id="click-menu" />}
-        </Card>
+        {/* </Card> */}
       </div>
     </Card>
   );

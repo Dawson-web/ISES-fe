@@ -27,11 +27,10 @@ const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitCommen
     setNewComment("");
   }
   return (
-    <Card className={clsx(className, "mt-8 rounded-xl shadow-sm bg-white dark:bg-gray-800")}>
+    <Card className={clsx(className, "mt-8 rounded-xl shadow-sm bg-white dark:bg-gray-800 border-0")}>
       <div className="flex gap-3">
         <Input
           placeholder="写下你的评论..."
-          size="md"
           className="flex-1 transition-all duration-200 hover:border-blue-400 focus:border-blue-500"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
@@ -42,11 +41,10 @@ const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitCommen
           }}
         />
         <Button
-          variant="filled"
-          size="md"
-          className="bg-blue-500 hover:bg-blue-600 transition-colors duration-200"
-          onClick={handlePostComment}
+          // variant="filled"
           disabled={!newComment.trim()}
+          className=""
+          onClick={handlePostComment}
         >
           评论
         </Button>
@@ -59,7 +57,7 @@ const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitCommen
                 comment={comment}
                 key={comment.userInfoId}
                 createdAt={comment.createdAt}
-                className="w-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 p-2 rounded-lg"
+                className="w-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 p-2 rounded-lg border-b-1 border-gray-200"
               />
             );
           }):

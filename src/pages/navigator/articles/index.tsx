@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ISESSkeleton from '@/components/skeleton';
 import CreatorList from './components/creatorlist';
 import { apiConfig } from '@/config';
+import { tiptapToText } from '@/utils';
 
 const { Title, Text } = Typography;
 
@@ -162,7 +163,7 @@ export default function ArticleList() {
 
                             {/* 文章内容 */}
                             <Text className="text-[#515767] dark:text-[#A4A4A4] text-[14px] leading-relaxed line-clamp-2 mb-3">
-                              {article.metadata.excerpt}
+                              {tiptapToText(article.content)}
                             </Text>
                             
                             {/* 文章数据 */}

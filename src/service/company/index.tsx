@@ -1,11 +1,11 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
-import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyStatus } from "@/types/company";
+import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyListRequest, ICompanyStatus } from "@/types/company";
 import { ISalaryReportForm, ISalaryReportList } from "@/types/salary";
 
 
-export const getCompanyListApi = async () => {
-    const res = await $axios.get<ApiOk<ICompanyList>>('/companies');
+export const getCompanyListApi = async (data:ICompanyListRequest) => {
+    const res = await $axios.post<ApiOk<ICompanyList>>('/companies',data);
     return res.data;
 };
 

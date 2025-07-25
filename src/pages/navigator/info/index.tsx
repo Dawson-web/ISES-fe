@@ -13,14 +13,30 @@ import { IconSubscribeAdd } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
 const Info = () => {
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(''); // 搜索值(暂存)
+  const [searchKeyword, setSearchKeyword] = useState(''); // 搜索关键词(实际搜索值)
   const [calculatorVisible, setCalculatorVisible] = useState(false);
   const [companyFormVisible, setCompanyFormVisible] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  });
   const navigate = useNavigate();
 
   const { data: companyList } = useQuery({
-    queryKey: ['companyList'],
-    queryFn: () => getCompanyListApi().then(res => res.data),
+    queryKey: ['companyList', pagination.current, pagination.pageSize,searchKeyword],
+    queryFn: () => getCompanyListApi({
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+      keyword: searchValue
+    }).then(res => {
+      setPagination(prev => ({
+        ...prev,
+        total: res.data.total
+      }));
+      return res.data;
+    })
   })
 
 
@@ -82,6 +98,16 @@ const Info = () => {
       ),
     },
     {
+      title: '投递链接',
+      width: 120,
+      dataIndex: 'metadata',
+      render: (metadata: any) => (
+        <span className="schedule-cell line-clamp-1 hover:cursor-pointer text-blue-600" onClick={() => window.open(metadata.website, '_blank')}>
+          {metadata.website}
+        </span>
+      ),
+    },
+    {
       title: '状态',
       width: 120,
       dataIndex: 'status',
@@ -123,16 +149,27 @@ const Info = () => {
           <Input
             placeholder="请输入公司/岗位名称"
             value={searchValue}
-            onChange={setSearchValue}
+            onChange={(value) => {
+              setSearchValue(value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setSearchKeyword(searchValue);
+                setPagination(prev => ({
+                  ...prev,
+                  current: 1,
+                }));
+              }
+            }}
             className="search-input"
             style={{ paddingRight: '0px !important' }}
             suffix={<Button type="primary" className="absolute right-0 top-0">GO→</Button>}
           />
-          <div className="search-tags">
+          {/* <div className="search-tags">
             <Tag>华为</Tag>
             <Tag>好未来</Tag>
             <Tag>字节</Tag>
-          </div>
+          </div> */}
         </div>
         <div className="tool-box md:w-[300px] w-full ">
           <div className="tool-title">求职工具箱</div>
@@ -182,7 +219,18 @@ const Info = () => {
       <Table
         columns={columns}
         data={companyList?.companies || []}
-        pagination={false}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          onChange: (current, pageSize) => {
+            setPagination(prev => ({
+              ...prev,
+              current,
+              pageSize
+            }));
+          }
+        }}
         className="schedule-table"
         rowKey="id"
       />

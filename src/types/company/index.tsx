@@ -1,5 +1,12 @@
 import { ICurrentCompany } from "../user";
 
+export interface ICompanyListRequest {
+    page: number;
+    pageSize: number;
+    keyword?: string;
+    status?: string;
+}
+
 export interface ICompany {
     id?: string;
     name: string;

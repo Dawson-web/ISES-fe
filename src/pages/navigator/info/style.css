@@ -157,15 +157,9 @@
 }
 
 .company-logo {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border-radius: 4px;
-}
-
-.schedule-cell {
-  /* display: flex;
-  flex-direction: column;
-  gap: 4px; */
 }
 
 .link-button {

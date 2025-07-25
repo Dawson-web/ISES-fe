@@ -6,6 +6,7 @@ import './style.css';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ICompany, ICompanyStatus } from '@/types/company';
 import { useState } from 'react';
+import { apiConfig } from '@/config';
 
 const { Title, Text, Paragraph } = Typography;
 const { Row, Col } = Grid;
@@ -70,7 +71,7 @@ const Page = () => {
                 <div className="company-info">
                     <div className="company-logo">
                         {record.logo ? (
-                            <img src={record.logo} alt={record.name} />
+                            <img src={apiConfig.baseUrl + record.logo} alt={record.name} />
                         ) : (
                             <div className="company-logo-placeholder">
                                 {record.name.charAt(0)}
