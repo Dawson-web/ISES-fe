@@ -75,8 +75,8 @@ const Home: React.FC = observer(() => {
       </div>
 
       {/* 主要内容 */}
-      <div className="p-4 sm:p-6">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+      <div className="py-4 px-6">
+        <div className="flex flex-col lg:flex-row gap-4 ">
 
 
           {/* 左侧文章列表 */}

@@ -9,7 +9,7 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    background: var(--accent);
+    background: #ececec;
     -webkit-border-radius: 1ex;
   }
   

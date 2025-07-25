@@ -17,8 +17,8 @@ const MenuBar: FC<IEditorMenuBarProps> = ({ editor }) => {
 
   const menuItemGroups = getMenuItemGroups(editor);
   return (
-    <Card className="w-full">
-      <div className="flex flex-row gap-2 flex-wrap bg-gray-00 p-2 rounded-md  justify-center">
+    <Card className="w-full ">
+      <div className="flex flex-row gap-2 rounded-md  justify-center overflow-x-auto pb-1">
         {menuItemGroups.map((group) => {
           return (
             <div key={group[0].tooltip} className="flex flex-row gap-1">

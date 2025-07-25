@@ -150,7 +150,7 @@ const getMenuItemGroups = (editor: Editor) => {
     },
     {
       tooltip: "上传图片",
-      Icon: <Image />,
+      Icon: <Image size={15} strokeWidth={3} />,
       onClick: () => {
         const inputNode = document.createElement("input");
         inputNode.setAttribute("type", "file");
@@ -201,13 +201,11 @@ const getMenuItemGroups = (editor: Editor) => {
       tooltip: "撤销",
       Icon: <Undo2Icon size={15} strokeWidth={3} />,
       onClick: () => editor.chain().focus().undo().run(),
-      disabled: !editor.can().chain().focus().undo().run(),
     },
     {
       tooltip: "恢复",
       Icon: <Redo2Icon size={15} strokeWidth={3} />,
       onClick: () => editor.chain().focus().redo().run(),
-      disabled: !editor.can().chain().focus().redo().run(),
     },
   ];
 
