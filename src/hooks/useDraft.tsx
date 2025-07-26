@@ -3,8 +3,7 @@ import { getDraft, saveDraft, delDraft, getDraftById } from "@/utils/indexDB";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Message } from "@arco-design/web-react";
-import isEqual from "lodash.isequal";
-import { get } from "http";
+
 export function useDraft({
   getEditorContent,
   setEditorContent,
@@ -127,7 +126,7 @@ export function useDraft({
     async (Id: number) => {
       const draft = await getDraftById(Id);
       console.log(draft);
-      const { id, content, ...otherFields } = draft;
+      const { id, content, ...otherFields } = draft as any;
       if (draft) {
         setEditorContent(content);
         setOtherFields?.(otherFields as any);

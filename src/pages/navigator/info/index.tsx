@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { apiConfig } from '@/config';
 import { IconSubscribeAdd } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
-import { isMobile } from '@/utils';
 
 type FilterKeys = 'companyName' | 'employeeCount' | 'mainBusiness' | 'address';
 

@@ -68,6 +68,7 @@ export default function ArticleEditPage() {
       tags: string[];
     }>
   >([]);
+  console.log(tag)
   //调用钩子
   const { importDraft, deleteDraft, fetchAllDrafts, toSaveDraft, lastId } =
     useDraft({
@@ -96,7 +97,7 @@ export default function ArticleEditPage() {
   const handleOpenDraftModal = async () => {
     setDraftModalVisible(true);
     const draft = await fetchAllDrafts();
-    setDrafts(draft);
+    setDrafts(draft as any);
   };
 
   const handleImportDraft = (id: number) => {
@@ -195,7 +196,7 @@ export default function ArticleEditPage() {
               icon={<IconSend />}
               onClick={() => {
                 handleSave();
-                if (lastId) {
+                if (lastId.current) {
                   deleteDraft(lastId.current);
                   setDrafts(
                     drafts.filter((draft) => draft.id !== lastId.current)
