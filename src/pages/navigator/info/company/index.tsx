@@ -255,7 +255,7 @@ const CompanyDetailPage = observer(() => {
                     <div className="relative pb-6">
                         <div className="px-6 pt-8">
                             <div className="flex items-center justify-between flex-wrap">
-                                <div className="flex flex-wrap items-center gap-6">
+                                <div className="flex flex-wrap gap-6">
                                     <div className="w-16 h-16 rounded-md">
                                         <Image
                                             src={apiConfig.baseUrl + company?.logo || '/default-company-logo.png'}

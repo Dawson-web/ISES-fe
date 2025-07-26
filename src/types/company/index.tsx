@@ -5,6 +5,10 @@ export interface ICompanyListRequest {
     pageSize: number;
     keyword?: string;
     status?: string;
+    mainBusiness?: string[];
+    employeeCount?: string[];
+    address?: string[];
+    companyName?: string[];
 }
 
 export interface ICompany {

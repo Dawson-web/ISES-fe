@@ -5,7 +5,6 @@ import userStore from '@/store/User';
 import { registerCompanyApi, uploadCompanyLogoApi } from '@/service/company';
 import { toast } from 'sonner';
 import { ICompany } from '@/types/company';
-import { IconUpload } from '@arco-design/web-react/icon';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -19,9 +18,9 @@ interface CompanyFormModalProps {
 
 const EMPLOYEE_COUNT_OPTIONS = [
   { label: '1-99人', value: '1-99' },
-  { label: '100-1000人', value: '100-1000' },
+  { label: '100-999人', value: '100-999' },
   { label: '1000-9999人', value: '1000-9999' },
-  { label: '9999人以上', value: '9999+' }
+  { label: '9999+', value: '9999+' }
 ];
 
 const CompanyFormModal = observer(({ visible, onClose, onSubmit, initialValues }: CompanyFormModalProps) => {
