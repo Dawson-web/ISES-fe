@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Layout, Menu, Avatar, Tag } from '@arco-design/web-react';
+import { Layout, Menu, Avatar } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BookText, Building2, CheckCircle, Coffee, Compass, House, LibraryBigIcon, MessageSquareText, PencilRuler, SquarePlayIcon, SquarePlus } from 'lucide-react';
+import { CheckCircle, Coffee, Compass, House, MessageSquareText, SquarePlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -95,7 +95,12 @@ const _Layout = () => {
       >
         <div className='logo' />
         <Menu
-          selectedKeys={[location.pathname]}
+          selectedKeys={(() => {
+            // 按路径长度降序排序，确保更具体的路径优先匹配
+            const sortedMenuList = [...menuList].sort((a, b) => b.key.length - a.key.length);
+            const foundItem = sortedMenuList.find((item) => location.pathname.startsWith(item.key));
+            return foundItem ? [foundItem.key] : [];
+          })()}
         >
           <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
             navigate('/navigator/profile');
@@ -115,7 +120,6 @@ const _Layout = () => {
                 {item.icon}
                 {item.label}
               </div>
-              {item.tag && <Tag color="red">{item.tag}</Tag>}
             </MenuItem>
           ))}
         </Menu>

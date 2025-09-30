@@ -119,7 +119,7 @@ export function useDraft({
   //获取所有草稿
   const fetchAllDrafts = useCallback(async () => {
     const drafts = await getDraft();
-    return drafts;
+    return Array.isArray(drafts) ? drafts : [];
   }, []);
   // 导入草稿
   const importDraft = useCallback(

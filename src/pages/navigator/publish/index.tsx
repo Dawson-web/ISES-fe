@@ -3,7 +3,6 @@ import {
   Input,
   Button,
   Message,
-  Avatar,
   Tag,
   Select,
   Modal,
@@ -19,7 +18,6 @@ import { createArticleApi } from "@/service/article";
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import MenuBar from "@/components/editor/MenuBar";
 import { useDraft } from "@/hooks/useDraft";
-import { set } from "mobx";
 
 const CATEGORY = [
   {
@@ -97,7 +95,7 @@ export default function ArticleEditPage() {
 
   const handleOpenDraftModal = async () => {
     setDraftModalVisible(true);
-    const draft  = await fetchAllDrafts();
+    const draft = await fetchAllDrafts();
     setDrafts(draft.reverse() as any);
   };
 

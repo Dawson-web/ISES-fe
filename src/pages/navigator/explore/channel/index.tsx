@@ -2,7 +2,7 @@ import ArticlePreview from "@/components/article/article-preview/index";
 import CommentBox from "@/components/article/comment/index";
 import { Card, Tooltip, Badge, Group, Text, ActionIcon, Button } from "@mantine/core";
 import { Undo2, ThumbsUp, Eye, MessageCircle, Clock } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { getArticleDetailApi, postCommentApi } from "@/service/article";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +12,6 @@ import { ICommentForm } from "@/types/article";
 import { toastMessage } from "@/components/toast";
 
 export default function Page() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const articleId = String(searchParams.get('id'));

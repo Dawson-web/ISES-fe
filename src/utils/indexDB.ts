@@ -38,7 +38,7 @@ export async function getDraft() {
     req.onerror = () => reject(req.error);
     req.onsuccess = () => {
       //console.log(req.result);
-      resolve(req.result);
+      resolve(req.result || []);
     };
   });
 }
