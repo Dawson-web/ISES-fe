@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Input, Select, Button, Radio, InputNumber, Table, Tabs, Message } from '@arco-design/web-react';
 import { IconEye } from '@arco-design/web-react/icon';
 
@@ -171,7 +171,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     const salary = Number(preTaxSalary) || 0;
     
     // 如果工资低于社保最低基数，给出提示
-    if (salary < SOCIAL_INSURANCE_BASE.min) {
+    if (salary < SOCIAL_INSURANCE_BASE.min && salary > 0) {
       Message.warning(`您的工资${salary}元低于社保最低基数${SOCIAL_INSURANCE_BASE.min}元，将按最低基数缴纳社保`);
     }
 
@@ -217,13 +217,29 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     setAfterTaxBonus(bonusAfterTax);
   };
 
+  // 自动计算：监听所有相关状态变化
+  useEffect(() => {
+    // 只有当税前工资有值时才进行计算
+    if (preTaxSalary && Number(preTaxSalary) > 0) {
+      handleCalculate();
+    } else {
+      // 清空计算结果
+      setAfterTaxMonthly(0);
+      setSocialInsurance(0);
+      setTax(0);
+      setHousingFund(0);
+      setInsuranceDetails([]);
+      setAfterTaxBonus(0);
+    }
+  }, [preTaxSalary, city, taxType, bonus, socialBase, housingBase, housingRate, socialType]);
+
   return (
     <Modal
       title={null}
       visible={visible}
       onCancel={onClose}
       footer={null}
-      className="w-[80vw] min-w-[360px] max-h-4/5 flex  gap-5 p-5  flex-col  md:flex-row overflow-auto "
+      className="w-[80vw] min-w-[360px] max-w-[1000px] max-h-4/5 flex  gap-5 p-5  flex-col  md:flex-row overflow-auto "
     >
       <div className="flex flex-col md:flex-row  overflow-auto">
         {/* 左侧结果区域 */}
@@ -267,8 +283,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                       placeholder="请输入月薪"
                       value={preTaxSalary}
                       onChange={setPreTaxSalary}
-                      suffix={<Button type="text" onClick={handleCalculate}>计算</Button>}
-                      className="!bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      className=""
                     />
                   </div>
                   <div className="flex-1">
@@ -276,7 +291,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                     <Select 
                       value={city} 
                       onChange={setCity} 
-                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      className="w-full "
                     >
                       {cities.map(city => (
                         <Option key={city.value} value={city.value}>
@@ -299,7 +314,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                     <Select 
                       value={socialType}
                       onChange={setSocialType}
-                      className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                      className="w-full"
                     >
                       <Option value="standard">按照工资</Option>
                       <Option value="base">按照基数</Option>
@@ -313,7 +328,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                         onChange={val => setSocialBase(String(val))}
                         min={SOCIAL_INSURANCE_BASE.min}
                         max={SOCIAL_INSURANCE_BASE.max}
-                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                        className="w-full "
                       />
                     </div>
                   )}
@@ -327,7 +342,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                         onChange={val => setHousingBase(String(val))}
                         min={HOUSING_FUND_BASE.min}
                         max={HOUSING_FUND_BASE.max}
-                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                        className="w-full "
                       />
                     </div>
                     <div className="flex-1">
@@ -335,11 +350,12 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                       <Select
                         value={housingRate}
                         onChange={setHousingRate}
-                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                        className="w-full "
                       >
                         <Option value="12">12%</Option>
                         <Option value="10">10%</Option>
                         <Option value="8">8%</Option>
+                        <Option value="5">5%</Option>
                       </Select>
                     </div>
                   </div>
@@ -351,11 +367,12 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                       <Select
                         value={housingRate}
                         onChange={setHousingRate}
-                        className="w-full !bg-[#F7F8FA] !border-[#E5E6EB] !rounded !h-9 hover:!bg-[#F2F3F5] hover:!border-[#C9CDD4] focus:!bg-white focus:!border-[#165DFF] focus:!shadow-[0_0_0_2px_rgba(22,93,255,0.1)]"
+                        className="w-full "
                       >
                         <Option value="12">12%</Option>
                         <Option value="10">10%</Option>
                         <Option value="8">8%</Option>
+                        <Option value="5">5%</Option>
                       </Select>
                     </div>
                   </div>
@@ -373,7 +390,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                     </RadioGroup>
                   </div>
                 </div>
-                <div className="flex">
+                <div className="flex mt-4">
                   <div className="flex-1">
                     <div className="text-sm text-gray-600 mb-2">年终奖倍数</div>
                     <div className="flex gap-2 flex-wrap">
@@ -382,7 +399,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                           key={multiple}
                           type={bonus === String(multiple) ? 'primary' : 'default'}
                           onClick={() => setBonus(String(multiple))}
-                          className="flex-1 min-w-[60px] !border-[#E5E6EB] !text-[#4E5969] hover:!border-[#165DFF] hover:!text-[#165DFF]"
+                          className="flex-1 min-w-[60px]"
                         >
                           ×{multiple}
                         </Button>
@@ -406,7 +423,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                     dataIndex: 'base', 
                     align: 'right',
                     width: 120,
-                    render: (value: number) => value.toFixed(2)
+                    render: (value: number) => value.toFixed(1)
                   },
                   { 
                     title: '个人部分',
@@ -424,7 +441,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                         dataIndex: 'personalAmount',
                         align: 'right',
                         width: 100,
-                        render: (value: number) => value.toFixed(2)
+                        render: (value: number) => value.toFixed(1)
                       }
                     ]
                   },
@@ -453,7 +470,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
                     dataIndex: 'total',
                     align: 'right',
                     width: 120,
-                    render: (value: number) => value.toFixed(2)
+                    render: (value: number) => value.toFixed(1)
                   }
                 ]}
                 data={insuranceDetails}

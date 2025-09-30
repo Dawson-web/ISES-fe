@@ -8,19 +8,19 @@ export type Path =
   | `/login`
   | `/navigator`
   | `/navigator/approve`
-  | `/navigator/articles`
-  | `/navigator/articles/components/creatorlist`
-  | `/navigator/articles/components/hotlist`
-  | `/navigator/articles/detail`
-  | `/navigator/articles/edit`
   | `/navigator/campus`
   | `/navigator/chat`
   | `/navigator/chat/components/AddFriend`
   | `/navigator/components/campuscalander`
   | `/navigator/components/companyalumni`
+  | `/navigator/explore`
+  | `/navigator/explore/channel`
+  | `/navigator/explore/components/creatorlist`
+  | `/navigator/explore/components/hotlist`
   | `/navigator/info`
   | `/navigator/info/company`
   | `/navigator/profile`
+  | `/navigator/publish`
   | `/register`
   | `/seekback`
 

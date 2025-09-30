@@ -41,7 +41,7 @@ export default function Page() {
           <div className="text-black font-bold flex items-center">
             <span className="text-black">arco.design</span>
             <div style={{width: '1.5px',height: '12px',background: '#6b7280',margin: '0 8px'}}></div>
-            <span className="text-gray-500 font-normal">Dawson & lpwo443</span>            
+            <span className="text-gray-500 font-normal">ises 职引</span>            
           </div>
           <div className="text-black text-5xl font-bold">Instant Share</div>
           <div className="text-gray-600 text-xl mt-2">专为在校生定制的一站式求职爆料平台</div>

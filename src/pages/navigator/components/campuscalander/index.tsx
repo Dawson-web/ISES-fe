@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 
   // 招聘季节数据
   const recruitmentSeasons = [
-    { name: '寒假实习', period: '12月-2月', status: 'past', color: '#86909C' },
-    { name: '春招', period: '3月-5月', status: 'past', color: '#00B42A' },
-    { name: '暑期实习', period: '6月-8月', status: 'current', color: '#3370FF' },
-    { name: '秋招', period: '9月-11月', status: 'future', color: '#FF7D00' },
+    { name: '寒假实习', period: '12月-2月', status: 0, color: '#86909C' },
+    { name: '春招', period: '3月-5月', status: 1, color: '#00B42A' },
+    { name: '暑期实习', period: '6月-8月', status: 2, color: '#3370FF' },
+    { name: '秋招', period: '9月-11月', status: 3, color: '#FF7D00' },
   ];
 
    // 当前日期判断
@@ -31,7 +31,6 @@ const CampusCalander = () => {
       <IconCalendar className="mr-2 text-blue-500" />
       <Text className="font-medium text-gray-900">招聘季节</Text>
     </div>
-
     {/* 桌面端垂直时间轴 */}
     <div className="block ">
       {recruitmentSeasons.map((season, index) => (
@@ -39,16 +38,16 @@ const CampusCalander = () => {
           <div className="flex flex-col items-center mr-4 mt-0.5">
             <div>
             <span className="relative flex h-2 w-2">
-              <span className={clsx(` absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75 ${season.status === 'current'
+              <span className={clsx(` absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75 ${season.status === getCurrentSeason()
                 ? 'bg-blue-500 ring-2 ring-blue-200 timeline-current '
-                : season.status === 'past'
+                : season.status < getCurrentSeason()
                   ? 'bg-gray-400'
                   : 'bg-gray-200'
                 }`,
-                season.status === 'current' && 'animate-ping')}></span>
-              <span className={clsx(`relative inline-flex rounded-full h-2 w-2  ${season.status === 'current'
+                season.status === getCurrentSeason() && 'animate-ping')}></span>
+              <span className={clsx(`relative inline-flex rounded-full h-2 w-2  ${season.status === getCurrentSeason()
                 ? 'bg-blue-600 ring-2 ring-blue-200 timeline-current '
-                : season.status === 'past'
+                : season.status < getCurrentSeason()
                   ? 'bg-gray-400'
                   : 'bg-gray-200'
                 }  `)}></span>
@@ -61,7 +60,7 @@ const CampusCalander = () => {
             )}
           </div>
           <div className="flex-1 -mt-0.5 flex justify-between">
-            <Text className={`font-medium transition-colors leading-tight ${season.status === 'current' ? 'text-blue-600' : 'text-gray-900'
+            <Text className={`font-medium transition-colors leading-tight ${season.status === getCurrentSeason() ? 'text-blue-600' : 'text-gray-900'
               }`}>
               {season.name}
             </Text>

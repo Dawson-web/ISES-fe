@@ -50,13 +50,13 @@ export default function Page() {
 
 
   return (
-    <div className="w-full h-full p-6">
+    <div className="w-full h-full p-6 bg-[#F7F8FA] dark:bg-[#17171A]">
       <Card className="flex flex-col gap-4 max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center">
           <Tooltip label="返回">
             <ActionIcon
               variant="subtle"
-              onClick={() => navigate("/navigator/articles")}
+              onClick={() => history.back()}
             >
               <Undo2 className="text-gray-600" />
             </ActionIcon>

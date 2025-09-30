@@ -24,7 +24,7 @@ export default function ArticleList() {
   const queryClient = useQueryClient();
 
   const handleArticleClick = (id: number) => {
-    navigate(`/navigator/articles/detail?id=${id}`);
+    navigate(`/navigator/explore/channel?id=${id}`);
   };
 
   const { data, isLoading} = useQuery({
@@ -83,9 +83,9 @@ export default function ArticleList() {
               icon={<IconPlus />} 
               size="large"
               className="ml-auto shadow-sm "
-              onClick={() => navigate('/navigator/articles/edit')}
+              onClick={() => navigate('/navigator/publish')}
             >
-              写文章
+              发布
             </Button>
           </div>
         </div>

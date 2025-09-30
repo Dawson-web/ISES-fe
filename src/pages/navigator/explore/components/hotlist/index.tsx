@@ -31,7 +31,7 @@ export default function HotList() {
       <div className="space-y-3">
         {hotArticles.map((article, index) => (
           <div key={index} className="flex items-start gap-3 group cursor-pointer" onClick={() => {
-            navigate(`/navigator/articles/detail?id=${article.id}`);
+            navigate(`/navigator/explore/channel?id=${article.id}`);
           }}>
             <div
               className={clsx(

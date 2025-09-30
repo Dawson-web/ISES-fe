@@ -4,7 +4,7 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BookText, Building2, CheckCircle, Compass, LibraryBigIcon, MessageSquareText, PencilRuler } from 'lucide-react';
+import { BookText, Building2, CheckCircle, Coffee, Compass, House, LibraryBigIcon, MessageSquareText, PencilRuler, SquarePlayIcon, SquarePlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -21,25 +21,19 @@ const menuList = [
     label: '首页',
   },
   {
-    key: '/navigator/articles/edit',
-    icon: <PencilRuler size={16} />,
-    label: '创作中心',
+    key: '/navigator/publish',
+    icon: <SquarePlus size={16} />,
+    label: '发布',
   },
   {
-    key: '/navigator/articles',
-    icon: <BookText size={16} />,
-    label: '文章',
+    key: '/navigator/explore',
+    icon: <House size={16} />,
+    label: '发现',
   },
   {
     key: '/navigator/info',
-    icon: <Building2 size={16} />,
+    icon: <Coffee size={16} />,
     label: '爆料',
-  },
-  {
-    key: '/navigator/campus',
-    icon: <LibraryBigIcon size={16} />,
-    label: '校园墙',
-    tag: '开发中',
   },
   {
     key: '/navigator/chat',

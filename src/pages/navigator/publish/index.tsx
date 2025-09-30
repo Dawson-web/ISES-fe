@@ -19,6 +19,7 @@ import { createArticleApi } from "@/service/article";
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import MenuBar from "@/components/editor/MenuBar";
 import { useDraft } from "@/hooks/useDraft";
+import { set } from "mobx";
 
 const CATEGORY = [
   {
@@ -96,8 +97,8 @@ export default function ArticleEditPage() {
 
   const handleOpenDraftModal = async () => {
     setDraftModalVisible(true);
-    const draft = await fetchAllDrafts();
-    setDrafts(draft as any);
+    const draft  = await fetchAllDrafts();
+    setDrafts(draft.reverse() as any);
   };
 
   const handleImportDraft = (id: number) => {
@@ -147,6 +148,16 @@ export default function ArticleEditPage() {
       (res) => {
         if (res.data.status) {
           Message.success("发布成功");
+          setForm({
+            title: "",
+            content: "",
+            type: "技术",
+            cover: "",
+            category: undefined,
+            contentType: undefined,
+            tags: [],
+            excerpt: "",
+          })
         } else {
           Message.error("发布失败");
         }
@@ -160,7 +171,6 @@ export default function ArticleEditPage() {
       <header className="editor-header">
         <div className="header-content flex justify-between flex-wrap gap-4">
           <div className="header-left">
-            <Avatar size={32}>D</Avatar>
             <Input
               placeholder="输入文章标题..."
               value={form.title}
@@ -290,53 +300,10 @@ export default function ArticleEditPage() {
         </div>
         <MenuBar editor={editor} />
         <IeseEditor editor={editor} className="w-full h-full" />
-        {/* <div>
-        <div className="editor-toolbar">
-          <Space size="small" className="format-tools">
-            {formatTools.map((tool, index) => (
-              <Button
-                key={index}
-                type="text"
-                className="tool-btn"
-                icon={tool.icon}
-                title={tool.tip}
-                onClick={() => handleFormat(tool.type)}
-              />
-            ))}
-          </Space>
-          <div className="divider" />
-          <Space size="small" className="insert-tools">
-            <Upload
-              accept="image/*"
-              showUploadList={false}
-              beforeUpload={handleImageUpload}
-            >
-              <Button
-                type="text"
-                className="tool-btn"
-                icon={<IconImage />}
-                title="插入图片"
-              />
-            </Upload>
-          </Space>
-        </div>
-        <div className="editor-content">
-          <Input.TextArea
-            ref={editorRef}
-            placeholder="开始创作精彩内容..."
-            value={form.content}
-            onChange={handleEditorChange}
-            className="content-input"
-          />
-          <div className="word-count">
-            {wordCount} 字
-          </div>
-        </div>
-        </div> */}
       </main>
 
       <Modal
-        title="选择草稿"
+        title="导入草稿"
         visible={draftModalVisible}
         onCancel={() => setDraftModalVisible(false)}
         footer={null}

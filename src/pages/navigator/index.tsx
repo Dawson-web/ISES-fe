@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Input, Button, Typography, Card, Tag, Pagination } from '@arco-design/web-react';
-import { IconSearch, IconEye, IconHeart } from '@arco-design/web-react/icon';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Input, Button, Typography } from '@arco-design/web-react';
+import { IconSearch } from '@arco-design/web-react/icon';
 
 import CampusCalander from './components/campuscalander';
 import CompanyAlumni from './components/companyalumni';
 import userStore from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import { getSelfArticleListApi } from '@/service/article';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LifeContentTypeColor } from '@/types/article';
+// import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+// import { LifeContentTypeColor } from '@/types/article';
 import { useNavigate } from 'react-router-dom';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const hitokotos = [
   '悲观者永远正确 乐观者永远前行 ~ 🥰',
@@ -27,11 +27,12 @@ const hitokotos = [
 
 const Home: React.FC = observer(() => {
   const [searchValue, setSearchValue] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize] = useState<number>(100);
+  const [allArticles, setAllArticles] = useState<any[]>([]);
+  const loadingRef = useRef<boolean>(false);
   const userInfo = userStore;
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  // 取消无限滚动后的保留引用已移除
 
   // 初始化显示所有文章
   useEffect(() => {
@@ -40,24 +41,56 @@ const Home: React.FC = observer(() => {
     }
   }, []);
 
-  const { data } = useQuery({
-    queryKey: ['getSelfArticleListApi', currentPage, pageSize],
-    queryFn: () => getSelfArticleListApi(searchValue,currentPage, pageSize).then(res => res.data.data),
-  });
+  // 获取文章数据
+  const fetchArticles = useCallback(async () => {
+    if (loadingRef.current) return;
+    
+    loadingRef.current = true;
+    try {
+      const response = await getSelfArticleListApi(searchValue, 1, pageSize);
+      const newData = response.data.data;
+      setAllArticles(newData.articles || []);
+    } catch (error) {
+      console.error('Failed to fetch articles:', error);
+    } finally {
+      loadingRef.current = false;
+    }
+  }, [searchValue, pageSize]);
 
-  const { mutateAsync: searchArticleList } = useMutation({
-    mutationFn: () => getSelfArticleListApi(searchValue,currentPage, pageSize),
-    onSuccess: () => {
-      // 刷新文章详情数据
-      queryClient.invalidateQueries({ queryKey: ["getSelfArticleListApi", currentPage, pageSize] });
-    },
-  }); 
+  // 初始加载
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
-  const articles = data?.articles
-  const pagination = data?.pagination
+  // 搜索功能
+  const handleSearch = useCallback(() => {
+    setAllArticles([]);
+    fetchArticles();
+  }, [fetchArticles]);
+
+  // 取消无限滚动：不再设置观察器
 
   const handleArticleClick = (articleId: number) => {
-    navigate(`/navigator/articles/detail?id=${articleId}`);
+    navigate(`/navigator/explore/channel?id=${articleId}`);
+  };
+
+  // 按年份分组文章（时间轴）
+  const groupArticlesByYear = (articles: any[]) => {
+    const groups: { [year: string]: any[] } = {};
+    articles.forEach((article) => {
+      const date = new Date(article.createdAt);
+      const yearKey = String(date.getFullYear());
+      if (!groups[yearKey]) groups[yearKey] = [];
+      groups[yearKey].push(article);
+    });
+
+    // 年份倒序，年内按时间倒序
+    return Object.entries(groups)
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .map(([year, list]) => [
+        year,
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+      ] as [string, any[]]);
   };
 
 
@@ -68,7 +101,7 @@ const Home: React.FC = observer(() => {
         <div className="flex flex-col px-6 py-2">
           <div className="flex items-center justify-between w-full">
             <div className="text-2xl font-bold">{userInfo.username || 'Aigei'}</div>
-            <Button type="primary" size="small" className="ml-2" onClick={() => navigate('/navigator/articles/edit')}>发布文章</Button>
+            <Button type="primary" size="small" className="ml-2" onClick={() => navigate('/navigator/publish')}>发布文章</Button>
           </div>
           <Text className="text-gray-500 text-sm">{userInfo.hitokoto}</Text>
         </div>
@@ -89,75 +122,55 @@ const Home: React.FC = observer(() => {
                   prefix={<IconSearch />}
                   value={searchValue}
                   onChange={setSearchValue}
-                  onSearch={() => searchArticleList()}
+                  onSearch={handleSearch}
                   style={{ maxWidth: '400px' }}
                 />
                 <Text className="text-sm text-gray-500">
-                  {searchValue ? `找到 ${articles?.length} 篇相关文章` : `共发布 ${pagination?.total} 篇文章`}
+                  {searchValue ? `找到 ${allArticles.length} 篇相关文章` : `共发布 ${allArticles.length} 篇文章`}
                 </Text>
               </div>
 
-              {/* 文章列表 */}
-              <div className="space-y-3">
-                {articles?.map((article) => (
-                  <Card
-                    key={article.id}
-                    className="cursor-pointer hover-lift article-card border-0 shadow-sm hover:shadow-md transition-all duration-300"
-                    onClick={() => handleArticleClick(article.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 min-w-0">
-                        <Title
-                          heading={6}
-                          className="mb-0 hover:text-blue-600 transition-colors leading-relaxed font-medium text-gray-900 flex items-center gap-4"
-                          style={{ fontSize: '16px', lineHeight: '1.5' }}
-                        >
-                          {article.title}
-                            <Tag
-                              color={LifeContentTypeColor[article.contentType as keyof typeof LifeContentTypeColor]}
-                              style={{
-                                border: 'none',
-                                // padding: '0 8px',
-                                height: '20px',
-                                fontSize: '12px',
-                                borderRadius: '10px'
-                              }}
-                            >
-                              {article.contentType}
-                            </Tag>
-                        </Title>
-                      </div>
+              {/* 时间轴样式的文章列表（按年份分组） */}
+              <div className="space-y-10">
+                {groupArticlesByYear(allArticles).map(([year, articles]) => (
+                  <div key={year} className="relative">
+                    {/* 左侧年份与统计 */}
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="text-2xl font-extrabold text-gray-800">{year}</div>
+                      <span className="text-md text-gray-400">发布 {articles.length} 篇文章</span>
+                    </div>
 
-                      <div className="flex items-center space-x-3 text-gray-400 ml-4 flex-shrink-0">
-                        <div className="flex items-center space-x-1">
-                          <IconEye className="text-sm" />
-                          <Text className="text-xs font-medium">{article.metadata.viewCount}</Text>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <IconHeart className="text-sm" />
-                          <Text className="text-xs font-medium">{article.metadata.likeCount}</Text>
-                        </div>
+                    {/* 纵向时间线 */}
+                    <div className="relative pl-8">
+                      <div className="absolute left-3 top-0 bottom-0 w-px" />
+
+                      <div className="space-y-1">
+                        {articles.map((article) => {
+                          const d = new Date(article.createdAt);
+                          const dateLabel = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+                          return (
+                            <div
+                              key={article.id}
+                              className="relative group rounded-md hover:bg-gray-50 transition-colors"
+                              onClick={() => handleArticleClick(article.id)}
+                            >
+                              <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-gray-300 group-hover:bg-blue-500" />
+                              <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3  px-2 cursor-pointer">
+                                <div className="text-xs text-gray-500 tabular-nums">{dateLabel}</div>
+                                <div className="truncate text-gray-900 hover:text-blue-600 hover:translate-x-2 transition-all	text-sm font-medium py-2">{article.title}</div>
+                                <div className="text-xs text-gray-400">#{article.contentType}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
 
-              {/* 分页 */}
-              <div className="mt-4 flex justify-center">
-                <Pagination
-                  total={pagination?.total || 0}
-                  current={currentPage}
-                  pageSize={pageSize}
-                  onChange={(page, pageSize) => {
-                    setCurrentPage(page);
-                    setPageSize(pageSize);
-                  }}
-                  showTotal
-                  sizeCanChange
-                  sizeOptions={[10, 20, 50]}
-                />
-              </div>
+              {/* 一次性加载，无更多提示 */}
             </div>
           </div>
           {/* 右侧时间轴 */}
