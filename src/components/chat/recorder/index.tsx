@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Mic, MicOff } from "lucide-react";
 import Recorder from "js-audio-recorder";
 import { useRef, useEffect, FC } from "react";
-import { IGetChatMessageResponse } from "@/types/chat";
+import { IMessage } from "@/types/chat";
 
 interface IProps {
   isRecording: boolean;
@@ -13,9 +13,7 @@ interface IProps {
   };
   socket: WebSocket | null;
   setMessages: React.Dispatch<
-    React.SetStateAction<
-      (IGetChatMessageResponse & { isUploading?: boolean })[]
-    >
+    React.SetStateAction<(IMessage & { isUploading?: boolean })[]>
   >;
 }
 

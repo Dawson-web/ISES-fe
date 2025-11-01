@@ -1,54 +1,17 @@
-import { useEffect, useState } from "react";
-import { apiConfig } from "@/config";
+import { useEffect, useState, useMemo } from "react";
 import clsx from "clsx";
-import { Button, Card, Input, Badge, Avatar, Text, Box } from "@mantine/core";
-import { useSearchParams } from "react-router-dom";
+import { Button, Card, Input, Badge, Text, Box } from "@mantine/core";
 import { Plus, Search } from "lucide-react";
 import AddFriend from "./components/AddFriend";
 import { useDisclosure } from "@mantine/hooks";
 import ChatRoom from "@/components/chat/chat-room";
-
-interface ILastMessage {
-  id: string;
-  fromUserId: string;
-  toUserId: string;
-  messageType: string;
-  content: string;
-  metadata: {
-    isRead: boolean;
-    isDeleted: boolean;
-  };
-  replyToId: string | null;
-  createdAt: string;
-  updatedAt: string;
-  sender: {
-    id: string;
-    username: string;
-    avatar: string | null;
-    introduce: string | null;
-    school: string | null;
-    online: boolean;
-  };
-  receiver: {
-    id: string;
-    username: string;
-    avatar: string | null;
-    introduce: string | null;
-    school: string | null;
-    online: boolean;
-  };
-}
-
-interface IChatListItem {
-  userId: string;
-  username: string;
-  avatar: string | null;
-  introduce: string | null;
-  school: string | null;
-  online: boolean;
-  lastMessage: ILastMessage;
-  unreadCount: number;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getChatList } from "@/service/chat";
+import { getValidUid } from "@/api/token";
+import chatStore from "@/store/chat";
+import { observer } from "mobx-react-lite";
+import { runInAction } from "mobx";
+import UserAvatar from "@/components/public/user_avatar";
 
 export interface IChatInfo {
   chatId: string;
@@ -57,50 +20,7 @@ export interface IChatInfo {
   online: boolean;
 }
 
-// Demo数据
-const DEMO_DATA: IChatListItem[] = [
-  {
-    userId: "aa947e2b-4c3a-494e-88d8-4bdb7143a4ee",
-    username: "小黑",
-    avatar: null,
-    introduce: null,
-    school: null,
-    online: true,
-    lastMessage: {
-      id: "1751345028362872289399",
-      fromUserId: "242c9423-d78f-41bb-8006-600c234e0f39",
-      toUserId: "aa947e2b-4c3a-494e-88d8-4bdb7143a4ee",
-      messageType: "text",
-      content: '{"text": "string", "imageUrl":"string"}',
-      metadata: {
-        isRead: true,
-        isDeleted: true
-      },
-      replyToId: null,
-      createdAt: "2025-07-01T04:43:48.000Z",
-      updatedAt: "2025-07-01T05:01:39.000Z",
-      sender: {
-        id: "242c9423-d78f-41bb-8006-600c234e0f39",
-        username: "Dawson1",
-        avatar: null,
-        introduce: "卡皮巴拉",
-        school: "CUIT",
-        online: true
-      },
-      receiver: {
-        id: "aa947e2b-4c3a-494e-88d8-4bdb7143a4ee",
-        username: "小黑",
-        avatar: null,
-        introduce: null,
-        school: null,
-        online: true
-      }
-    },
-    unreadCount: 0
-  }
-];
-
-export default function Page() {
+const Page = observer(() => {
   const [chatInfo, setChatInfo] = useState<IChatInfo>({
     chatId: "",
     chatUser: "",
@@ -108,29 +28,63 @@ export default function Page() {
     online: false,
   });
   const [search, setSearch] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams();
   const [opened, { open, close }] = useDisclosure(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  useEffect(() => {
-    const chatId = searchParams.get("id");
-    if (chatId) {
-      const chat = DEMO_DATA.find(chat => chat.userId === chatId);
-      if (chat) {
-        setChatInfo({
-          chatId: chat.userId,
-          chatUser: chat.userId,
-          userName: chat.username,
-          online: chat.online,
-        });
-        setChatOpen(true);
-      }
-    }
-  }, [searchParams]);
+  // 获取聊天列表
+  const { data } = useQuery({
+    queryKey: ["chatList", getValidUid()],
+    queryFn: () => getChatList(),
+  });
 
-  const filteredChats = DEMO_DATA.filter(chat => 
-    chat.username.toLowerCase().includes(search.toLowerCase())
-  );
+  // 合并服务器数据和本地临时数据
+  useEffect(() => {
+    if (data?.data?.data) {
+      runInAction(() => {
+        const serverChats = data.data.data;
+        const localTempChats = chatStore.chatlist.filter(
+          (chat) => "isTemp" in chat && chat.isTemp
+        );
+        
+        // 合并：服务器数据 + 本地临时数据（如果不在服务器列表中）
+        const mergedChats = [...serverChats];
+        localTempChats.forEach((tempChat) => {
+          if (!mergedChats.find((chat) => chat.userId === tempChat.userId)) {
+            mergedChats.unshift(tempChat);
+          }
+        });
+        
+        chatStore.chatlist = mergedChats;
+      });
+    }
+  }, [data]);
+
+  // 过滤聊天列表（根据搜索关键词）
+  const filteredChatList = useMemo(() => {
+    if (!search) return chatStore.chatlist;
+    const lowerSearch = search.toLowerCase();
+    return chatStore.chatlist.filter(
+      (chat) =>
+        chat.username.toLowerCase().includes(lowerSearch) ||
+        chat.userId.toLowerCase().includes(lowerSearch)
+    );
+  }, [chatStore.chatlist, search]);
+
+  // 选择聊天
+  const handleSelectChat = (userId: string) => {
+    const chat = chatStore.chatlist.find((c) => c.userId === userId);
+    if (chat) {
+      setChatInfo({
+        chatId: chat.userId,
+        chatUser: chat.userId,
+        userName: chat.username,
+        online: chat.online,
+      });
+      setChatOpen(true);
+    }
+  };
+
+  
 
   return (
     <Card className="w-full flex flex-row p-0 overflow-y-auto h-full rounded-lg flex-1">
@@ -165,88 +119,112 @@ export default function Page() {
           </Button>
         </div>
 
-        <AddFriend opened={opened} close={close} />
+        <AddFriend
+          opened={opened}
+          close={close}
+          onSelectChat={handleSelectChat}
+        />
 
         {/* 聊天列表 */}
         <div className="flex-1 overflow-y-auto">
-          {filteredChats.map(chat => (
-            <div
-              key={chat.userId}
-              className={clsx(
-                "flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2C2E33] transition-colors",
-                {
-                  "bg-gray-50 dark:bg-[#2C2E33]": chatInfo.chatId === chat.userId,
+          {filteredChatList?.length > 0 ? (
+            filteredChatList.map((chat) => {
+              const isTemp = "isTemp" in chat && chat.isTemp;
+              const isActive = chatInfo.chatId === chat.userId;
+
+              // 格式化最后一条消息
+              let lastMessageText = "暂无消息";
+              let lastMessageTime = "";
+              if (chat.lastMessage) {
+                const message = chat.lastMessage;
+                if (message.messageType === "text") {
+                  const content =
+                    typeof message.content === "string"
+                      ? JSON.parse(message.content).text || message.content
+                      : (message.content as any).text || "";
+                  lastMessageText = content || "暂无消息";
+                } else if (message.messageType === "image") {
+                  lastMessageText = "[图片]";
+                } else if (message.messageType === "audio") {
+                  lastMessageText = "[语音]";
                 }
-              )}
-              onClick={() => {
-                setChatInfo({
-                  chatId: chat.userId,
-                  chatUser: chat.userId,
-                  userName: chat.username,
-                  online: chat.online,
-                });
-                setSearchParams({ id: chat.userId });
-                setChatOpen(true);
-              }}
-            >
-              <div className="relative">
-                <Avatar 
-                  src={chat.avatar ? `${apiConfig.baseUrl}${chat.avatar}` : null}
-                  alt={chat.username}
-                  radius="xl"
-                  size="md"
+                lastMessageTime = new Date(message.createdAt).toLocaleTimeString(
+                  [],
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                );
+              }
+
+              return (
+                <div
+                  key={chat.userId}
+                  className={clsx(
+                    "flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2C2E33] transition-colors",
+                    {
+                      "bg-gray-50 dark:bg-[#2C2E33]": isActive,
+                    }
+                  )}
+                  onClick={() => handleSelectChat(chat.userId)}
                 >
-                  {!chat.avatar && chat.username[0]}
-                </Avatar>
-                {chat.online && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-[#1A1B1E]" />
-                )}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <Box className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <Text className="text-sm font-medium truncate">
-                      {chat.username}
-                    </Text>
-                    {chat.lastMessage && (
-                      <Text size="xs" color="dimmed">
-                        {new Date(chat.lastMessage.createdAt).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </Text>
+                  <div className="relative">
+                    <UserAvatar
+                      src={chat.avatar || undefined}
+                      size="small"
+                      disabled={true}
+                    />
+                    {chat.online && (
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-[#1A1B1E]" />
                     )}
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Text size="xs" color="dimmed" className="flex-1 truncate">
-                      {chat.lastMessage ? (
-                        chat.lastMessage.messageType === 'text' ? (
-                          JSON.parse(chat.lastMessage.content).text
-                        ) : (
-                          '[图片]'
-                        )
-                      ) : '暂无消息'}
-                    </Text>
-                    {chat.unreadCount > 0 && (
-                      <Badge 
-                        variant="filled" 
-                        size="sm" 
-                        className="min-w-[20px] h-[20px]"
-                      >
-                        {chat.unreadCount}
-                      </Badge>
-                    )}
-                  </div>
-                </Box>
-              </div>
-            </div>
-          ))}
 
-          {filteredChats.length === 0 && (
+                  <div className="flex-1 min-w-0">
+                    <Box className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Text className="text-sm font-medium truncate">
+                          {chat.username}
+                          {isTemp && (
+                            <span className="text-xs text-gray-400 ml-1">
+                              (新对话)
+                            </span>
+                          )}
+                        </Text>
+                        {lastMessageTime && (
+                          <Text size="xs" color="dimmed">
+                            {lastMessageTime}
+                          </Text>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Text
+                          size="xs"
+                          color="dimmed"
+                          className="flex-1 truncate"
+                        >
+                          {lastMessageText}
+                        </Text>
+                        {!isTemp && chat.unreadCount > 0 && (
+                          <Badge
+                            variant="filled"
+                            size="sm"
+                            className="min-w-[20px] h-[20px]"
+                          >
+                            {chat.unreadCount}
+                          </Badge>
+                        )}
+                      </div>
+                    </Box>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
             <div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <Text size="sm">暂无聊天</Text>
+              <Text size="sm">
+                {search ? "未找到匹配的聊天" : "暂无聊天"}
+              </Text>
             </div>
           )}
         </div>
@@ -267,4 +245,6 @@ export default function Page() {
       )}
     </Card>
   );
-}
+})
+
+export default Page

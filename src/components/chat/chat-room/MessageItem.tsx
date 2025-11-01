@@ -1,28 +1,36 @@
 import { getValidUid } from "@/api/token";
-import { IGetChatMessageResponse } from "@/types/chat";
+import { IMessage } from "@/types/chat";
 import clsx from "clsx";
 import { FC, useRef, useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { apiConfig } from "@/config";
 
 interface Props {
-  message: IGetChatMessageResponse & { isUploading?: boolean };
+  message: IMessage & { isUploading?: boolean };
   className?: string;
   avatarSrc?: string;
   onContextMenu?: (event: React.MouseEvent) => void;
 }
 
-const isImageUrl = (message: IGetChatMessageResponse) => {
+const isImageUrl = (message: IMessage) => {
   if (message.messageType === "image") {
     return true;
   }
   return false;
 };
 
-const isAudioUrl = (message: IGetChatMessageResponse) => {
-  if (message.messageType === "text" && message.content.includes("语音消息/")) {
-    console.log("audioUrl", message);
+const isAudioUrl = (message: IMessage) => {
+  if (message.messageType === "audio") {
     return true;
+  }
+  if (message.messageType === "text") {
+    const content = typeof message.content === 'string' 
+      ? message.content 
+      : JSON.stringify(message.content);
+    if (content.includes("语音消息/")) {
+      console.log("audioUrl", message);
+      return true;
+    }
   }
   return false;
 };
@@ -50,11 +58,18 @@ const MessageItem: FC<Props> = ({
 
   const renderContent = () => {
     if (isImageUrl(message) && !imageError) {
+      const imageUrl = typeof message.content === 'string'
+        ? JSON.parse(message.content).imageUrl
+        : (message.content as any).imageUrl;
+      const fullImageUrl = imageUrl.startsWith('http') 
+        ? imageUrl 
+        : apiConfig.baseUrl + imageUrl;
+      
       return (
         <div className="relative group">
           <div className="relative">
             <img
-              src={apiConfig.baseUrl + message.imageUrl}
+              src={fullImageUrl}
               alt="聊天图片"
               className={clsx(
                 "max-w-[200px] max-h-[200px] rounded-lg transition-all duration-300 cursor-pointer",
@@ -65,7 +80,7 @@ const MessageItem: FC<Props> = ({
               onError={() => setImageError(true)}
               onClick={() => {
                 if (!message.isUploading) {
-                  window.open(message.content, "_blank");
+                  window.open(fullImageUrl, "_blank");
                 }
               }}
             />
@@ -80,8 +95,20 @@ const MessageItem: FC<Props> = ({
           )}
         </div>
       );
-    } 
-    return message.content;
+    }
+    
+    // 文本消息
+    if (message.messageType === "text") {
+      const content = typeof message.content === 'string' 
+        ? JSON.parse(message.content).text || message.content
+        : (message.content as any).text || JSON.stringify(message.content);
+      return content;
+    }
+    
+    // 其他类型
+    return typeof message.content === 'string' 
+      ? message.content 
+      : JSON.stringify(message.content);
   };
 
   return (
@@ -92,12 +119,12 @@ const MessageItem: FC<Props> = ({
             className={clsx(
               "absolute mt-[-25px] text-gray-500 dark:text-gray-400 text-nowrap ",
               {
-                "ml-[calc(100%-130px)]": getValidUid() === message.userInfoId,
-                "ml-[50px]": getValidUid() !== message.userInfoId,
+                "ml-[calc(100%-130px)]": getValidUid() === message.fromUserId,
+                "ml-[50px]": getValidUid() !== message.fromUserId,
               }
             )}
           >
-            {String(message.createdAt)}
+            {new Date(message.createdAt).toLocaleString()}
           </div>
         )}
         <img
@@ -113,7 +140,7 @@ const MessageItem: FC<Props> = ({
           onContextMenu={onContextMenu}
           className={clsx(
             "p-2 rounded-lg break-words select-text",
-            getValidUid() === message.userInfoId
+            getValidUid() === message.fromUserId
               ? "bg-theme_blue text-white"
               : "bg-theme_gray text-black dark:bg-gray-600",
             isImageUrl(message) && !imageError && "!bg-transparent !p-0",

@@ -1,4 +1,4 @@
-import { IGetChatMessageResponse } from "@/types/chat";
+import { IMessage } from "@/types/chat";
 import { IWSMessage } from "@/types/websocket";
 
 let lockReconnect = false;
@@ -118,7 +118,7 @@ export function createWebSocket(
 let lockConnect = false;
 
 export function createChatsocket(
-  setMessage: React.Dispatch<React.SetStateAction<IGetChatMessageResponse[]>>,
+  setMessage: React.Dispatch<React.SetStateAction<IMessage[]>>,
   type: string
 ) {
   // let timer: null | NodeJS.Timer = null;

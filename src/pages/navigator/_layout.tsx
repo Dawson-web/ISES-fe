@@ -78,7 +78,8 @@ const _Layout = () => {
     queryFn: () => getUserInfoApi().then((res) => {
         userStore.setUserInfo(res.data.data);
         return res.data.data
-    }).catch(() => {
+    })
+    .catch(() => {
       navigate('/login');
     })
   });

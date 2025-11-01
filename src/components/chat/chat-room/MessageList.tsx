@@ -2,13 +2,13 @@ import { useRef, useEffect, LegacyRef, useState, useCallback } from "react";
 import clsx from "clsx";
 import { FC } from "react";
 import MessageItem from "./MessageItem";
-import { IGetChatMessageResponse } from "@/types/chat";
+import { IMessage } from "@/types/chat";
 import { getValidUid } from "@/api/token";
 import { apiConfig } from "@/config";
 import { Card } from "@mantine/core";
 
 interface Props {
-  messages: IGetChatMessageResponse[];
+  messages: (IMessage & { isUploading?: boolean })[];
   className?: string;
 }
 
@@ -23,7 +23,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   const handleContextMenu = useCallback(
-    (event: React.MouseEvent, message: IGetChatMessageResponse) => {
+    (event: React.MouseEvent, message: IMessage) => {
       event.preventDefault();
       // 确保菜单不会超出屏幕边界
       const x = Math.min(event.clientX, window.innerWidth - 160);
@@ -33,11 +33,17 @@ const MessageList: FC<Props> = ({ messages, className }) => {
     []
   );
 
-  const handleCopy = useCallback((message: IGetChatMessageResponse) => {
+  const handleCopy = useCallback((message: IMessage) => {
     if (message.messageType === "text") {
-      navigator.clipboard.writeText(message.content);
-    } else {
-      navigator.clipboard.writeText(apiConfig.baseUrl + message.imageUrl);
+      const content = typeof message.content === 'string' 
+        ? JSON.parse(message.content).text || message.content
+        : (message.content as any).text || JSON.stringify(message.content);
+      navigator.clipboard.writeText(content);
+    } else if (message.messageType === "image") {
+      const imageUrl = typeof message.content === 'string'
+        ? JSON.parse(message.content).imageUrl
+        : (message.content as any).imageUrl;
+      navigator.clipboard.writeText(apiConfig.baseUrl + imageUrl);
     }
     setContextMenu(null);
   }, []);
@@ -77,18 +83,29 @@ const MessageList: FC<Props> = ({ messages, className }) => {
       style={{ maxHeight: "65vh" }}
       onContextMenu={(e) => e.preventDefault()} // 禁用整个列表的默认右键菜单
     >
-      {messages &&
-        messages.map((message) => (
-          <MessageItem
-            key={message.id}
-            message={message}
-            className={clsx(
-              getValidUid() === message.userInfoId ? "flex-row-reverse" : ""
-            )}
-            avatarSrc={`${apiConfig.baseUrl}/uploads/avatars/${message.userInfoId}.png`}
-            onContextMenu={(e) => handleContextMenu(e, message)}
-          />
-        ))}
+      {        messages &&
+        messages.map((message) => {
+          const currentUserId = getValidUid();
+          const isOwnMessage = message.fromUserId === currentUserId;
+          // 如果是自己的消息，显示自己的头像，否则显示对方的头像
+          const avatarInfo = isOwnMessage ? message.sender : message.receiver;
+          
+          return (
+            <MessageItem
+              key={message.id}
+              message={message}
+              className={clsx(
+                isOwnMessage ? "flex-row-reverse" : ""
+              )}
+              avatarSrc={
+                avatarInfo?.avatar 
+                  ? `${apiConfig.baseUrl}${avatarInfo.avatar}`
+                  : `https://q.qlogo.cn/g?b=qq&nk=369060891&s=160`
+              }
+              onContextMenu={(e) => handleContextMenu(e, message)}
+            />
+          );
+        })}
       <div ref={messagesEndRef as LegacyRef<HTMLDivElement> | undefined} />
 
       {contextMenu && (
@@ -133,7 +150,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
             </svg>
             复制
           </button>
-          {messages.find((m) => m.id === contextMenu.messageId)?.userInfoId ===
+          {messages.find((m) => m.id === contextMenu.messageId)?.fromUserId ===
             getValidUid() && (
             <>
               <div className="h-[1px] bg-gray-200 dark:bg-gray-700 mx-2" />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, Input, Select, Button, Radio, InputNumber, Table, Tabs, Message } from '@arco-design/web-react';
 import { IconEye } from '@arco-design/web-react/icon';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -167,7 +168,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     return 0;
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = useDebounce(() => {
     const salary = Number(preTaxSalary) || 0;
     
     // 如果工资低于社保最低基数，给出提示
@@ -215,7 +216,7 @@ export const SalaryCalculator: React.FC<SalaryCalculatorProps> = ({ visible, onC
     const finalAfterTax = Math.max(0, afterInsurance - taxAmount);
     setAfterTaxMonthly(Number(finalAfterTax.toFixed(2)));
     setAfterTaxBonus(bonusAfterTax);
-  };
+  },500)
 
   // 自动计算：监听所有相关状态变化
   useEffect(() => {
