@@ -90,17 +90,17 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   }, [isSuccess, isFetching, data, isFirstMessage, chatInfo.chatUser]);
 
   // 创建websocket连接
-  useEffect(() => {
-    if (!isFirstMessage && isSuccess && !isFetching) {
-      socket = createChatsocket(setMessages, "chat");
-    }
-    return () => {
-      if (socket) {
-        websocketClose(socket);
-        socket = null;
-      }
-    };
-  }, [isSuccess, isFetching, isFirstMessage]);
+  // useEffect(() => {
+  //   if (!isFirstMessage && isSuccess && !isFetching) {
+  //     socket = createChatsocket(setMessages, "chat");
+  //   }
+  //   return () => {
+  //     if (socket) {
+  //       websocketClose(socket);
+  //       socket = null;
+  //     }
+  //   };
+  // }, [isSuccess, isFetching, isFirstMessage]);
 
   // 发送消息
   const handleSend = async () => {
@@ -246,52 +246,52 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
   }, []);
 
   // 处理接收到的消息
-  const handleReceivedMessage = (message: IMessage) => {
-    // 只处理当前聊天的消息
-    if (
-      (message.fromUserId === chatInfo.chatUser &&
-        message.toUserId === getValidUid()) ||
-      (message.toUserId === chatInfo.chatUser &&
-        message.fromUserId === getValidUid())
-    ) {
-      setMessages((prev) => {
-        // 检查是否已存在（避免重复）
-        if (prev.find((m) => m.id === message.id)) {
-          return prev;
-        }
-        return [...prev, message];
-      });
-      // 更新聊天列表的最后一条消息
-      chatStore.updateLastMessage(chatInfo.chatUser, message);
-    }
-  };
+  // const handleReceivedMessage = (message: IMessage) => {
+  //   // 只处理当前聊天的消息
+  //   if (
+  //     (message.fromUserId === chatInfo.chatUser &&
+  //       message.toUserId === getValidUid()) ||
+  //     (message.toUserId === chatInfo.chatUser &&
+  //       message.fromUserId === getValidUid())
+  //   ) {
+  //     setMessages((prev) => {
+  //       // 检查是否已存在（避免重复）
+  //       if (prev.find((m) => m.id === message.id)) {
+  //         return prev;
+  //       }
+  //       return [...prev, message];
+  //     });
+  //     // 更新聊天列表的最后一条消息
+  //     chatStore.updateLastMessage(chatInfo.chatUser, message);
+  //   }
+  // };
 
   // 更新 websocket 消息处理
-  useEffect(() => {
-    if (socket) {
-      const originalOnMessage = socket.onmessage;
-      socket.onmessage = function (event) {
-        try {
-          const message = JSON.parse(event.data);
-          if (originalOnMessage) {
-            originalOnMessage.call(this, event);
-          }
-          handleReceivedMessage(message as IMessage);
-        } catch (e) {
-          console.error("Parse message error:", e);
-        }
-      };
-    }
-  }, [socket, chatInfo.chatUser]);
+  // useEffect(() => {
+  //   if (socket) {
+  //     const originalOnMessage = socket.onmessage;
+  //     socket.onmessage = function (event) {
+  //       try {
+  //         const message = JSON.parse(event.data);
+  //         if (originalOnMessage) {
+  //           originalOnMessage.call(this, event);
+  //         }
+  //         handleReceivedMessage(message as IMessage);
+  //       } catch (e) {
+  //         console.error("Parse message error:", e);
+  //       }
+  //     };
+  //   }
+  // }, [socket, chatInfo.chatUser]);
 
   return (
-    <Card
-      className={clsx("p-0 bg-white dark:bg-gray-900 shadow-xl", className)}
+    <div
+      className={clsx("h-full flex flex-col", className)}
     >
-      <Card className="h-[70px] flex-shrink-0 px-6 py-4 rounded-none border-0">
+      <div className="h-[70px] flex-shrink-0 px-6 py-4 rounded-none border-0">
         <div className="flex flex-nowrap justify-between">
           <div className="flex flex-col">
-            <span className="font-bold text-lg text-gray-800 dark:text-white">
+            <span className="font-bold text-lg text-gray-800 dark:text-white line-clamp-1">
               {chatInfo.userName}
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -327,7 +327,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
       <div className="flex-1 min-h-0 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-900">
         {isFirstMessage ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 gap-4">
@@ -361,7 +361,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           </div>
         )}
       </div>
-      <Card className="py-0 rounded-none border-0 h-[160px] border-t border-gray-100 dark:border-gray-800">
+      <div className="py-0 rounded-none border-0 h-[160px] border-t border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2">
           <input
             type="file"
@@ -451,8 +451,8 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
             发送
           </Button>
         </div>
-      </Card>
-    </Card>
+      </div>
+    </div>
   );
 };
 

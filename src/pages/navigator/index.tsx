@@ -114,7 +114,7 @@ const Home: React.FC = observer(() => {
 
           {/* 左侧文章列表 */}
           <div className="flex-1">
-            <div className="h-full bg-white rounded-lg border border-gray-200 p-6">
+            <div className="h-full bg-white border border-gray-200 p-6">
               {/* 搜索框 */}
               <div className="mb-6 flex items-center justify-between">
                 <Input.Search

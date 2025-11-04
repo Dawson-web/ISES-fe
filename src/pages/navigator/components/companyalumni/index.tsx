@@ -16,7 +16,7 @@ const CompanyAlumni = () => {
 
 
 
-    return <div className="bg-white rounded-lg border border-gray-200 p-4 ">
+    return <div className="bg-white border border-gray-200 p-4 ">
         {/* 公司校友列表 */}
         <div className="mb-4">
             <div className="flex items-center mb-4">

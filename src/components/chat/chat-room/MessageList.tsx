@@ -88,7 +88,7 @@ const MessageList: FC<Props> = ({ messages, className }) => {
           const currentUserId = getValidUid();
           const isOwnMessage = message.fromUserId === currentUserId;
           // 如果是自己的消息，显示自己的头像，否则显示对方的头像
-          const avatarInfo = isOwnMessage ? message.sender : message.receiver;
+          const avatarInfo = message.sender ;
           
           return (
             <MessageItem

@@ -198,20 +198,16 @@ const Page = () => {
     ];
 
     return (
-        <div className="approve-page">
-            <Card className="approve-card">
-                <Row justify="space-between" align="center" className="page-header">
-                    <Col>
-                        <Title heading={4}>公司审批</Title>
-                    </Col>
-                    <Col>
+        <div className="approve-page px-6 py-4">
+            <Card className="">
+                <div className="page-header">
+                        <Title>公司审批</Title>
                         <div className="total-count">
                             <Text type="secondary">待审批</Text>
                             <Text className="count-number">{data?.total}</Text>
                             <Text type="secondary">条</Text>
                         </div>
-                    </Col>
-                </Row>
+                </div>
                 <Divider />
                 <Table
                     loading={isLoading}

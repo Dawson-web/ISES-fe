@@ -1,22 +1,20 @@
 .approve-page {
-    padding: 24px;
     background-color: var(--color-fill-2);
     min-height: 100%;
 }
 
-.approve-card {
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
 .page-header {
-    margin-bottom: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
 }
 
 .total-count {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 36px 0 18px 0;
 }
 
 .count-number {

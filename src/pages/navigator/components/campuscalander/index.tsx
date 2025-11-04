@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 const CampusCalander = () => {
   const navigate = useNavigate();
 
-  return        <div className="bg-white rounded-lg border border-gray-200 p-4">
+  return        <div className="bg-white border border-gray-200 p-4">
   {/* 招聘季节进度条 */}
   <div className="mb-4">
     <div className="flex items-center mb-4">

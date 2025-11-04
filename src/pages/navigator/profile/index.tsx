@@ -108,16 +108,16 @@ const Page = observer(() => {
 
   return (
     isLoading ? <div>加载中...</div> :
-      <div className="p-4 pt-8 bg-gray-100 min-h-screen">
+      <div className="py-4 px-6 bg-[#F7F8FA] min-h-screen">
         <div className="mx-auto">
           {/* 用户头部卡片 */}
           <Card
-            className="rounded-lg mb-6"
+            className=" mb-4"
             cover={
               <div className="max-h-48 overflow-hidden">
                 <Image
                   src={_userInfo?.banner || homeBG}
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full object-contain "
                 />
               </div>
 
@@ -187,7 +187,7 @@ const Page = observer(() => {
 
           <Row gutter={24}>
             <Col span={24}>
-              <Card title="实习经历" className="mb-6 rounded-lg">
+              <Card title="实习经历" className="mb-4 ">
                 <div className="flex flex-col gap-4">
                   {_userInfo?.company?.map((item) => (
                     <div className="space-y-4">
@@ -220,7 +220,7 @@ const Page = observer(() => {
             </Col>
 
             <Col span={12}>
-              <Card title="基本信息" className="mb-6 rounded-lg">
+              <Card title="基本信息" className="mb-4 ">
                 <Descriptions
                   column={1}
                   colon={":"}
@@ -254,7 +254,7 @@ const Page = observer(() => {
             </Col>
 
             <Col span={12}>
-              <Card title="技能与兴趣" className="mb-6 rounded-lg">
+              <Card title="技能与兴趣" className="mb-4 ">
                 <div className="mb-4">
                   <Text className="font-medium text-gray-600 mb-2 block">
                     <IconCode /> 技术方向

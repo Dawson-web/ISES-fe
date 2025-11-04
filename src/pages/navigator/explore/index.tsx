@@ -46,7 +46,7 @@ export default function ArticleList() {
 
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#17171A]">
+    <div className="min-h-screen bg-[#F7F8FA]">
       {/* 头部搜索区域 */}
       <div className="bg-white dark:bg-[#232324] border-b border-[#E5E6E8] dark:border-[#333335] sticky top-0 z-10">
         <div className=" mx-auto px-6 py-3">

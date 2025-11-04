@@ -187,7 +187,7 @@ const Info = () => {
   };
 
   return (
-    <div className="info-container">
+    <div className="info-container px-6 py-4">
 
       <div className="search-box flex md:flex-nowrap flex-wrap">
         <div className="search-wrapper">

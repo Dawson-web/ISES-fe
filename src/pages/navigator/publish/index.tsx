@@ -165,7 +165,7 @@ export default function ArticleEditPage() {
   };
 
   return (
-    <div className="editor-container p-6 ">
+    <div className="editor-container px-6 py-4 ">
       <header className="editor-header">
         <div className="header-content flex justify-between flex-wrap gap-4">
           <div className="header-left">

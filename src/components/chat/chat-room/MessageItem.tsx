@@ -142,7 +142,7 @@ const MessageItem: FC<Props> = ({
             "p-2 rounded-lg break-words select-text",
             getValidUid() === message.fromUserId
               ? "bg-theme_blue text-white"
-              : "bg-theme_gray text-black dark:bg-gray-600",
+              : "bg-gray-100 text-black dark:bg-gray-600",
             isImageUrl(message) && !imageError && "!bg-transparent !p-0",
             isAudioUrl(message) && "!bg-transparent !p-0"
           )}
