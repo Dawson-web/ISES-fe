@@ -1,4 +1,4 @@
-import { agreeChatRoom } from "@/service/chat";
+// import { agreeChatRoom } from "@/service/chat";
 import { Button } from "@mantine/core";
 import clsx from "clsx";
 
@@ -10,15 +10,14 @@ function FriendCard(props: any) {
     online,
     connect,
     temporary,
-    chatListId,
     className,
   } = props;
 
   async function handleAgreeChatRoom() {
-    const data = {
-      chatListId: chatListId,
-    };
-    await agreeChatRoom(data);
+    // const data = {
+    //   chatListId: chatListId,
+    // };
+    // await agreeChatRoom(data);
   }
   return (
     <div className={clsx(className)}>

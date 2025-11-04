@@ -1,4 +1,4 @@
-import { Button, Card } from "@mantine/core";
+import { Button } from "@mantine/core";
 import clsx from "clsx";
 import {
   Image,
@@ -19,7 +19,6 @@ import {
   uploadChatImage,
   markMessagesAsRead,
 } from "@/service/chat";
-import { getValidUid } from "@/api/token";
 import { IMessage } from "@/types/chat";
 import { createChatsocket, websocketClose } from "@/service/websocket";
 import { useQuery } from "@tanstack/react-query";
@@ -56,6 +55,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     const chatItem = chatStore.chatlist.find(
       (chat) => chat.userId === chatInfo.chatUser
     );
+    // @ts-ignore
     setIsFirstMessage(chatItem && "isTemp" in chatItem && chatItem.isTemp);
   }, [chatInfo.chatUser]);
 
@@ -110,7 +110,6 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
       return;
     }
 
-    const currentUserId = getValidUid() as string;
     const messageContent = JSON.stringify({ text: content });
 
     try {

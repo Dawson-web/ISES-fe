@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import clsx from "clsx";
-import { Button, Card, Input, Badge, Text, Box } from "@mantine/core";
+import { Button, Input, Badge, Text, Box } from "@mantine/core";
 import { Plus, Search } from "lucide-react";
 import AddFriend from "./components/AddFriend";
 import { useDisclosure } from "@mantine/hooks";

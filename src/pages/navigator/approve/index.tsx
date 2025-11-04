@@ -1,4 +1,4 @@
-import { Table, Button, Card, Tag, Space, Typography, Divider, Grid, Input, Modal, Form } from '@arco-design/web-react';
+import { Table, Button, Card, Tag, Space, Typography, Divider, Input, Modal, Form } from '@arco-design/web-react';
 import { IconCheckCircle, IconCloseCircle, IconCalendar, IconUserGroup, IconEdit } from '@arco-design/web-react/icon';
 import { getCompanyApproveListApi, updateCompanyStatusApi } from '@/service/company';
 import './style.css';
@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { apiConfig } from '@/config';
 
 const { Title, Text, Paragraph } = Typography;
-const { Row, Col } = Grid;
 const FormItem = Form.Item;
 
 const Page = () => {
