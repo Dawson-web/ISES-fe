@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import clsx from "clsx";
 import {
   Image,
@@ -27,6 +26,7 @@ import { toastMessage } from "@/components/toast";
 import chatStore from "@/store/chat";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import RecorderButton from "../recorder";
+import { Button } from "@arco-design/web-react";
 
 interface IProps {
   className?: string;
@@ -76,7 +76,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
     if (isSuccess && !isFetching && data?.data?.data) {
       // 反转消息顺序（后端返回的是最新的在前）
       setMessages([...data.data.data.messages].reverse());
-      
+
       // 标记消息为已读
       markMessagesAsRead({ otherUserId: chatInfo.chatUser }).catch(
         (error) => {
@@ -126,11 +126,11 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           const newMessage = response.data.data;
           chatStore.convertTempToFormal(chatInfo.chatUser, newMessage);
           chatStore.updateLastMessage(chatInfo.chatUser, newMessage);
-          
+
           // 更新消息列表
           setMessages([newMessage]);
           setIsFirstMessage(false);
-          
+
           // 创建 websocket 连接
           socket = createChatsocket(setMessages, "chat");
         }
@@ -148,7 +148,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           setMessages((prev) => [...prev, newMessage]);
           // 更新聊天列表的最后一条消息
           chatStore.updateLastMessage(chatInfo.chatUser, newMessage);
-          
+
           // 通过 websocket 发送（如果需要）
           if (socket) {
             socket.send(
@@ -161,7 +161,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           }
         }
       }
-      
+
       setContent("");
     } catch (error: any) {
       toastMessage.error(error.message || "发送失败");
@@ -191,7 +191,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
 
       if (response.data.status) {
         const newMessage = response.data.data;
-        
+
         // 如果是临时项，转换为正式项
         if (isFirstMessage) {
           chatStore.convertTempToFormal(chatInfo.chatUser, newMessage);
@@ -199,12 +199,12 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           // 创建 websocket 连接
           socket = createChatsocket(setMessages, "chat");
         }
-        
+
         // 更新消息列表
         setMessages((prev) => [...prev, newMessage]);
         // 更新聊天列表的最后一条消息
         chatStore.updateLastMessage(chatInfo.chatUser, newMessage);
-        
+
         toastMessage.success("图片发送成功");
       }
     } catch (error: any) {
@@ -360,8 +360,8 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           </div>
         )}
       </div>
-      <div className="py-0 rounded-none border-0 h-[160px] border-t border-gray-100 dark:border-gray-800">
-        <div className="flex items-center gap-2">
+      <div className="py-0 rounded-none border-0 h-[200px] border-t border-gray-100 dark:border-gray-800">
+        <div className="flex items-center gap-2 p-2">
           <input
             type="file"
             accept="image/*"
@@ -437,7 +437,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
           placeholder="按 Enter 发送消息"
           className="flex-1 w-full px-2 py-3 bg-transparent outline-none resize-none focus-visible:outline-none text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
-        <div className="flex justify-end items-center px-6 py-3 absolute bottom-0 right-0">
+        <div className="flex justify-end items-center px-6 py-3 absolute bottom-4 right-4">
           <Button
             className={clsx(
               "w-[120px] h-10 font-bold transition-all flex items-center justify-center gap-2 rounded-full text-white bg-theme_blue",

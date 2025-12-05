@@ -1,8 +1,8 @@
 import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result, Pagination } from '@arco-design/web-react';
-import {  IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
+import { IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import {  IArticle, LifeContentTypeColor } from "@/types/article";
+import { IArticle, LifeContentTypeColor } from "@/types/article";
 import HotList from './components/hotlist';
 import { getArticleList } from '@/service/article';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,7 +27,7 @@ export default function ArticleList() {
     navigate(`/navigator/explore/channel?id=${id}`);
   };
 
-  const { data, isLoading} = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["getArticleList", currentPage, pageSize],
     queryFn: () => getArticleList(searchTerm, currentPage, pageSize).then(res => res.data.data),
   });
@@ -39,7 +39,7 @@ export default function ArticleList() {
       // 刷新文章详情数据
       queryClient.invalidateQueries({ queryKey: ["getArticleList", currentPage, pageSize] });
     },
-  }); 
+  });
 
   const articles = data?.articles || [];
   const total = data?.pagination?.total || 0;
@@ -78,9 +78,9 @@ export default function ArticleList() {
                 </Select.Option>
               ))}
             </Select> */}
-            <Button 
-              type="primary" 
-              icon={<IconPlus />} 
+            <Button
+              type="primary"
+              icon={<IconPlus />}
               size="large"
               className="ml-auto shadow-sm "
               onClick={() => navigate('/navigator/publish')}
@@ -93,7 +93,7 @@ export default function ArticleList() {
 
       {/* 主体内容区域 */}
       <div className=" mx-auto px-6 py-4 flex gap-4 md:flex-nowrap flex-wrap">
-        
+
         {/* 左侧内容区 */}
         <div className="flex-1">
           <div className="">
@@ -113,8 +113,8 @@ export default function ArticleList() {
                           <div className="flex-shrink-0">
                             <Avatar size={40}>
                               {article.creator.avatar ? (
-                                <img 
-                                  src={apiConfig.baseUrl + article.creator.avatar} 
+                                <img
+                                  src={apiConfig.baseUrl + article.creator.avatar}
                                   alt={article.creator.username}
                                   className="w-full h-full object-cover"
                                 />
@@ -128,11 +128,8 @@ export default function ArticleList() {
                           <div className="flex-1 min-w-0">
                             {/* 作者信息 */}
                             <div className="flex items-center gap-2 mb-2">
-                              <Text className="text-[14px] font-medium text-[#252933] dark:text-[#E5E6E8]">
+                              <Text className="text-[14px] font-medium text-[#252933] dark:text-[#E5E6E8] line-clamp-1">
                                 {article.creator.username}
-                              </Text>
-                              <Text className="text-[12px] text-[#8A919F] line-clamp-1">
-                                {article.metadata.excerpt}
                               </Text>
                               <Text className="text-[12px] text-[#8A919F] line-clamp-1">
                                 {article.createdAt.split('T')[0]}
@@ -141,13 +138,13 @@ export default function ArticleList() {
 
                             {/* 文章标题和标签 */}
                             <div className="flex items-center gap-2 mb-2">
-                              <Title 
-                                heading={5} 
+                              <Title
+                                heading={5}
                                 className="!m-0 !text-[16px] !font-medium group-hover:text-[#1e80ff] transition-colors line-clamp-1"
                               >
                                 {article.title}
                               </Title>
-                              <Tag 
+                              <Tag
                                 style={{
                                   border: 'none',
                                   padding: '0 8px',
@@ -165,7 +162,7 @@ export default function ArticleList() {
                             <Text className="text-[#515767] dark:text-[#A4A4A4] text-[14px] leading-relaxed line-clamp-2 mb-3">
                               {tiptapToText(article.content)}
                             </Text>
-                            
+
                             {/* 文章数据 */}
                             <Space size="large" className="text-[#8A919F]">
                               <Space className="text-xs">
@@ -194,13 +191,13 @@ export default function ArticleList() {
                           status="404"
                           title="暂无相关内容"
                           subTitle={<>
-                          换个关键词试试，或者 
-                          <Text 
-                            className="text-[#1e80ff] hover:text-[#1e70ee] text-sm ml-1 cursor-pointer"
-                            onClick={() => navigate('/articles/edit')}
-                          >
-                            发布相关内容
-                          </Text>
+                            换个关键词试试，或者
+                            <Text
+                              className="text-[#1e80ff] hover:text-[#1e70ee] text-sm ml-1 cursor-pointer"
+                              onClick={() => navigate('/articles/edit')}
+                            >
+                              发布相关内容
+                            </Text>
                           </>}
                         />
                       </div>
@@ -234,9 +231,9 @@ export default function ArticleList() {
 
         {/* 右侧热榜区域 */}
         <div className="flex flex-col gap-4 w-full md:w-[300px]">
-        <HotList />
-        <CreatorList />
-      </div>
+          <HotList />
+          <CreatorList />
+        </div>
       </div>
     </div>
   );

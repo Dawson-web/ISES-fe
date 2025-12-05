@@ -86,12 +86,12 @@ const CompanyBasicInfo = ({ company }: { company?: ICompany }) => {
             <div className="mt-8 flex gap-2 flex-col">
                 <h2 className="font-bold text-gray-900 text-nowrap ">办公地点</h2>
                 <div className="flex flex-wrap gap-2">
-                {
-                    company.address.map((address, index) => (
-                        <Tag key={index} color="blue" className="text-gray-700">{address}</Tag>
-                    ))
-                }
-                 </div>
+                    {
+                        company.address.map((address, index) => (
+                            <Tag key={index} color="blue" className="text-gray-700">{address}</Tag>
+                        ))
+                    }
+                </div>
             </div>
         </>
     );
@@ -160,7 +160,7 @@ const CompanyEmployees = ({ companyId }: { companyId: string }) => {
                                         </span>
                                     </div>
                                     <div className="mt-1 text-sm text-gray-500">
-                                    {employee.currentCompany.department} - {employee.currentCompany.position || '职位未设置'}
+                                        {employee.currentCompany.department} - {employee.currentCompany.position || '职位未设置'}
                                     </div>
                                     {employee.currentCompany.joinDate && (
                                         <div className="mt-2 text-xs text-gray-400">
@@ -219,9 +219,9 @@ const CompanyDetailPage = observer(() => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-[#F7F8FA] py-4 px-6">
                 <div className="max-w-7xl mx-auto">
-                    <Card className="overflow-hidden bg-white shadow-xl rounded-2xl">
+                    <Card className="overflow-hidden bg-white shadow-xl">
                         <div className="relative pb-6">
                             <div className="px-6 pt-8">
                                 <div className="flex items-center gap-6">
@@ -248,9 +248,9 @@ const CompanyDetailPage = observer(() => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-[#F7F8FA] py-4 px-6">
             <div className="max-w-7xl mx-auto">
-                <Card className="overflow-hidden bg-white shadow-xl rounded-2xl min-h-[calc(100vh-64px)]">
+                <Card className="overflow-hidden bg-white shadow-xl min-h-[calc(100vh-64px)]">
                     {/* 公司头部信息 */}
                     <div className="relative pb-6">
                         <div className="px-6 pt-8">
@@ -274,13 +274,13 @@ const CompanyDetailPage = observer(() => {
                                                 className={company?.status === 'approved' ? 'bg-green-400/20' : 'bg-orange-400/20'}>
                                                 {company?.status === 'approved' ? '已批准' : '审核中'}
                                             </Tag>
-                                            {isAdmin && (
-                                                <Button type="primary" size="mini" onClick={() => setIsEditModalVisible(true)}>
-                                                    更新信息
-                                                </Button>
-                                            )}
                                         </div>
                                         <p className="text-sm max-w-2xl text-gray-600">{company?.description}</p>
+                                        {isAdmin && (
+                                            <Button className="mt-4" type="primary" size="small" onClick={() => setIsEditModalVisible(true)}>
+                                                更新信息
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

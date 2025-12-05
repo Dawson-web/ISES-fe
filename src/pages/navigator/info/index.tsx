@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Table, Tag, Button, Input } from '@arco-design/web-react';
 import SalaryCalculator from '@/components/salary-calculator';
 import CompanyFormModal from '@/components/company-form-modal';
@@ -63,7 +63,20 @@ const Info = () => {
     pageSize: 10,
     total: 0
   });
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
+
+  // 监听窗口宽度变化
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const { data: companyList } = useQuery({
     queryKey: ['companyList', pagination.current, pagination.pageSize, searchKeyword, filter],
@@ -86,11 +99,13 @@ const Info = () => {
 
 
 
-  const columns = [
+  // 定义所有列，并为每列设置最小显示宽度
+  const allColumns = [
     {
       title: '公司',
       dataIndex: 'name',
-      width: 100,
+      width: 80,
+      minWidth: 0, // 始终显示
       render: (_: any, record: ICompany) => (
         <div className="company-cell hover:cursor-pointer hover:text-blue-600" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
           <img src={apiConfig.baseUrl + record.logo || ''} alt={record.name} className="company-logo" />
@@ -99,9 +114,19 @@ const Info = () => {
       ),
     },
     {
+      title: '状态',
+      width: 80,
+      dataIndex: 'status',
+      minWidth: 0, // 窗口宽度 >= 600px 时显示
+      render: (status: boolean) => (
+        <Tag color={status ? 'green' : 'red'}>{status ? '已认证' : '未认证'}</Tag>
+      ),
+    },
+    {
       title: '人数规模',
-      width: 120,
+      width: 80,
       dataIndex: 'employeeCount',
+      minWidth: 500, // 窗口宽度 >= 768px 时显示
       render: (employeeCount: string) => (
         <span className="schedule-cell  line-clamp-1">
           {employeeCount}
@@ -110,8 +135,9 @@ const Info = () => {
     },
     {
       title: '成立时间',
-      width: 120,
+      width: 100,
       dataIndex: 'establishedDate',
+      minWidth: 900, // 窗口宽度 >= 900px 时显示
       render: (establishedDate: string) => (
         <span className="schedule-cell  line-clamp-1">
           {establishedDate ? dayjs(establishedDate).format('YYYY-MM-DD') : '暂无'}
@@ -122,6 +148,7 @@ const Info = () => {
       title: '办公地点',
       width: 120,
       dataIndex: 'address',
+      minWidth: 1024, // 窗口宽度 >= 1024px 时显示
       render: (address: string[]) => (
         <span className="schedule-cell line-clamp-1">
           {address.length > 0 && Array.isArray(address) ?
@@ -132,8 +159,9 @@ const Info = () => {
     },
     {
       title: '主营业务',
-      width: 120,
+      width: 100,
       dataIndex: 'mainBusiness',
+      minWidth: 1200, // 窗口宽度 >= 1200px 时显示
       render: (mainBusiness: string) => (
         <span className="schedule-cell line-clamp-1">
           {mainBusiness.length > 0 && Array.isArray(mainBusiness) ?
@@ -144,42 +172,21 @@ const Info = () => {
     },
     {
       title: '投递链接',
-      width: 120,
+      width: 150,
       dataIndex: 'metadata',
+      minWidth: 1400, // 窗口宽度 >= 1400px 时显示
       render: (metadata: any) => (
         <span className="schedule-cell line-clamp-1 hover:cursor-pointer text-blue-600" onClick={() => window.open(metadata.website, '_blank')}>
           {metadata.website}
         </span>
       ),
     },
-    {
-      title: '状态',
-      width: 120,
-      dataIndex: 'status',
-      render: (status: boolean) => (
-        <Tag color={status ? 'green' : 'red'}>{status ? '已认证' : '未认证'}</Tag>
-      ),
-    }
-    // {
-    //   title:'更新时间',
-    //   dataIndex: 'updatedAt',
-    //   render: (updatedAt: string) => (
-    //     <div className="schedule-cell">
-    //       <div>{updatedAt}</div>
-    //     </div>
-    //   ),
-    // },
-    // {
-    //   title:'投递链接',
-    //   dataIndex: 'metadata',
-    //   render: (metadata: string) => (
-    //     <div className="schedule-cell">
-    //       <div>{metadata}</div>
-    //     </div>
-    //   ),
-    // }
-
   ];
+
+  // 根据窗口宽度动态过滤列
+  const columns = useMemo(() => {
+    return allColumns.filter(column => windowWidth >= column.minWidth);
+  }, [windowWidth]);
 
   const handleCompanySubmit = (values: any) => {
     console.log('提交的公司信息:', values);

@@ -1,7 +1,19 @@
 import { Button } from "@arco-design/web-react";
 import Text from "@arco-design/web-react/es/Typography/text";
+import { createChatCompletion } from "@/api/ai";
+import { useEffect } from "react";
 
 const Page = () => {
+
+    async function demo() {
+        const data = await createChatCompletion({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: "前端技术栈有哪些？只需要回答三个" }],
+            temperature: 0.7,
+        });
+        console.log(data);
+    }
+    useEffect(() => { demo() }, [])
     return (
         <div className="flex items-center sm:flex-row flex-col justify-center h-screen ">
             {/* 装饰性图片 */}
@@ -14,12 +26,12 @@ const Page = () => {
             </div>
             <div className="w-2/5">
                 <div className="flex items-center gap-2 flex-col sm:flex-row">
-                <Text className="text-4xl font-bold text-nowrap">
-                    404
-                </Text>
-                <Text className="text-3xl font-bold text-nowrap">
-               Page Not Found
-                </Text>
+                    <Text className="text-4xl font-bold text-nowrap">
+                        404
+                    </Text>
+                    <Text className="text-3xl font-bold text-nowrap">
+                        Page Not Found
+                    </Text>
                 </div>
                 <p className="text-gray-500 sm:text-xl text-base mt-4">
                     你迷失在了神秘的角落，让小黑带你回家吧

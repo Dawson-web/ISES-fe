@@ -45,7 +45,7 @@ const Page = observer(() => {
         const localTempChats = chatStore.chatlist.filter(
           (chat) => "isTemp" in chat && chat.isTemp
         );
-        
+
         // 合并：服务器数据 + 本地临时数据（如果不在服务器列表中）
         const mergedChats = [...serverChats];
         localTempChats.forEach((tempChat) => {
@@ -53,7 +53,7 @@ const Page = observer(() => {
             mergedChats.unshift(tempChat);
           }
         });
-        
+
         chatStore.chatlist = mergedChats;
       });
     }
@@ -84,21 +84,25 @@ const Page = observer(() => {
     }
   };
 
-  
+
 
   return (
-    <div className="bg-[#f7f8fa] px-6 py-4 h-full">
-      <div className="w-full flex flex-row overflow-y-auto h-full flex-1 bg-white">
+    <div className="bg-[#f7f8fa] sm:px-6 sm:py-4 h-full">
+      <div className="w-full flex flex-row overflow-y-auto h-full  bg-white shadow-md ">
         <div
           className={clsx(
-            "flex flex-col w-[450px] h-full overflow-y-scroll border-r",
+            "flex flex-col h-full overflow-y-scroll border-r",
+            // sm 以上：始终显示，宽度 30%
+            "md:w-[30%] md:flex w-full",
+            // sm 以下：根据 chatOpen 状态显示/隐藏，宽度 100%
             {
-              "sm:flex hidden": chatOpen,
+              "hidden": chatOpen, // sm 以下且 chatOpen 时隐藏
+              "flex": !chatOpen, // sm 以下且 !chatOpen 时显示
             }
           )}
         >
           {/* 搜索和添加好友 */}
-          <div className="h-[60px] flex items-center px-4 border-b dark:border-[#2C2E33]">
+          <div className="h-[71px] flex items-center px-4 border-b dark:border-[#2C2E33]">
             <div className="flex-1 relative">
               <Input
                 placeholder="搜索好友..."
@@ -111,9 +115,9 @@ const Page = observer(() => {
                 }}
               />
             </div>
-            <Button 
+            <Button
               variant="subtle"
-              className="ml-2 px-2 h-[36px] hover:bg-gray-100 dark:hover:bg-[#2C2E33]" 
+              className="ml-2 px-2 h-[36px] hover:bg-gray-100 dark:hover:bg-[#2C2E33]"
               onClick={opened ? close : open}
             >
               <Plus size={20} />
@@ -177,7 +181,7 @@ const Page = observer(() => {
                       />
                     </div>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0">
                       <Box className="space-y-1">
                         <div className="flex items-center justify-between">
                           <Text className="text-sm font-medium truncate">
@@ -232,12 +236,17 @@ const Page = observer(() => {
         {chatOpen ? (
           <ChatRoom
             key={chatInfo.chatId}
-            className={clsx("w-full")}
+            className={clsx(
+              // sm 以上：宽度 70%
+              "md:w-[70%]",
+              // sm 以下：宽度 100%
+              "w-full"
+            )}
             chatInfo={chatInfo}
             setOpen={setChatOpen}
           />
         ) : (
-          <div className="hidden sm:flex flex-col flex-grow items-center justify-center text-gray-400">
+          <div className="flex-1 hidden md:flex flex-col flex-grow items-center justify-center text-gray-400">
             <Text size="sm">选择一个聊天开始会话</Text>
           </div>
         )}

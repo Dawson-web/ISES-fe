@@ -44,7 +44,7 @@ const Home: React.FC = observer(() => {
   // 获取文章数据
   const fetchArticles = useCallback(async () => {
     if (loadingRef.current) return;
-    
+
     loadingRef.current = true;
     try {
       const response = await getSelfArticleListApi(searchValue, 1, pageSize);
@@ -101,7 +101,6 @@ const Home: React.FC = observer(() => {
         <div className="flex flex-col px-6 py-2">
           <div className="flex items-center justify-between w-full">
             <div className="text-2xl font-bold">{userInfo.username || 'Aigei'}</div>
-            <Button type="primary" size="small" className="ml-2" onClick={() => navigate('/navigator/publish')}>发布文章</Button>
           </div>
           <Text className="text-gray-500 text-sm">{userInfo.hitokoto}</Text>
         </div>
@@ -116,16 +115,19 @@ const Home: React.FC = observer(() => {
           <div className="flex-1">
             <div className="h-full bg-white border border-gray-200 p-6">
               {/* 搜索框 */}
-              <div className="mb-6 flex items-center justify-between">
-                <Input.Search
-                  placeholder="搜索文章、技术、面试..."
-                  prefix={<IconSearch />}
-                  value={searchValue}
-                  onChange={setSearchValue}
-                  onSearch={handleSearch}
-                  style={{ maxWidth: '400px' }}
-                />
-                <Text className="text-sm text-gray-500">
+              <div className="mb-6 flex items-end justify-between">
+                <div className='flex-1 flex flex-nowrap gap-2 items-center '>
+                  <Input.Search
+                    placeholder="搜索文章、技术、面试..."
+                    prefix={<IconSearch />}
+                    value={searchValue}
+                    onChange={setSearchValue}
+                    onSearch={handleSearch}
+                    style={{ maxWidth: '400px' }}
+                  />
+                  <Button type="primary" className="ml-2" onClick={() => navigate('/navigator/publish')}>发布文章</Button>
+                </div>
+                <Text className="text-sm text-gray-500 hidden sm:block">
                   {searchValue ? `找到 ${allArticles.length} 篇相关文章` : `共发布 ${allArticles.length} 篇文章`}
                 </Text>
               </div>
