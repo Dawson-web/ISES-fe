@@ -1,9 +1,9 @@
 import ArticlePreview from "@/components/article/article-preview/index";
 import CommentBox from "@/components/article/comment/index";
 import { Card, Tooltip, Button, Avatar, Tag, Space, Typography } from "@arco-design/web-react";
-import { Undo2, ThumbsUp, Eye, MessageCircle } from "lucide-react";
+import { Undo2, ThumbsUp, Eye, MessageCircle, Sparkles, BookOpenText } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getArticleDetailApi, postCommentApi } from "@/service/article";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiConfig } from "@/config";
@@ -41,6 +41,18 @@ export default function Page() {
   });
 
   const article = data;
+  const articleTags = useMemo(
+    () => (Array.isArray(article?.metadata?.tags) ? article?.metadata?.tags : []),
+    [article?.metadata?.tags]
+  );
+  const plainLength = useMemo(() => {
+    if (!article?.content) return 0;
+    return String(article.content)
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .trim().length;
+  }, [article?.content]);
 
   useEffect(() => {
     setAiSummary(article?.metadata?.excerpt ?? "");
@@ -138,30 +150,88 @@ export default function Page() {
         </div>
 
         <div className="px-4 sm:px-6">
-          <div className="rounded-xl border border-black/5 dark:border-white/10 bg-gray-50 dark:bg-[#101015] px-4 py-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1">
-                <Typography.Title heading={6} className="!m-0 text-gray-900 dark:text-gray-100">AI 智能概括</Typography.Title>
-                <Typography.Text type="secondary" className="block mt-1 text-[12px]">
-                  一键生成摘要，快速了解文章要点
-                </Typography.Text>
+          <div className="overflow-hidden rounded-2xl border border-[#e9ecf1] dark:border-[#2a2c33] shadow-[0_12px_40px_rgba(15,23,42,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f5f8ff] via-white to-[#eef2ff] dark:from-[#0d0f17] dark:via-[#0b0c13] dark:to-[#11121b]">
+              <div className="pointer-events-none absolute inset-0 opacity-70">
+                <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-[#4c79ff]/15 blur-3xl" />
+                <div className="absolute right-0 top-10 h-32 w-32 rounded-full bg-[#22d3ee]/12 blur-3xl" />
               </div>
-              <Button
-                size="mini"
-                type="secondary"
-                loading={isGeneratingSummary}
-                disabled={!article}
-                onClick={handleGenerateSummary}
-              >
-                {aiSummary ? "重新生成" : "生成摘要"}
-              </Button>
-            </div>
-            <div className="mt-3 text-[14px] leading-6 text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
-              {aiSummary
-                ? aiSummary
-                : isGeneratingSummary
-                  ? "AI 正在生成摘要..."
-                  : "点击右上方按钮生成这篇文章的 AI 摘要。"}
+              <div className="relative p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-white/80 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm">
+                      <Sparkles size={18} className="text-blue-600 dark:text-blue-200" />
+                    </div>
+                    <div>
+                      <div className="text-[12px] uppercase tracking-[0.08em] text-blue-600 dark:text-blue-200 font-semibold">AI 摘要</div>
+                      <div className="text-base font-semibold text-gray-900 dark:text-gray-50">AI 智能概括</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">自动提炼要点，快速摸清文章核心</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 dark:bg-white/5 border border-white/80 dark:border-white/10 text-xs text-gray-600 dark:text-gray-300">
+                      <span className="flex items-center gap-1">
+                        <BookOpenText size={14} className="text-blue-500" />
+                        正文 {plainLength || 0} 字
+                      </span>
+                      <span className="h-4 w-px bg-gray-200 dark:bg-white/10" />
+                      <span className="flex items-center gap-1">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                        {articleTags.length ? `标签 ${articleTags.length}` : "自动概括"}
+                      </span>
+                    </div>
+                    <Button
+                      size="small"
+                      type="primary"
+                      className="flex items-center gap-1"
+                      loading={isGeneratingSummary}
+                      disabled={!article}
+                      onClick={handleGenerateSummary}
+                    >
+                      <Sparkles size={14} />
+                      {aiSummary ? "重新生成" : "生成摘要"}
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)]">
+                  <div className="rounded-xl border border-white/80 dark:border-white/10 bg-white/90 dark:bg-[#0e1018]/80 shadow-sm px-4 py-3">
+                    <Typography.Paragraph className="!mb-2 text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">
+                      {aiSummary
+                        ? aiSummary
+                        : isGeneratingSummary
+                          ? "AI 正在生成摘要..."
+                          : "点击右上角的按钮，让 AI 帮你总结这篇文章的重点内容。"}
+                    </Typography.Paragraph>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      最多截取前 2800 字进行概括，生成后可随时重新生成以贴合最新内容。
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-white/80 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-800 dark:text-gray-100">
+                      <BookOpenText size={16} className="text-blue-600 dark:text-blue-300" />
+                      文章标签 / 分类
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {articleTags.length
+                        ? articleTags.map((tag: string) => (
+                          <span key={tag} className="px-2.5 py-1 rounded-full bg-[#eef3ff] text-[12px] text-blue-700 dark:bg-white/10 dark:text-blue-100">
+                            #{tag}
+                          </span>
+                        ))
+                        : <span className="text-xs text-gray-500 dark:text-gray-400">暂无标签，生成摘要时将自动提炼要点</span>}
+                    </div>
+                    {article?.metadata?.category && (
+                      <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#ecfdf3] text-[12px] text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                        {article?.metadata?.category}
+                      </div>
+                    )}
+                    <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                      结合标签与正文，摘要将突出关键信息并保持 120 字内。
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
