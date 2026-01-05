@@ -15,6 +15,8 @@ import {
   IconBook,
   IconCode,
   IconEdit,
+  IconInfoCircle,
+  IconExclamationCircle,
 } from "@arco-design/web-react/icon";
 import { useEffect, useRef, useState } from "react";
 import { IUserInfo } from "@/types/user";
@@ -33,8 +35,8 @@ const { Row, Col } = Grid;
 
 const roleMap = {
   0: { text: "普通用户", color: "blue" },
-  1: { text: "管理员", color: "red" },
-  2: { text: "招聘者", color: "gold" },
+  1: { text: "招聘者", color: "gold" },
+  2: { text: "管理员", color: "red" },
 };
 
 const certificationStatusMap = {
@@ -266,39 +268,47 @@ const Page = observer(() => {
                                 setCertificationModalVisible(true);
                               }}
                             >
-                              申请企业认证
+                              {(_userInfo?.certificationStatus || "none") ===
+                                "rejected"
+                                ? "重新申请企业认证"
+                                : "申请企业认证"}
                             </Button>
+                          )}
+                          {viewRole === 1 && (
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-700">
+                              {!canApplyCertification && (
+                                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 border border-orange-200 text-orange-700">
+                                  <IconExclamationCircle />
+                                  <span>完善在职公司信息后可提交认证</span>
+                                </div>
+                              )}
+
+                              {_userInfo?.certificationStatus === "rejected" &&
+                                _userInfo?.certificationRemark && (
+                                  <div className="flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 border border-red-200 text-red-700">
+                                    <IconInfoCircle />
+                                    <span>认证未通过：{_userInfo.certificationRemark}</span>
+                                  </div>
+                                )}
+
+                              {_userInfo?.certificationFile && (
+                                <a
+                                  className="flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 border border-blue-200 text-blue-700 hover:text-blue-800"
+                                  href={apiConfig.baseUrl + _userInfo.certificationFile}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <IconInfoCircle />
+                                  <span>查看认证材料</span>
+                                </a>
+                              )}
+                            </div>
                           )}
                         </>
                     }
                   </div>
 
-                  {viewRole === 1 && !canApplyCertification && (
-                    <Text type="secondary" className="mt-2">
-                      未填写在职公司，无法提交企业身份认证
-                    </Text>
-                  )}
 
-                  {viewRole === 1 &&
-                    _userInfo?.certificationStatus === "rejected" &&
-                    _userInfo?.certificationRemark && (
-                      <Paragraph className="text-red-600 mt-3">
-                        未通过原因：{_userInfo.certificationRemark}
-                      </Paragraph>
-                    )}
-
-                  {_userInfo?.certificationFile && (
-                    <div className="mt-2">
-                      <a
-                        href={apiConfig.baseUrl + _userInfo.certificationFile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500"
-                      >
-                        查看认证材料
-                      </a>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

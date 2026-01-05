@@ -6,6 +6,7 @@ import {
   ICertificationRejectResponse,
   IGetCertificationsParams,
 } from "@/types/certification";
+import { IAdminStats } from "@/types/admin/stats";
 
 export const sendAnnouncements = async () => {
   return await $axios.post<ApiOk<null>>("/admin/email");
@@ -38,4 +39,10 @@ export const rejectCertificationApi = async (data: {
     `/admin/certifications/${userInfoId}/reject`,
     { remark }
   );
+};
+
+export const getAdminStatsApi = async (days?: number) => {
+  return await $axios.get<ApiOk<IAdminStats>>("/admin/stats", {
+    params: { days },
+  });
 };

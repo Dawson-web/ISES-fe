@@ -6,7 +6,7 @@ import './style.css';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ICompany, ICompanyStatus } from '@/types/company';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { apiConfig } from '@/config';
 import type { CertificationStatus, ICertificationApplication, ICertificationCurrentCompany } from '@/types/certification';
 
@@ -19,12 +19,19 @@ const Page = () => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [activeTab, setActiveTab] = useState('company');
+    const [isCompact, setIsCompact] = useState(() => window.innerWidth < 768);
     const [certPagination, setCertPagination] = useState({ current: 1, pageSize: 10 });
     const [certStatus, setCertStatus] = useState<CertificationStatus>('pending');
     const [certActionVisible, setCertActionVisible] = useState(false);
     const [certActionType, setCertActionType] = useState<'approve' | 'reject'>('approve');
     const [certRemark, setCertRemark] = useState('');
     const [currentCertification, setCurrentCertification] = useState<ICertificationApplication | null>(null);
+
+    useEffect(() => {
+        const onResize = () => setIsCompact(window.innerWidth < 768);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     const { data, isLoading } = useQuery({
         queryKey: ['getCompanyApproveListApi'],
@@ -104,11 +111,11 @@ const Page = () => {
     //     }
     // };
 
-    const columns = [
+    const companyColumns = useMemo(() => ([
         {
             title: '公司信息',
             dataIndex: 'name',
-            width: 400,
+            width: isCompact ? 280 : 400,
             render: (_: string, record: ICompany) => (
                 <div className="company-info">
                     <div className="company-logo">
@@ -147,7 +154,7 @@ const Page = () => {
         {
             title: '主营业务',
             dataIndex: 'mainBusiness',
-            width: 200,
+            width: isCompact ? 160 : 200,
             render: (mainBusiness: string[]) => {
                 return (
                     <div className="business-tags">
@@ -168,33 +175,35 @@ const Page = () => {
         {
             title: '办公地点',
             dataIndex: 'address',
-            width: 200,
+            width: isCompact ? 160 : 200,
             render: (address: string[]) => {
                 return address.length > 0 && Array.isArray(address) ? <span className='flex flex-wrap gap-2 line-clamp-1'>
                     {address.join(',')}
                 </span> : '暂无'
             }
         },
-        {
-            title: '投递链接',
-            dataIndex: 'metadata',
-            width: 200,
-            render: (metadata: any) => {
-                return metadata?.website ? <a href={metadata?.website} target="_blank" rel="noopener noreferrer" className='text-blue-500  line-clamp-1'>
-                    {metadata?.website}
-                </a> : <>暂无</>
-            }
-        },
-        {
-            title: '内推码',
-            dataIndex: 'metadata',
-            width: 100,
-            render: (metadata: any) => {
-                return metadata?.internalCode ? <Tag color="green">
-                    {metadata?.internalCode}
-                </Tag> : <>暂无</>
-            }
-        },
+        ...(!isCompact ? ([
+            {
+                title: '投递链接',
+                dataIndex: 'metadata',
+                width: 200,
+                render: (metadata: any) => {
+                    return metadata?.website ? <a href={metadata?.website} target="_blank" rel="noopener noreferrer" className='text-blue-500  line-clamp-1'>
+                        {metadata?.website}
+                    </a> : <>暂无</>
+                }
+            },
+            {
+                title: '内推码',
+                dataIndex: 'metadata',
+                width: 100,
+                render: (metadata: any) => {
+                    return metadata?.internalCode ? <Tag color="green">
+                        {metadata?.internalCode}
+                    </Tag> : <>暂无</>
+                }
+            },
+        ] as const) : []),
         {
             title: '操作',
             fixed: 'right' as const,
@@ -237,7 +246,7 @@ const Page = () => {
                 </Space>
             ),
         },
-    ];
+    ]), [isCompact]);
 
     const certificationStatusColorMap: Record<CertificationStatus, string> = {
         none: 'gray',
@@ -277,11 +286,11 @@ const Page = () => {
         return null;
     };
 
-    const certificationColumns = [
+    const certificationColumns = useMemo(() => ([
         {
             title: '用户',
             dataIndex: 'username',
-            width: 200,
+            width: isCompact ? 200 : 220,
             render: (_: string, record: ICertificationApplication) => (
                 <Space direction="vertical" size={2}>
                     <Text>{record.username}</Text>
@@ -292,7 +301,7 @@ const Page = () => {
         {
             title: '在职公司',
             dataIndex: 'currentCompany',
-            width: 220,
+            width: isCompact ? 200 : 240,
             render: (currentCompanyValue: unknown, record: ICertificationApplication) => {
                 const currentCompany = normalizeCurrentCompany(currentCompanyValue) || normalizeCurrentCompany(record.currentCompany);
                 return (
@@ -312,8 +321,8 @@ const Page = () => {
             render: (role: number) => {
                 const roleTextMap: Record<number, string> = {
                     0: '普通用户',
-                    1: '管理员',
-                    2: '招聘者',
+                    1: '招聘者',
+                    2: '管理员',
                 };
                 return <Tag color={role === 1 ? 'red' : role === 2 ? 'gold' : 'blue'}>
                     {roleTextMap[role] || role}
@@ -333,7 +342,7 @@ const Page = () => {
         {
             title: '材料',
             dataIndex: 'certificationFile',
-            width: 220,
+            width: 140,
             render: (file: string) => (
                 file ? <a
                     href={apiConfig.baseUrl + file}
@@ -345,26 +354,28 @@ const Page = () => {
                 </a> : <>暂无</>
             )
         },
-        {
-            title: '备注',
-            dataIndex: 'certificationRemark',
-            width: 260,
-            render: (remark: string | null) => (
-                <span className='line-clamp-2'>{remark || '-'}</span>
-            )
-        },
-        {
-            title: '提交时间',
-            dataIndex: 'createdAt',
-            width: 180,
-            render: (createdAt: string) => (
-                <span>{createdAt ? new Date(createdAt).toLocaleString() : '-'}</span>
-            )
-        },
+        ...(!isCompact ? ([
+            {
+                title: '备注',
+                dataIndex: 'certificationRemark',
+                width: 260,
+                render: (remark: string | null) => (
+                    <span className='line-clamp-2'>{remark || '-'}</span>
+                )
+            },
+            {
+                title: '提交时间',
+                dataIndex: 'createdAt',
+                width: 180,
+                render: (createdAt: string) => (
+                    <span>{createdAt ? new Date(createdAt).toLocaleString() : '-'}</span>
+                )
+            },
+        ] as const) : []),
         {
             title: '操作',
             fixed: 'right' as const,
-            width: 220,
+            width: isCompact ? 180 : 220,
             render: (_: any, record: ICertificationApplication) => (
                 <Space size="large" className="action-buttons">
                     <Button
@@ -398,87 +409,91 @@ const Page = () => {
                 </Space>
             ),
         },
-    ];
+    ]), [isCompact]);
 
     return (
         <div className="approve-page px-6 py-4">
-            <Card className="">
-                <Tabs activeTab={activeTab} onChange={setActiveTab}>
-                    <TabPane key="company" title="公司审批">
-                        <div className="page-header">
-                            <Title>公司审批</Title>
-                            <div className="total-count">
-                                <Text type="secondary">待审批</Text>
-                                <Text className="count-number">{data?.total}</Text>
-                                <Text type="secondary">条</Text>
+            <div className="approve-container">
+                <Card className="approve-card">
+                    <Tabs activeTab={activeTab} onChange={setActiveTab}>
+                        <TabPane key="company" title="公司审批">
+                            <div className="page-header">
+                                <Title>公司审批</Title>
+                                <div className="total-count">
+                                    <Text type="secondary">待审批</Text>
+                                    <Text className="count-number">{data?.total}</Text>
+                                    <Text type="secondary">条</Text>
+                                </div>
                             </div>
-                        </div>
-                        <Divider />
-                        <Table
-                            loading={isLoading}
-                            columns={columns as any}
-                            data={data?.companies || [] as any}
-                            pagination={{
-                                total: data?.total || 0,
-                                showTotal: true,
-                                sizeCanChange: true,
-                                showJumper: true,
-                                className: 'pagination'
-                            }}
-                            className="company-table"
-                        />
-                    </TabPane>
-                    <TabPane key="certification" title="企业身份认证">
-                        <div className="page-header">
-                            <Title>企业身份认证</Title>
-                            <div className="total-count">
-                                <Text type="secondary">共</Text>
-                                <Text className="count-number">{certificationsData?.pagination?.total || 0}</Text>
-                                <Text type="secondary">条</Text>
-                            </div>
-                        </div>
-                        <Space style={{ marginTop: 8 }}>
-                            <Text type="secondary">状态筛选：</Text>
-                            <Select
-                                style={{ width: 180 }}
-                                value={certStatus}
-                                onChange={(value) => {
-                                    setCertStatus(value as CertificationStatus);
-                                    setCertPagination((prev) => ({ ...prev, current: 1 }));
+                            <Divider />
+                            <Table
+                                loading={isLoading}
+                                columns={companyColumns as any}
+                                data={data?.companies || [] as any}
+                                scroll={{ x: isCompact ? 820 : 1100 }}
+                                pagination={{
+                                    total: data?.total || 0,
+                                    showTotal: true,
+                                    sizeCanChange: true,
+                                    showJumper: true,
+                                    className: 'pagination'
                                 }}
-                                options={[
-                                    { label: '待审核', value: 'pending' },
-                                    { label: '已通过', value: 'approved' },
-                                    { label: '已拒绝', value: 'rejected' },
-                                    { label: '未认证', value: 'none' },
-                                ]}
+                                className="company-table"
                             />
-                        </Space>
-                        <Divider />
-                        <Table
-                            loading={certificationsLoading}
-                            columns={certificationColumns as any}
-                            data={certificationsData?.items || [] as any}
-                            pagination={{
-                                current: certPagination.current,
-                                pageSize: certPagination.pageSize,
-                                total: certificationsData?.pagination?.total || 0,
-                                showTotal: true,
-                                sizeCanChange: true,
-                                showJumper: true,
-                                className: 'pagination',
-                                onChange: (current: number) => {
-                                    setCertPagination((prev) => ({ ...prev, current }));
-                                },
-                                onPageSizeChange: (pageSize: number) => {
-                                    setCertPagination({ current: 1, pageSize });
-                                },
-                            }}
-                            className="company-table"
-                        />
-                    </TabPane>
-                </Tabs>
-            </Card>
+                        </TabPane>
+                        <TabPane key="certification" title="企业身份认证">
+                            <div className="page-header">
+                                <Title>企业身份认证</Title>
+                                <div className="total-count">
+                                    <Text type="secondary">共</Text>
+                                    <Text className="count-number">{certificationsData?.pagination?.total || 0}</Text>
+                                    <Text type="secondary">条</Text>
+                                </div>
+                            </div>
+                            <Space className="filters-bar">
+                                <Text type="secondary">状态筛选：</Text>
+                                <Select
+                                    style={{ width: 180 }}
+                                    value={certStatus}
+                                    onChange={(value) => {
+                                        setCertStatus(value as CertificationStatus);
+                                        setCertPagination((prev) => ({ ...prev, current: 1 }));
+                                    }}
+                                    options={[
+                                        { label: '待审核', value: 'pending' },
+                                        { label: '已通过', value: 'approved' },
+                                        { label: '已拒绝', value: 'rejected' },
+                                        { label: '未认证', value: 'none' },
+                                    ]}
+                                />
+                            </Space>
+                            <Divider />
+                            <Table
+                                loading={certificationsLoading}
+                                columns={certificationColumns as any}
+                                data={certificationsData?.items || [] as any}
+                                scroll={{ x: isCompact ? 820 : 1100 }}
+                                pagination={{
+                                    current: certPagination.current,
+                                    pageSize: certPagination.pageSize,
+                                    total: certificationsData?.pagination?.total || 0,
+                                    showTotal: true,
+                                    sizeCanChange: true,
+                                    showJumper: true,
+                                    className: 'pagination',
+                                    onChange: (current: number) => {
+                                        setCertPagination((prev) => ({ ...prev, current }));
+                                    },
+                                    onPageSizeChange: (pageSize: number) => {
+                                        setCertPagination({ current: 1, pageSize });
+                                    },
+                                }}
+                                className="company-table"
+                            />
+                        </TabPane>
+                    </Tabs>
+                </Card>
+            </div>
 
             <Modal
                 title="编辑公司信息"

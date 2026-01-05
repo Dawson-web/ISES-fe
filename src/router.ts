@@ -13,6 +13,7 @@ export type Path =
   | `/navigator/chat/components/AddFriend`
   | `/navigator/components/campuscalander`
   | `/navigator/components/companyalumni`
+  | `/navigator/dashboard`
   | `/navigator/explore`
   | `/navigator/explore/channel`
   | `/navigator/explore/components/creatorlist`

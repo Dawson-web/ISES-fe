@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Layout, Menu, Avatar } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { CheckCircle, Coffee, Compass, House, MessageSquareText, SquarePlus } from 'lucide-react';
+import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, SquarePlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -14,7 +14,9 @@ const Sider = Layout.Sider;
 const Content = Layout.Content;
 const MenuItem = Menu.Item;
 
-const menuList = [
+type MenuItemConfig = { key: string; icon: ReactNode; label: string; adminOnly?: boolean };
+
+const DEFAULT_MENU_LIST: MenuItemConfig[] = [
   {
     key: '/navigator',
     icon: <Compass size={16} />,
@@ -44,6 +46,13 @@ const menuList = [
     key: '/navigator/approve',
     icon: <CheckCircle size={16} />,
     label: '审批',
+    adminOnly: true,
+  },
+  {
+    key: '/navigator/dashboard',
+    icon: <BarChart3 size={16} />,
+    label: '数据大盘',
+    adminOnly: true,
   },
 ];
 
@@ -51,6 +60,7 @@ const _Layout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  let menuList = DEFAULT_MENU_LIST;
 
   const handleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -71,17 +81,21 @@ const _Layout = () => {
     };
   }, []);
 
+  if (userStore.role !== 2) {
+    menuList = menuList.filter((item) => !item.adminOnly);
+  }
+
 
   //获取信息
   useQuery({
     queryKey: ["initUserStore"],
     queryFn: () => getUserInfoApi().then((res) => {
-        userStore.setUserInfo(res.data.data);
-        return res.data.data
+      userStore.setUserInfo(res.data.data);
+      return res.data.data
     })
-    .catch(() => {
-      navigate('/login');
-    })
+      .catch(() => {
+        navigate('/login');
+      })
   });
 
 
@@ -154,5 +168,4 @@ const _Layout = () => {
 }
 
 export default _Layout;
-
 

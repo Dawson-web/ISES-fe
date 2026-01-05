@@ -1,6 +1,17 @@
 .approve-page {
-    background-color: var(--color-fill-2);
+    background: linear-gradient(180deg, var(--color-fill-2) 0%, var(--color-bg-1) 100%);
     min-height: 100%;
+}
+
+.approve-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.approve-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .page-header {
@@ -8,6 +19,7 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: nowrap;
+    gap: 12px;
 }
 
 .total-count {
@@ -21,6 +33,20 @@
     font-size: 24px;
     font-weight: 600;
     color: rgb(var(--primary-6));
+}
+
+.filters-bar {
+    margin-top: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.approve-card .arco-tabs-header-nav {
+    padding: 0 16px;
+}
+
+.approve-card .arco-tabs-content {
+    padding: 0 16px 16px 16px;
 }
 
 .company-info {
@@ -151,4 +177,38 @@
 
 .pagination {
     margin-top: 16px;
-} 
+}
+
+@media (max-width: 768px) {
+    .approve-page {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .total-count {
+        margin: 4px 0 12px 0;
+    }
+
+    .count-number {
+        font-size: 20px;
+    }
+
+    .company-info {
+        gap: 12px;
+        padding: 10px 0;
+    }
+
+    .company-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .action-buttons {
+        padding: 10px 0;
+    }
+}
