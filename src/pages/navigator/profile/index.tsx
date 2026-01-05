@@ -8,6 +8,7 @@ import {
   Button,
   Grid,
   Image,
+  Modal,
 } from "@arco-design/web-react";
 import {
   IconUser,
@@ -15,30 +16,42 @@ import {
   IconCode,
   IconEdit,
 } from "@arco-design/web-react/icon";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IUserInfo } from "@/types/user";
 import EditProfileDrawer from "@/components/profile/EditProfileDrawer";
-import { getUserInfoApi, updateUserInfo } from "@/service/user";
+import { applyCertificationApi, getUserInfoApi, updateUserInfo } from "@/service/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import userStore from "@/store/User";
 import homeBG from "@/assets/home-bg.png";
 import { observer } from "mobx-react-lite";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { apiConfig } from "@/config";
 
 const { Title, Paragraph, Text } = Typography;
 const { Row, Col } = Grid;
 
 const roleMap = {
   0: { text: "普通用户", color: "blue" },
-  1: { text: "VIP用户", color: "gold" },
-  2: { text: "管理员", color: "red" },
+  1: { text: "管理员", color: "red" },
+  2: { text: "招聘者", color: "gold" },
 };
+
+const certificationStatusMap = {
+  none: { text: "未认证", color: "gray" },
+  pending: { text: "审核中", color: "orange" },
+  approved: { text: "已认证", color: "green" },
+  rejected: { text: "未通过", color: "red" },
+} as const;
 
 
 const Page = observer(() => {
   const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const [searchParams] = useSearchParams()
   const [viewRole, setViewRole] = useState(0) // 0 非自己 1 自己
+  const [certificationModalVisible, setCertificationModalVisible] = useState(false);
+  const [certificationFile, setCertificationFile] = useState<File | null>(null);
+  const certificationFileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   //修改信息抽屉
@@ -103,6 +116,56 @@ const Page = observer(() => {
   })
 
   const _userInfo = viewRole === 1 ? userStore : userInfo
+  const certificationStatusKey =
+    (_userInfo?.certificationStatus || "none") as keyof typeof certificationStatusMap;
+  const certificationMeta =
+    certificationStatusMap[certificationStatusKey] || certificationStatusMap.none;
+  const canApplyCertification = !!_userInfo?.currentCompany?.name;
+
+  const { mutate: applyCertification, isPending: isApplyingCertification } =
+    useMutation({
+      mutationFn: (formData: FormData) => applyCertificationApi(formData),
+      onSuccess: (res) => {
+        toast.success(res.data.message || "提交认证成功，请等待管理员审核");
+        queryClient.invalidateQueries({ queryKey: ["initUserStore"] });
+        queryClient.invalidateQueries({ queryKey: ["userInfo", searchParams.get("id")] });
+        setCertificationModalVisible(false);
+        setCertificationFile(null);
+        if (certificationFileInputRef.current) {
+          certificationFileInputRef.current.value = "";
+        }
+      },
+      onError: (err: unknown) => {
+        const message = err instanceof Error ? err.message : "提交失败";
+        toast.error(message);
+      },
+    });
+
+  const handleCertificationFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+    setCertificationFile(selectedFile);
+  };
+
+  const handleSubmitCertification = () => {
+    if (!canApplyCertification) {
+      toast.error("请先填写在职公司后再提交企业认证");
+      return;
+    }
+    if (!certificationFile) {
+      toast.error("请先选择文件");
+      return;
+    }
+    if (certificationFile.size > 10 * 1024 * 1024) {
+      toast.error("文件大小不能超过 10MB");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", certificationFile);
+    applyCertification(formData);
+  };
 
 
 
@@ -153,6 +216,11 @@ const Page = observer(() => {
                       {roleMap[_userInfo?.role as keyof typeof roleMap]?.text ||
                         "普通用户"}
                     </Tag>
+                    <Tag
+                      color={certificationMeta.color}
+                    >
+                      企业认证：{certificationMeta.text}
+                    </Tag>
                   </div>
 
                   <Paragraph className="text-gray-600 mb-4">
@@ -171,15 +239,66 @@ const Page = observer(() => {
                           </Button>
                         </>
                         :
-                        <Button
-                          type="outline"
-                          size="small"
-                          onClick={() => setEditDrawerVisible(true)}
-                        >
-                          <IconEdit /> 编辑资料
-                        </Button>
+                        <>
+                          <Button
+                            type="outline"
+                            size="small"
+                            onClick={() => setEditDrawerVisible(true)}
+                          >
+                            <IconEdit /> 编辑资料
+                          </Button>
+                          {(_userInfo?.certificationStatus || "none") ===
+                            "pending" ? (
+                            <Button type="outline" size="small" disabled>
+                              企业认证审核中
+                            </Button>
+                          ) : (_userInfo?.certificationStatus || "none") ===
+                            "approved" ? null : (
+                            <Button
+                              type="primary"
+                              size="small"
+                              disabled={!canApplyCertification}
+                              onClick={() => {
+                                if (!canApplyCertification) {
+                                  toast.error("请先填写在职公司后再提交企业认证");
+                                  return;
+                                }
+                                setCertificationModalVisible(true);
+                              }}
+                            >
+                              申请企业认证
+                            </Button>
+                          )}
+                        </>
                     }
                   </div>
+
+                  {viewRole === 1 && !canApplyCertification && (
+                    <Text type="secondary" className="mt-2">
+                      未填写在职公司，无法提交企业身份认证
+                    </Text>
+                  )}
+
+                  {viewRole === 1 &&
+                    _userInfo?.certificationStatus === "rejected" &&
+                    _userInfo?.certificationRemark && (
+                      <Paragraph className="text-red-600 mt-3">
+                        未通过原因：{_userInfo.certificationRemark}
+                      </Paragraph>
+                    )}
+
+                  {_userInfo?.certificationFile && (
+                    <div className="mt-2">
+                      <a
+                        href={apiConfig.baseUrl + _userInfo.certificationFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500"
+                      >
+                        查看认证材料
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -243,7 +362,13 @@ const Page = observer(() => {
                     },
                     {
                       label: "在职职位",
-                      value: `${_userInfo?.currentCompany?.department}-${_userInfo?.currentCompany?.position}` || "-",
+                      value:
+                        [
+                          _userInfo?.currentCompany?.department,
+                          _userInfo?.currentCompany?.position,
+                        ]
+                          .filter(Boolean)
+                          .join("-") || "-",
                     },
                   ]}
                   layout="inline-horizontal"
@@ -278,6 +403,45 @@ const Page = observer(() => {
           userInfo={_userInfo as IUserInfo}
           onSave={handleSaveProfile}
         />
+
+        <Modal
+          title="申请企业认证"
+          visible={certificationModalVisible}
+          onOk={handleSubmitCertification}
+          confirmLoading={isApplyingCertification}
+          onCancel={() => {
+            setCertificationModalVisible(false);
+            setCertificationFile(null);
+            if (certificationFileInputRef.current) {
+              certificationFileInputRef.current.value = "";
+            }
+          }}
+          autoFocus={false}
+          maskClosable={false}
+        >
+          <input
+            ref={certificationFileInputRef}
+            type="file"
+            accept=".jpg,.jpeg,.png,.gif,.webp,.pdf"
+            onChange={handleCertificationFileChange}
+            style={{ display: "none" }}
+          />
+
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Space>
+              <Button
+                type="outline"
+                onClick={() => certificationFileInputRef.current?.click()}
+              >
+                选择文件
+              </Button>
+              <Text type="secondary">
+                {certificationFile ? certificationFile.name : "未选择"}
+              </Text>
+            </Space>
+            <Text type="secondary">支持 jpg/png/gif/webp/pdf，≤10MB</Text>
+          </Space>
+        </Modal>
       </div>
   );
 });

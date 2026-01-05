@@ -17,11 +17,11 @@ const CompanyAlumni = () => {
 
 
     return <div className="bg-white border border-gray-200 p-4 ">
-        {/* 公司校友列表 */}
+        {/* 人脉列表 */}
         <div className="mb-4">
             <div className="flex items-center mb-4">
                 <IconUser className="mr-2 text-green-500" />
-                <Text className="font-medium text-gray-900">公司校友</Text>
+                <Text className="font-medium text-gray-900">人脉</Text>
             </div>
             <div className="space-y-3">
                 {data?.length && data.length > 0 ? data.slice(0, 3).map((alumni) => (
@@ -39,7 +39,7 @@ const CompanyAlumni = () => {
                                     color: 'white',
                                     fontWeight: 'bold'
                                 }}>
-                                    {alumni.avatar ?  <img src={alumni.avatar} alt="avatar" />:alumni.username.charAt(0)}
+                                    {alumni.avatar ? <img src={alumni.avatar} alt="avatar" /> : alumni.username.charAt(0)}
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <Text className="w-full font-medium text-gray-900 text-sm truncate flex items-center justify-between">
@@ -66,7 +66,7 @@ const CompanyAlumni = () => {
                 )) : (
                     <Result
                         status='404'
-                        subTitle='未填写个人公司信息，或公司暂无校友'
+                        subTitle='个人信息未完善，或暂未发现人脉'
                         extra={
                             <Text className='text-blue-500 cursor-pointer' onClick={() => {
                                 navigate('/navigator/profile')

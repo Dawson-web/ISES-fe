@@ -14,7 +14,7 @@ import { createChatCompletion } from "@/api/ai";
 export default function Page() {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const articleId = String(searchParams.get('id'));
+  const articleId = searchParams.get("id") ?? "";
 
   const [isLiked, setIsLiked] = useState(false);
   const [aiSummary, setAiSummary] = useState("");
@@ -25,6 +25,7 @@ export default function Page() {
 
   const { data } = useQuery({
     queryKey: ["article", articleId],
+    enabled: Boolean(articleId),
     queryFn: async () => {
       const res = await getArticleDetailApi(articleId);
       return res.data.data;
@@ -56,7 +57,7 @@ export default function Page() {
 
   useEffect(() => {
     setAiSummary(article?.metadata?.excerpt ?? "");
-  }, [article?.id, article?.metadata?.excerpt]);
+  }, [article?.id]);
 
   const { mutateAsync: generateSummary, isPending: isGeneratingSummary } = useMutation({
     mutationFn: async () => {
@@ -80,7 +81,12 @@ export default function Page() {
           },
           {
             role: "user",
-            content: `标题：${article.title}\n正文：${plainContent.slice(0, 2800)}`,
+            content: [
+              `标题：${article.title}`,
+              `分类：${article.metadata?.category || "未提供"}`,
+              `标签：${Array.isArray(article.metadata?.tags) && article.metadata.tags.length ? article.metadata.tags.join("、") : "未提供"}`,
+              `正文：${plainContent.slice(0, 2800)}`
+            ].join("\n"),
           },
         ],
         temperature: 0.6,
@@ -112,11 +118,11 @@ export default function Page() {
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <Avatar size={44}>
-                <img alt='avatar' src={`${apiConfig.baseUrl}/uploads/avatars/${article?.creator.id}.png`} />
+                <img alt="avatar" src={`${apiConfig.baseUrl}/uploads/avatars/${article?.creator?.id}.png`} />
               </Avatar>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <Typography.Text className="text-gray-900 dark:text-gray-100 truncate font-semibold">{article?.creator.username}</Typography.Text>
+                  <Typography.Text className="text-gray-900 dark:text-gray-100 truncate font-semibold">{article?.creator?.username}</Typography.Text>
                   <Tag color="gray" className="hidden sm:inline">作者</Tag>
                 </div>
                 <div className="mt-1 text-[12px] text-gray-500 dark:text-gray-400">编辑于 {String(article?.createdAt)}</div>
@@ -139,9 +145,9 @@ export default function Page() {
           </div>
 
           <div className="mt-6 text-[15px] leading-7 text-gray-900 dark:text-gray-100">
-            {Array.isArray(article?.metadata.tags) && article?.metadata.tags.length > 0 && (
+            {Array.isArray(article?.metadata?.tags) && article?.metadata?.tags.length > 0 && (
               <div className="mb-2 flex flex-wrap gap-x-3 gap-y-1">
-                {article?.metadata.tags.map((tag: string) => (
+                {article?.metadata?.tags.map((tag: string) => (
                   <span key={tag} className="text-[#1677ff]">#{tag}</span>
                 ))}
               </div>
@@ -150,7 +156,7 @@ export default function Page() {
         </div>
 
         <div className="px-4 sm:px-6">
-          <div className="overflow-hidden rounded-2xl border border-[#e9ecf1] dark:border-[#2a2c33] shadow-[0_12px_40px_rgba(15,23,42,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+          <Card className="mt-4 overflow-hidden border border-[#e9ecf1] dark:border-[#2a2c33] rounded-2xl shadow-[0_12px_40px_rgba(15,23,42,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f5f8ff] via-white to-[#eef2ff] dark:from-[#0d0f17] dark:via-[#0b0c13] dark:to-[#11121b]">
               <div className="pointer-events-none absolute inset-0 opacity-70">
                 <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-[#4c79ff]/15 blur-3xl" />
@@ -233,14 +239,14 @@ export default function Page() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         <div className="px-2 sm:px-8 py-6">
           <ArticlePreview
             content={String(article?.content)}
             title={article?.title}
-            type={article?.metadata.category}
+            type={article?.metadata?.category}
             className="w-full h-full flex flex-col [&>div]:flex-1 [&>div>div]:h-full"
           />
         </div>

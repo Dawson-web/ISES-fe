@@ -1,3 +1,5 @@
+import type { CertificationStatus } from "@/types/certification";
+
 export interface IAccountData {
   email: string;
   password?: string;
@@ -28,6 +30,9 @@ export interface IUserInfo {
   username: string;
   introduce?: string;
   role: number;
+  certificationStatus?: CertificationStatus;
+  certificationFile?: string;
+  certificationRemark?: string | null;
   school?: string;
   avatar?: string;
   online?: boolean;

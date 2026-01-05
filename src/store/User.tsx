@@ -1,5 +1,6 @@
 import { apiConfig } from "@/config";
 import { ICompany, IUserInfo } from "@/types/user";
+import type { CertificationStatus } from "@/types/certification";
 import { makeAutoObservable } from "mobx";
 
 class User {
@@ -8,6 +9,9 @@ class User {
   username: string = "";
   introduce?: string = "";
   role: number = 0;
+  certificationStatus?: CertificationStatus = "none";
+  certificationFile?: string = "";
+  certificationRemark?: string | null = null;
   school?: string = "";
   avatar?: string = "";
   banner?: string = "";
@@ -30,6 +34,9 @@ class User {
     this.role = u.role;
     this.username = u.username;
     this.introduce = u.introduce;
+    this.certificationStatus = u.certificationStatus;
+    this.certificationFile = u.certificationFile;
+    this.certificationRemark = u.certificationRemark;
     this.school = u.school;
     this.avatar = apiConfig.baseUrl + u.avatar;
     this.banner = u.banner;

@@ -1,6 +1,7 @@
 import { $axios } from "../../api";
 import { ApiOk } from "../../api/types";
 import { IUpdateUserForm, IUserFormData, IUserInfo } from "../../types/user";
+import { ICertificationApplyResponse } from "../../types/certification";
 
 export const getUserInfoApi = async (id?: string) => {
   return await $axios.get<ApiOk<IUserInfo>>("/user/info", {
@@ -37,4 +38,11 @@ export const searchUsers = async (data: { searchKey: string }) => {
 
 export const getUserCompanyAlumni = async () => {
   return await $axios.get<ApiOk<IUserInfo[]>>("/user/company-alumni");
-}
+};
+
+export const applyCertificationApi = async (formData: FormData) => {
+  return await $axios.post<ApiOk<ICertificationApplyResponse>>(
+    "/user/certification/apply",
+    formData
+  );
+};
