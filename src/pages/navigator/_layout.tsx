@@ -4,7 +4,7 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, SquarePlus } from 'lucide-react';
+import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -46,6 +46,12 @@ const DEFAULT_MENU_LIST: MenuItemConfig[] = [
     key: '/navigator/approve',
     icon: <CheckCircle size={16} />,
     label: '审批',
+    adminOnly: true,
+  },
+  {
+    key: '/navigator/admin',
+    icon: <ShieldCheck size={16} />,
+    label: '管理员',
     adminOnly: true,
   },
   {
@@ -168,4 +174,3 @@ const _Layout = () => {
 }
 
 export default _Layout;
-
