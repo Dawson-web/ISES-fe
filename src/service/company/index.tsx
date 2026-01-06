@@ -1,6 +1,6 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
-import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyListRequest, ICompanyStatus } from "@/types/company";
+import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyListRequest, ICompanyStatus, IReferralContent, IReferralCreatePayload, IReferralListRequest, IReferralListResponse } from "@/types/company";
 import { ISalaryReportForm, ISalaryReportList } from "@/types/salary";
 
 
@@ -70,5 +70,23 @@ export const uploadCompanyLogoApi = async (formData: FormData,companyId:string) 
             companyId
         }
     });
+    return res.data;
+};
+
+// 发布岗位内推（需企业认证通过）
+export const addCompanyReferralApi = async (data: IReferralCreatePayload) => {
+    const res = await $axios.post<ApiOk<IReferralContent>>(`/companies/referrals/add`, data);
+    return res.data;
+};
+
+// 获取岗位内推列表
+export const getCompanyReferralsApi = async (data: IReferralListRequest) => {
+    const res = await $axios.post<ApiOk<IReferralListResponse>>(`/companies/referrals`, data);
+    return res.data;
+};
+
+// 获取岗位内推详情
+export const getCompanyReferralDetailApi = async (id: string) => {
+    const res = await $axios.get<ApiOk<IReferralContent>>(`/companies/referrals/${id}`);
     return res.data;
 };

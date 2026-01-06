@@ -23,6 +23,7 @@ export type Path =
   | `/navigator/info/company`
   | `/navigator/profile`
   | `/navigator/publish`
+  | `/navigator/referrals`
   | `/register`
   | `/seekback`
 

@@ -7,6 +7,7 @@ import {
   Select,
   Modal,
   List,
+  Tabs,
 } from "@arco-design/web-react";
 import { IconSave, IconSend } from "@arco-design/web-react/icon";
 // import { useSearchParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ import { createArticleApi } from "@/service/article";
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import MenuBar from "@/components/editor/MenuBar";
 import { useDraft } from "@/hooks/useDraft";
+import { addCompanyReferralApi } from "@/service/company";
 
 const CATEGORY = [
   {
@@ -40,6 +42,8 @@ export const CONTENT_TYPE = {
   company: ["信息"],
 };
 
+const TabPane = Tabs.TabPane;
+
 export default function ArticleEditPage() {
   const [form, setForm] = useState<IArticleForm>({
     title: "",
@@ -56,6 +60,17 @@ export default function ArticleEditPage() {
   const editor = useAritcleEditor("");
   const [draftModalVisible, setDraftModalVisible] = useState(false);
   const [tag, setTag] = useState(1);
+  const [referralLoading, setReferralLoading] = useState(false);
+  const [referralForm, setReferralForm] = useState({
+    title: "",
+    position: "",
+    location: "",
+    reward: "",
+    expireAt: "",
+    contact: "",
+    description: "",
+  });
+  const [activeTab, setActiveTab] = useState<"article" | "referral">("article");
   const [drafts, setDrafts] = useState<
     Array<{
       id: number;
@@ -164,141 +179,262 @@ export default function ArticleEditPage() {
     // TODO: 实现保存逻辑
   };
 
+  const handleReferralPublish = async () => {
+    if (referralLoading) return;
+    setReferralLoading(true);
+    try {
+      const res = await addCompanyReferralApi(referralForm);
+      if (res.status) {
+        Message.success(res.message || "发布内推成功");
+        setReferralForm({
+          title: "",
+          position: "",
+          location: "",
+          reward: "",
+          expireAt: "",
+          contact: "",
+          description: "",
+        });
+      } else {
+        Message.error(res.message || "发布失败");
+      }
+    } catch (err: any) {
+      Message.error(err?.response?.data?.message || err?.message || "发布失败");
+    } finally {
+      setReferralLoading(false);
+    }
+  };
+
   return (
     <div className="editor-container px-6 py-4 ">
-      <header className="editor-header">
-        <div className="header-content flex justify-between flex-wrap gap-4">
-          <div className="header-left">
-            <Input
-              placeholder="输入文章标题..."
-              value={form.title}
-              onChange={(value) =>
-                setForm((prev) => ({ ...prev, title: value }))
-              }
-              className="title-input"
-            />
-            <Tag color={isDraft ? "gray" : "arcoblue"} className="status-tag">
-              {isDraft ? "草稿" : "已发布"}
-            </Tag>
-          </div>
-          <div className="header-right">
-            <Button
-              type="secondary"
-              icon={<IconSave />}
-              onClick={handleOpenDraftModal}
-            >
-              导入草稿
-            </Button>
-            <Button
-              type="secondary"
-              icon={<IconSave />}
-              onClick={() => {
-                toSaveDraft();
-                setTag(0);
-              }}
-            >
-              保存草稿
-            </Button>
-            <Button
-              type="primary"
-              icon={<IconSend />}
-              onClick={() => {
-                handleSave();
-                if (lastId.current) {
-                  deleteDraft(lastId.current);
-                  setDrafts(
-                    drafts.filter((draft) => draft.id !== lastId.current)
-                  );
-                  lastId.current = null;
-                }
-              }}
-            >
-              发布文章
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Tabs activeTab={activeTab} onChange={(key) => setActiveTab(key as any)} type="capsule">
+        <TabPane key="article" title="发布文章">
+          <header className="editor-header">
+            <div className="header-content flex justify-between flex-wrap gap-4">
+              <div className="header-left">
+                <Input
+                  placeholder="输入文章标题..."
+                  value={form.title}
+                  onChange={(value) =>
+                    setForm((prev) => ({ ...prev, title: value }))
+                  }
+                  className="title-input"
+                />
+                <Tag color={isDraft ? "gray" : "arcoblue"} className="status-tag">
+                  {isDraft ? "草稿" : "已发布"}
+                </Tag>
+              </div>
+              <div className="header-right">
+                <Button
+                  type="secondary"
+                  icon={<IconSave />}
+                  onClick={handleOpenDraftModal}
+                >
+                  导入草稿
+                </Button>
+                <Button
+                  type="secondary"
+                  icon={<IconSave />}
+                  onClick={() => {
+                    toSaveDraft();
+                    setTag(0);
+                  }}
+                >
+                  保存草稿
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<IconSend />}
+                  onClick={() => {
+                    handleSave();
+                    if (lastId.current) {
+                      deleteDraft(lastId.current);
+                      setDrafts(
+                        drafts.filter((draft) => draft.id !== lastId.current)
+                      );
+                      lastId.current = null;
+                    }
+                  }}
+                >
+                  发布文章
+                </Button>
+              </div>
+            </div>
+          </header>
 
-      <main className="editor-main bg-white">
-        <div>
-          <div className="mb-6">
-            <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">
-              文章信息
+          <main className="editor-main bg-white">
+            <div>
+              <div className="mb-6">
+                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">
+                  文章信息
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">分类</div>
+                    <Select
+                      placeholder="请选择文章分类"
+                      className="w-full"
+                      allowClear
+                      value={form.category}
+                      onChange={(value) =>
+                        setForm((prev) => ({ ...prev, category: value }))
+                      }
+                    >
+                      {CATEGORY.map(({ value, label }) => (
+                        <Select.Option key={value} value={value}>
+                          {label}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-600 mb-2">内容类型</div>
+                    <Select
+                      placeholder="请选择内容类型"
+                      className="w-full"
+                      allowClear
+                      value={form.contentType}
+                      onChange={(value) =>
+                        setForm((prev) => ({ ...prev, contentType: value }))
+                      }
+                    >
+                      {form.category &&
+                        CONTENT_TYPE[
+                          form.category as keyof typeof CONTENT_TYPE
+                        ].map((value) => (
+                          <Select.Option key={value} value={value}>
+                            {value}
+                          </Select.Option>
+                        ))}
+                    </Select>
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="text-sm text-gray-600 mb-2">标签</div>
+                  <Select
+                    mode="multiple"
+                    placeholder="请输入标签，按回车确认"
+                    className="w-full"
+                    allowCreate
+                    allowClear
+                    value={form.tags}
+                    onChange={(value) =>
+                      setForm((prev) => ({ ...prev, tags: value }))
+                    }
+                  />
+                </div>
+                <div className="mb-4">
+                  <div className="text-sm text-gray-600 mb-2">引言</div>
+                  <Input.TextArea
+                    placeholder="请输入文章引言，将显示在文章列表中"
+                    className="w-full"
+                    style={{ minHeight: "100px" }}
+                    value={form.excerpt}
+                    onChange={(value) =>
+                      setForm((prev) => ({ ...prev, excerpt: value }))
+                    }
+                    maxLength={200}
+                    showWordLimit
+                  />
+                </div>
+              </div>
+            </div>
+            <MenuBar editor={editor} />
+            <IeseEditor editor={editor} className="w-full h-full" />
+          </main>
+        </TabPane>
+
+        <TabPane key="referral" title="发布内推">
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="text-base font-medium text-gray-800 mb-1">岗位内推</div>
+            <div className="text-xs text-gray-500 mb-4">
+              需企业认证通过，自动使用你当前在职公司
             </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="flex-1">
-                <div className="text-sm text-gray-600 mb-2">分类</div>
-                <Select
-                  placeholder="请选择文章分类"
-                  className="w-full"
-                  allowClear
-                  value={form.category}
+                <div className="text-sm text-gray-600 mb-2">内推标题</div>
+                <Input
+                  placeholder="可选，默认使用岗位/公司名"
+                  value={referralForm.title}
                   onChange={(value) =>
-                    setForm((prev) => ({ ...prev, category: value }))
+                    setReferralForm((prev) => ({ ...prev, title: value }))
                   }
-                >
-                  {CATEGORY.map(({ value, label }) => (
-                    <Select.Option key={value} value={value}>
-                      {label}
-                    </Select.Option>
-                  ))}
-                </Select>
+                />
               </div>
               <div className="flex-1">
-                <div className="text-sm text-gray-600 mb-2">内容类型</div>
-                <Select
-                  placeholder="请选择内容类型"
-                  className="w-full"
-                  allowClear
-                  value={form.contentType}
+                <div className="text-sm text-gray-600 mb-2">岗位名称</div>
+                <Input
+                  placeholder="必填"
+                  value={referralForm.position}
                   onChange={(value) =>
-                    setForm((prev) => ({ ...prev, contentType: value }))
+                    setReferralForm((prev) => ({ ...prev, position: value }))
                   }
-                >
-                  {form.category &&
-                    CONTENT_TYPE[
-                      form.category as keyof typeof CONTENT_TYPE
-                    ].map((value) => (
-                      <Select.Option key={value} value={value}>
-                        {value}
-                      </Select.Option>
-                    ))}
-                </Select>
+                />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">工作地点</div>
+                <Input
+                  placeholder="可选"
+                  value={referralForm.location}
+                  onChange={(value) =>
+                    setReferralForm((prev) => ({ ...prev, location: value }))
+                  }
+                />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">推荐奖励说明</div>
+                <Input
+                  placeholder="可选"
+                  value={referralForm.reward}
+                  onChange={(value) =>
+                    setReferralForm((prev) => ({ ...prev, reward: value }))
+                  }
+                />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">截止时间</div>
+                <Input
+                  placeholder="如 2024-12-31，可选"
+                  value={referralForm.expireAt}
+                  onChange={(value) =>
+                    setReferralForm((prev) => ({ ...prev, expireAt: value }))
+                  }
+                />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 mb-2">联系方式</div>
+                <Input
+                  placeholder="邮箱/微信/电话"
+                  value={referralForm.contact}
+                  onChange={(value) =>
+                    setReferralForm((prev) => ({ ...prev, contact: value }))
+                  }
+                />
               </div>
             </div>
             <div className="mb-4">
-              <div className="text-sm text-gray-600 mb-2">标签</div>
-              <Select
-                mode="multiple"
-                placeholder="请输入标签，按回车确认"
-                className="w-full"
-                allowCreate
-                allowClear
-                value={form.tags}
-                onChange={(value) =>
-                  setForm((prev) => ({ ...prev, tags: value }))
-                }
-              />
-            </div>
-            <div className="mb-4">
-              <div className="text-sm text-gray-600 mb-2">引言</div>
+              <div className="text-sm text-gray-600 mb-2">岗位描述</div>
               <Input.TextArea
-                placeholder="请输入文章引言，将显示在文章列表中"
+                placeholder="岗位描述"
                 className="w-full"
-                style={{ minHeight: "100px" }}
-                value={form.excerpt}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+                value={referralForm.description}
                 onChange={(value) =>
-                  setForm((prev) => ({ ...prev, excerpt: value }))
+                  setReferralForm((prev) => ({ ...prev, description: value }))
                 }
-                maxLength={200}
-                showWordLimit
               />
             </div>
+            <Button
+              type="primary"
+              status="success"
+              loading={referralLoading}
+              onClick={handleReferralPublish}
+            >
+              发布内推
+            </Button>
           </div>
-        </div>
-        <MenuBar editor={editor} />
-        <IeseEditor editor={editor} className="w-full h-full" />
-      </main>
+        </TabPane>
+      </Tabs>
 
       <Modal
         title="导入草稿"

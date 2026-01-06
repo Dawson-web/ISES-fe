@@ -4,7 +4,7 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus } from 'lucide-react';
+import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
@@ -31,6 +31,11 @@ const DEFAULT_MENU_LIST: MenuItemConfig[] = [
     key: '/navigator/explore',
     icon: <House size={16} />,
     label: '发现',
+  },
+  {
+    key: '/navigator/referrals',
+    icon: <BriefcaseBusiness size={16} />,
+    label: '岗位内推',
   },
   {
     key: '/navigator/info',
