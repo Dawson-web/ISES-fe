@@ -48,12 +48,6 @@ const DEFAULT_MENU_LIST: MenuItemConfig[] = [
     label: '消息',
   },
   {
-    key: '/navigator/approve',
-    icon: <CheckCircle size={16} />,
-    label: '审批',
-    adminOnly: true,
-  },
-  {
     key: '/navigator/admin',
     icon: <ShieldCheck size={16} />,
     label: '管理员',

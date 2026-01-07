@@ -1,9 +1,8 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
   Card,
   Grid,
   Typography,
-  Statistic,
   Space,
   Select,
   Table,
@@ -36,12 +35,21 @@ const SummaryCard = ({
   value: number;
   suffix?: string;
 }) => (
-  <Card className="h-full rounded-lg border border-gray-100 bg-white shadow-sm">
-    <Space direction="vertical" size={8} className="w-full">
+  <Card
+    className="h-full rounded-lg border border-[#e7ebf3] bg-white shadow-sm transition-transform duration-150 hover:-translate-y-0.5"
+    bodyStyle={{ padding: 14 }}
+  >
+    <Space direction="vertical" size={6} className="w-full">
       <Text type="secondary" style={{ fontSize: 12, letterSpacing: 0.2 }}>
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e] mr-1" />
         {title}
       </Text>
-      <Statistic value={value} suffix={suffix} valueStyle={{ fontSize: 24, fontWeight: 700 }} />
+      <div className="flex items-baseline gap-1">
+        <span className="text-[26px] font-semibold leading-none text-gray-900">
+          {value?.toLocaleString?.() ?? value}
+        </span>
+        {suffix ? <span className="text-sm text-gray-500">{suffix}</span> : null}
+      </div>
     </Space>
   </Card>
 );
@@ -78,6 +86,36 @@ const EChart = ({
 
   return <div ref={ref} style={{ width: "100%", height }} />;
 };
+
+const ChartCard = ({
+  title,
+  subtitle,
+  children,
+  extra,
+}: {
+  title: string;
+  subtitle?: string;
+  extra?: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <Card
+    className="h-full rounded-lg border border-[#e7ebf3] bg-white shadow-sm"
+    bodyStyle={{ padding: 14 }}
+  >
+    <div className="flex items-start justify-between gap-3 mb-2">
+      <div className="flex flex-col gap-1">
+        <Text style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{title}</Text>
+        {subtitle ? (
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </div>
+      <Space size={8}>{extra}</Space>
+    </div>
+    {children}
+  </Card>
+);
 
 type TrendKey = keyof IStatsTrends;
 
@@ -121,19 +159,36 @@ const StatsDashboard = observer(() => {
       data?.trends?.contents?.map((item) => item.date) ||
       [];
     return {
-      tooltip: { trigger: "axis" },
-      grid: { left: 60, right: 20, top: 70, bottom: 40 },
+      tooltip: {
+        trigger: "axis",
+        backgroundColor: "#0f172acc",
+        borderWidth: 0,
+        textStyle: { color: "#e5e7eb", fontSize: 12 },
+      },
+      grid: { left: 52, right: 18, top: 60, bottom: 40 },
       legend: {
         data: trendBlocks.map((b) => b.title),
-        top: 8,
+        top: 10,
         left: "center",
+        itemWidth: 10,
+        itemHeight: 10,
+        textStyle: { color: "#4b5563", fontSize: 12 },
       },
       xAxis: {
         type: "category",
         data: dates,
-        axisLabel: { formatter: (val: string) => dayjs(val).format("MM-DD") },
+        axisLabel: {
+          formatter: (val: string) => dayjs(val).format("MM-DD"),
+          color: "#6b7280",
+        },
+        axisLine: { lineStyle: { color: "#e5e7eb" } },
+        axisTick: { show: false },
       },
-      yAxis: { type: "value" },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: "#6b7280" },
+        splitLine: { lineStyle: { color: "#eef1f7" } },
+      },
       series: trendBlocks.map((block) => ({
         name: block.title,
         type: "line",
@@ -146,6 +201,7 @@ const StatsDashboard = observer(() => {
             { offset: 1, color: `${block.color}10` },
           ]),
         },
+        lineStyle: { width: 2.4, color: block.color },
         data: data?.trends?.[block.key]?.map((item) => item.count) || [],
       })),
     };
@@ -155,7 +211,7 @@ const StatsDashboard = observer(() => {
     const pieColors = ["#2563eb", "#0ea5e9", "#22c55e", "#f59e0b", "#ec4899", "#a855f7"];
     return {
       tooltip: { trigger: "item" },
-      legend: { top: "2%" },
+      legend: { top: "2%", textStyle: { color: "#4b5563" } },
       color: pieColors,
       series: [
         {
@@ -185,7 +241,7 @@ const StatsDashboard = observer(() => {
     const pieColors = ["#0ea5e9", "#22c55e", "#f97316"];
     return {
       tooltip: { trigger: "item" },
-      legend: { top: "2%" },
+      legend: { top: "2%", textStyle: { color: "#4b5563" } },
       color: pieColors,
       series: [
         {
@@ -274,7 +330,7 @@ const StatsDashboard = observer(() => {
   }
 
   return (
-    <div className="px-6 py-4 space-y-4 bg-[#f7f8fa]">
+    <div className="px-6 py-5 space-y-4 bg-[#f4f6fb]">
       <div className="flex items-center justify-between">
         <div>
           <Title heading={3} style={{ margin: 0 }}>
@@ -300,89 +356,72 @@ const StatsDashboard = observer(() => {
       </div>
 
       <Skeleton loading={isLoading} animation>
-        <Card>
+        <Card
+          className="rounded-xl border border-[#e7ebf3] bg-white shadow-sm"
+          bodyStyle={{ padding: 16 }}
+        >
           <div className="flex items-center justify-between mb-3">
-            <Title heading={5} style={{ margin: 0 }}>
-              核心概览
-            </Title>
-            <Tag color="gray">实时</Tag>
+            <div className="flex items-center gap-2">
+              <Title heading={5} style={{ margin: 0 }}>
+                核心概览
+              </Title>
+              <Tag color="arcoblue">实时</Tag>
+            </div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              近 {data?.rangeDays ?? range} 天 · 刷新频率 1 分钟
+            </Text>
           </div>
-          <Row gutter={16}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
             {summaryCards.map((item) => (
-              <Col key={item.title} xs={12} sm={8} md={6} lg={4}>
-                <SummaryCard title={item.title} value={item.value} />
-              </Col>
+              <SummaryCard key={item.title} title={item.title} value={item.value} />
             ))}
-          </Row>
+          </div>
         </Card>
       </Skeleton>
 
       <Skeleton loading={isLoading} animation>
-        <Card>
-          <Space direction="vertical" size={12} className="w-full">
-            <div className="flex items-center gap-2">
-              <Title heading={5} style={{ margin: 0 }}>
-                趋势概览
-              </Title>
-              <Tag color="arcoblue" icon={<IconArrowRise />}>
-                按天
-              </Tag>
-            </div>
-            {trendOption.series && (trendOption.series as any[]).length ? (
-              <EChart option={trendOption} height={320} />
-            ) : (
-              <Empty description="暂无趋势数据" />
-            )}
-          </Space>
-        </Card>
+        <ChartCard
+          title="趋势概览"
+          subtitle={`按天 · 近 ${data?.rangeDays ?? range} 天`}
+          extra={<Tag color="arcoblue" icon={<IconArrowRise />}>实时</Tag>}
+        >
+          {trendOption.series && (trendOption.series as any[]).length ? (
+            <EChart option={trendOption} height={340} />
+          ) : (
+            <Empty description="暂无趋势数据" />
+          )}
+        </ChartCard>
       </Skeleton>
 
       <Skeleton loading={isLoading} animation>
         <Row gutter={16}>
           <Col xs={24} md={12}>
-            <Card>
-              <Space direction="vertical" size={8} className="w-full">
-                <Title heading={5} style={{ margin: 0 }}>
-                  内容类型分布
-                </Title>
-                {contentTypeOption.series && (contentTypeOption.series as any[])[0]?.data?.length ? (
-                  <EChart option={contentTypeOption} height={320} />
-                ) : (
-                  <Empty description="暂无数据" />
-                )}
-              </Space>
-            </Card>
+            <ChartCard title="内容类型分布" subtitle="按内容分类占比">
+              {contentTypeOption.series && (contentTypeOption.series as any[])[0]?.data?.length ? (
+                <EChart option={contentTypeOption} height={320} />
+              ) : (
+                <Empty description="暂无数据" />
+              )}
+            </ChartCard>
           </Col>
           <Col xs={24} md={12}>
-            <Card>
-              <Space direction="vertical" size={8} className="w-full">
-                <Title heading={5} style={{ margin: 0 }}>
-                  公司认证状态分布
-                </Title>
-                {companyStatusOption.series && (companyStatusOption.series as any[])[0]?.data?.length ? (
-                  <EChart option={companyStatusOption} height={320} />
-                ) : (
-                  <Empty description="暂无数据" />
-                )}
-              </Space>
-            </Card>
+            <ChartCard title="公司认证状态分布" subtitle="企业认证情况">
+              {companyStatusOption.series && (companyStatusOption.series as any[])[0]?.data?.length ? (
+                <EChart option={companyStatusOption} height={320} />
+              ) : (
+                <Empty description="暂无数据" />
+              )}
+            </ChartCard>
           </Col>
         </Row>
       </Skeleton>
 
       <Skeleton loading={isLoading} animation>
-        <Card>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Title heading={5} style={{ margin: 0 }}>
-                浏览 Top 5 内容
-              </Title>
-              <Tag color="purple" icon={<IconArrowFall />}>
-                metadata.viewCount
-              </Tag>
-            </div>
-            <Text type="secondary">字段沿用内容详情的浏览数</Text>
-          </div>
+        <ChartCard
+          title="浏览 Top 5 内容"
+          subtitle="字段沿用内容详情的浏览数"
+          extra={<Tag color="purple" icon={<IconArrowFall />}>metadata.viewCount</Tag>}
+        >
           <Divider style={{ margin: "8px 0 16px" }} />
           <Table
             columns={columns}
@@ -395,7 +434,7 @@ const StatsDashboard = observer(() => {
             rowKey="id"
             locale={{ emptyText: <Empty description="暂无数据" /> }}
           />
-        </Card>
+        </ChartCard>
       </Skeleton>
     </div>
   );

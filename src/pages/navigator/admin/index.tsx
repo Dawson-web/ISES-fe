@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   Tabs,
@@ -16,7 +16,14 @@ import {
   Input,
   Checkbox,
 } from "@arco-design/web-react";
-import { IconDelete, IconSearch } from "@arco-design/web-react/icon";
+import {
+  IconCheckCircle,
+  IconCloseCircle,
+  IconDelete,
+  IconSearch,
+  IconUserGroup,
+  IconCalendar,
+} from "@arco-design/web-react/icon";
 import { observer } from "mobx-react-lite";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -30,10 +37,23 @@ import {
   getAdminCompaniesApi,
   updateAdminCompanyApi,
   deleteAdminCompanyApi,
+  getCertificationsApi,
+  rejectCertificationApi,
+  approveCertificationApi,
 } from "@/service/admin";
+import {
+  getCompanyApproveListApi,
+  updateCompanyStatusApi,
+} from "@/service/company";
 import type { IAdminUser } from "@/types/admin/management";
 import type { IArticle } from "@/types/article";
-import type { ICompany } from "@/types/company";
+import type { ICompany, ICompanyStatus } from "@/types/company";
+import type {
+  CertificationStatus,
+  ICertificationApplication,
+  ICertificationCurrentCompany,
+} from "@/types/certification";
+import { apiConfig } from "@/config";
 
 const { Title, Text } = Typography;
 const TabPane = Tabs.TabPane;
@@ -56,6 +76,19 @@ const Page = observer(() => {
   const [companyModalVisible, setCompanyModalVisible] = useState(false);
   const [editingCompany, setEditingCompany] = useState<ICompany | null>(null);
   const [companyForm] = Form.useForm();
+  const [isCompact, setIsCompact] = useState(() => window.innerWidth < 768);
+  const [certPagination, setCertPagination] = useState({ current: 1, pageSize: 10 });
+  const [certStatus, setCertStatus] = useState<CertificationStatus>("pending");
+  const [certActionVisible, setCertActionVisible] = useState(false);
+  const [certActionType, setCertActionType] = useState<"approve" | "reject">("approve");
+  const [certRemark, setCertRemark] = useState("");
+  const [currentCertification, setCurrentCertification] = useState<ICertificationApplication | null>(null);
+
+  useEffect(() => {
+    const onResize = () => setIsCompact(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["adminUsers", userPagination],
@@ -114,6 +147,23 @@ const Page = observer(() => {
     enabled: userStore.role === 2,
   });
 
+  const { data: approveListData, isLoading: approveListLoading } = useQuery({
+    queryKey: ["companyApproveList"],
+    queryFn: () => getCompanyApproveListApi().then((res) => res.data),
+    enabled: userStore.role === 2,
+  });
+
+  const { data: certificationsData, isLoading: certificationsLoading } = useQuery({
+    queryKey: ["getCertificationsApi", certPagination.current, certPagination.pageSize, certStatus],
+    queryFn: () =>
+      getCertificationsApi({
+        page: certPagination.current,
+        pageSize: certPagination.pageSize,
+        status: certStatus,
+      }).then((res) => res.data),
+    enabled: userStore.role === 2,
+  });
+  console.log(123, certificationsData?.data);
   const { mutate: updateCompany, isPending: updatingCompany } = useMutation({
     mutationFn: (payload: { id: string; data: Partial<ICompany> }) =>
       updateAdminCompanyApi(payload.id, payload.data),
@@ -126,6 +176,52 @@ const Page = observer(() => {
     },
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : "更新失败";
+      toast.error(msg);
+    },
+  });
+
+  const { mutate: updateCompanyStatus, isPending: updatingCompanyStatus } = useMutation({
+    mutationFn: (payload: ICompanyStatus) => updateCompanyStatusApi(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["companyApproveList"] });
+      toast.success("更新公司状态成功");
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "更新失败";
+      toast.error(msg);
+    },
+  });
+
+  const { mutate: approveCertification, isPending: approvingCertification } = useMutation({
+    mutationFn: (data: { userInfoId: string; remark?: string }) => approveCertificationApi(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getCertificationsApi", certPagination.current, certPagination.pageSize, certStatus],
+      });
+      setCertActionVisible(false);
+      setCertRemark("");
+      setCurrentCertification(null);
+      toast.success("认证已通过");
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "操作失败";
+      toast.error(msg);
+    },
+  });
+
+  const { mutate: rejectCertification, isPending: rejectingCertification } = useMutation({
+    mutationFn: (data: { userInfoId: string; remark?: string }) => rejectCertificationApi(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getCertificationsApi", certPagination.current, certPagination.pageSize, certStatus],
+      });
+      setCertActionVisible(false);
+      setCertRemark("");
+      setCurrentCertification(null);
+      toast.success("认证已拒绝");
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "操作失败";
       toast.error(msg);
     },
   });
@@ -361,7 +457,7 @@ const Page = observer(() => {
               okText="删除"
               cancelText="取消"
               okButtonProps={{ status: "danger" }}
-              onOk={() => record.id && deleteCompany(record.id)}
+              onOk={() => record.id && deleteCompany(record.id || "")}
               disabled={deletingCompany}
             >
               <Button size="small" status="danger" icon={<IconDelete />}>
@@ -373,6 +469,289 @@ const Page = observer(() => {
       },
     ],
     [companyForm, deleteCompany, deletingCompany]
+  );
+
+  const certificationStatusColorMap: Record<CertificationStatus, string> = {
+    none: "gray",
+    pending: "orange",
+    approved: "green",
+    rejected: "red",
+  };
+
+  const certificationStatusTextMap: Record<CertificationStatus, string> = {
+    none: "未认证",
+    pending: "待审核",
+    approved: "已通过",
+    rejected: "已拒绝",
+  };
+
+  const normalizeCurrentCompany = (value: unknown): ICertificationCurrentCompany | null => {
+    if (!value) return null;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value) as unknown;
+        if (
+          parsed &&
+          typeof parsed === "object" &&
+          "name" in parsed &&
+          typeof (parsed as { name?: unknown }).name === "string"
+        ) {
+          return parsed as ICertificationCurrentCompany;
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    }
+    if (
+      typeof value === "object" &&
+      "name" in value &&
+      typeof (value as { name?: unknown }).name === "string"
+    ) {
+      return value as ICertificationCurrentCompany;
+    }
+    return null;
+  };
+
+  const companyApproveColumns = useMemo(
+    () => [
+      {
+        title: "公司信息",
+        dataIndex: "name",
+        width: isCompact ? 280 : 400,
+        render: (_: string, record: ICompany) => (
+          <div className="flex gap-3 items-start">
+            <div className="h-12 w-12 overflow-hidden rounded-full bg-slate-100 flex items-center justify-center">
+              {record.logo ? (
+                <img
+                  src={apiConfig.baseUrl + record.logo}
+                  alt={record.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-gray-500">{record.name.charAt(0)}</span>
+              )}
+            </div>
+            <div className="flex-1">
+              <Text className="font-semibold">{record.name}</Text>
+              <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                <span className="flex items-center gap-1">
+                  <IconCalendar />{" "}
+                  {record.establishedDate ? new Date(record.establishedDate).toLocaleDateString() : "-"}
+                </span>
+                <span className="flex items-center gap-1">
+                  <IconUserGroup /> {record.employeeCount || "-"}
+                </span>
+              </div>
+              <Text type="secondary" className="block text-xs mt-1" ellipsis={{ rows: 2 }}>
+                简介：{record.description || "-"}
+              </Text>
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "主营业务",
+        dataIndex: "mainBusiness",
+        width: isCompact ? 160 : 200,
+        render: (mainBusiness: string[]) => (
+          <Space wrap size={6}>
+            {(mainBusiness || []).map((biz) => (
+              <Tag key={biz}>{biz}</Tag>
+            ))}
+          </Space>
+        ),
+      },
+      {
+        title: "办公地点",
+        dataIndex: "address",
+        width: isCompact ? 160 : 200,
+        render: (address: string[]) =>
+          address && Array.isArray(address) && address.length ? address.join(",") : "暂无",
+      },
+      ...(isCompact
+        ? []
+        : ([
+          {
+            title: "投递链接",
+            dataIndex: "metadata",
+            width: 200,
+            render: (metadata: any) =>
+              metadata?.website ? (
+                <a href={metadata.website} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                  {metadata.website}
+                </a>
+              ) : (
+                "暂无"
+              ),
+          },
+          {
+            title: "内推码",
+            dataIndex: "metadata",
+            width: 100,
+            render: (metadata: any) => (metadata?.internalCode ? <Tag color="green">{metadata.internalCode}</Tag> : "暂无"),
+          },
+        ] as const)),
+      {
+        title: "操作",
+        fixed: "right" as const,
+        render: (_: unknown, record: ICompany) => (
+          <Space size="large">
+            <Button
+              type="primary"
+              size="small"
+              icon={<IconCheckCircle />}
+              loading={updatingCompanyStatus}
+              onClick={() =>
+                updateCompanyStatus({
+                  companyId: record.id || "",
+                  status: "approved",
+                  isVerified: true,
+                })
+              }
+            >
+              通过
+            </Button>
+            <Button
+              type="secondary"
+              size="small"
+              icon={<IconCloseCircle />}
+              loading={updatingCompanyStatus}
+              onClick={() =>
+                updateCompanyStatus({
+                  companyId: record.id || "",
+                  status: "rejected",
+                  isVerified: false,
+                })
+              }
+            >
+              拒绝
+            </Button>
+          </Space>
+        ),
+      },
+    ],
+    [isCompact, updateCompanyStatus, updatingCompanyStatus]
+  );
+
+  const certificationColumns = useMemo(
+    () => [
+      {
+        title: "用户",
+        dataIndex: "username",
+        width: isCompact ? 200 : 220,
+        render: (_: string, record: ICertificationApplication) => (
+          <Space direction="vertical" size={2}>
+            <Text>{record.username}</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {record.user?.email || "-"}
+            </Text>
+          </Space>
+        ),
+      },
+      {
+        title: "在职公司",
+        dataIndex: "currentCompany",
+        width: isCompact ? 200 : 240,
+        render: (currentCompanyValue: unknown, record: ICertificationApplication) => {
+          const currentCompany =
+            normalizeCurrentCompany(currentCompanyValue) || normalizeCurrentCompany(record.currentCompany);
+          return (
+            <Space direction="vertical" size={2}>
+              <Text>{currentCompany?.name || "-"}</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {currentCompany?.department || "-"}
+                {currentCompany?.position ? `-${currentCompany.position}` : ""}
+              </Text>
+            </Space>
+          );
+        },
+      },
+      {
+        title: "角色",
+        dataIndex: "role",
+        width: 120,
+        render: (role: number) => {
+          const roleTextMap: Record<number, string> = { 0: "普通用户", 1: "招聘者", 2: "管理员" };
+          return <Tag color={role === 1 ? "red" : role === 2 ? "gold" : "blue"}>{roleTextMap[role] || role}</Tag>;
+        },
+      },
+      {
+        title: "状态",
+        dataIndex: "certificationStatus",
+        width: 120,
+        render: (status: CertificationStatus) => (
+          <Tag color={certificationStatusColorMap[status]}>{certificationStatusTextMap[status]}</Tag>
+        ),
+      },
+      {
+        title: "材料",
+        dataIndex: "certificationFile",
+        width: 140,
+        render: (file: string) =>
+          file ? (
+            <a href={apiConfig.baseUrl + file} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+              查看
+            </a>
+          ) : (
+            "暂无"
+          ),
+      },
+      ...(isCompact
+        ? []
+        : ([
+          {
+            title: "备注",
+            dataIndex: "certificationRemark",
+            width: 260,
+            render: (remark: string | null) => <span className="line-clamp-2">{remark || "-"}</span>,
+          },
+          {
+            title: "提交时间",
+            dataIndex: "createdAt",
+            width: 180,
+            render: (createdAt: string) => <span>{createdAt ? new Date(createdAt).toLocaleString() : "-"}</span>,
+          },
+        ] as const)),
+      {
+        title: "操作",
+        fixed: "right" as const,
+        width: isCompact ? 180 : 220,
+        render: (_: unknown, record: ICertificationApplication) => (
+          <Space size="large">
+            <Button
+              type="primary"
+              size="small"
+              icon={<IconCheckCircle />}
+              disabled={record.certificationStatus !== "pending"}
+              onClick={() => {
+                setCurrentCertification(record);
+                setCertActionType("approve");
+                setCertRemark("");
+                setCertActionVisible(true);
+              }}
+            >
+              通过
+            </Button>
+            <Button
+              type="secondary"
+              size="small"
+              icon={<IconCloseCircle />}
+              disabled={record.certificationStatus !== "pending"}
+              onClick={() => {
+                setCurrentCertification(record);
+                setCertActionType("reject");
+                setCertRemark("");
+                setCertActionVisible(true);
+              }}
+            >
+              拒绝
+            </Button>
+          </Space>
+        ),
+      },
+    ],
+    [isCompact]
   );
 
   if (userStore.role !== 2) {
@@ -419,9 +798,7 @@ const Page = observer(() => {
                   onPageSizeChange: (pageSize) =>
                     setUserPagination({ current: 1, pageSize }),
                 }}
-                tableLayout="fixed"
-                bordered
-                locale={{ emptyText: <Empty description="暂无用户" /> }}
+                border
               />
             </Skeleton>
           </Card>
@@ -462,9 +839,7 @@ const Page = observer(() => {
                   onPageSizeChange: (pageSize) =>
                     setArticlePagination({ current: 1, pageSize }),
                 }}
-                tableLayout="fixed"
-                bordered
-                locale={{ emptyText: <Empty description="暂无内容" /> }}
+                border
               />
             </Skeleton>
           </Card>
@@ -520,9 +895,83 @@ const Page = observer(() => {
                   onPageSizeChange: (pageSize) =>
                     setCompanyPagination({ current: 1, pageSize }),
                 }}
-                tableLayout="fixed"
-                bordered
-                locale={{ emptyText: <Empty description="暂无公司" /> }}
+                border
+              />
+            </Skeleton>
+          </Card>
+        </TabPane>
+
+        <TabPane key="companyApprove" title="公司审批">
+          <Card>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Title heading={5} style={{ margin: 0 }}>
+                  公司审批
+                </Title>
+                <Tag color="arcoblue">待审核</Tag>
+              </div>
+              <Text type="secondary">共 {approveListData?.total ?? 0} 条</Text>
+            </div>
+            <Table
+              loading={approveListLoading}
+              columns={companyApproveColumns as any}
+              data={approveListData?.companies || []}
+              scroll={{ x: isCompact ? 820 : 1100 }}
+              pagination={{
+                total: approveListData?.total || 0,
+                showTotal: true,
+                sizeCanChange: true,
+                showJumper: true,
+              }}
+              border
+            />
+          </Card>
+        </TabPane>
+
+        <TabPane key="certification" title="企业身份认证">
+          <Card>
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Title heading={5} style={{ margin: 0 }}>
+                  企业身份认证
+                </Title>
+                <Tag color="arcoblue">审核</Tag>
+              </div>
+              <Space align="center">
+                <Text type="secondary">状态筛选：</Text>
+                <Select
+                  style={{ width: 180 }}
+                  value={certStatus}
+                  onChange={(value) => {
+                    setCertStatus(value as CertificationStatus);
+                    setCertPagination((prev) => ({ ...prev, current: 1 }));
+                  }}
+                  options={[
+                    { label: "待审核", value: "pending" },
+                    { label: "已通过", value: "approved" },
+                    { label: "已拒绝", value: "rejected" },
+                    { label: "未认证", value: "none" },
+                  ]}
+                />
+              </Space>
+            </div>
+            <Skeleton loading={certificationsLoading} animation>
+              <Table
+                loading={certificationsLoading}
+                columns={certificationColumns as any}
+                data={certificationsData?.data.items || []}
+                scroll={{ x: isCompact ? 820 : 1100 }}
+                pagination={{
+                  current: certPagination.current,
+                  pageSize: certPagination.pageSize,
+                  total: certificationsData?.data.pagination.total || 0,
+                  showTotal: true,
+                  sizeCanChange: true,
+                  showJumper: true,
+                  onChange: (current) => setCertPagination((prev) => ({ ...prev, current })),
+                  onPageSizeChange: (pageSize) => setCertPagination({ current: 1, pageSize }),
+                }}
+                border
               />
             </Skeleton>
           </Card>
@@ -603,6 +1052,44 @@ const Page = observer(() => {
           </Form.Item>
           <Form.Item label="已认证" field="isVerified" triggerPropName="checked">
             <Checkbox />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={certActionType === "approve" ? "通过认证" : "拒绝认证"}
+        visible={certActionVisible}
+        confirmLoading={approvingCertification || rejectingCertification}
+        onOk={() => {
+          if (!currentCertification?.id) return;
+          if (certActionType === "approve") {
+            approveCertification({
+              userInfoId: currentCertification.id,
+              remark: certRemark.trim() ? certRemark.trim() : undefined,
+            });
+            return;
+          }
+          rejectCertification({
+            userInfoId: currentCertification.id,
+            remark: certRemark.trim() ? certRemark.trim() : "认证未通过",
+          });
+        }}
+        onCancel={() => {
+          setCertActionVisible(false);
+          setCertRemark("");
+          setCurrentCertification(null);
+        }}
+        autoFocus={false}
+        maskClosable={false}
+      >
+        <Form layout="vertical">
+          <Form.Item label="备注（可选）">
+            <Input.TextArea
+              value={certRemark}
+              onChange={(value) => setCertRemark(value)}
+              placeholder={certActionType === "approve" ? "通过原因（可选）" : "拒绝原因（默认：认证未通过）"}
+              autoSize={{ minRows: 3, maxRows: 6 }}
+            />
           </Form.Item>
         </Form>
       </Modal>
