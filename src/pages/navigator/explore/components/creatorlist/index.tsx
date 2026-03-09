@@ -24,17 +24,13 @@ const CreatorList = () => {
                 {creatorList?.map((creator) => (
                     <div
                         key={creator.creatorId}
-                        className=" flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                        style={{ border: '1px solid transparent' }}
+                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 border border-transparent transition-colors cursor-pointer"
                         onClick={() => {
                             navigate(`/navigator/profile?id=${creator.creatorId}`);
                         }}
                     >
                         <div className="flex items-center space-x-3 w-full">
-                            <Avatar size={32} style={{
-                                color: 'white',
-                                fontWeight: 'bold'
-                            }}>
+                            <Avatar size={32} className="text-white font-bold">
                                 {creator.creator.avatar ? <img src={apiConfig.baseUrl + creator.creator.avatar} alt="avatar" /> : creator.creator.username.charAt(0)}
                             </Avatar>
                             <div className="flex-1 min-w-0">

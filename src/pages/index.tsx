@@ -54,7 +54,7 @@ export default function Page() {
         <div className="flex gap-4 mt-8">
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-lg shadow-blue-500/25 hover:bg-blue-700 hover:shadow-blue-500/40 transition-all duration-200 active:scale-95"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-medium rounded-xl shadow-lg shadow-primary/25 hover:bg-primary-600 hover:shadow-primary/40 transition-all duration-200 active:scale-95"
             onClick={() => handleButtonClick('/login')}
             aria-label="前往登录"
           >
@@ -63,7 +63,7 @@ export default function Page() {
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 active:scale-95"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 active:scale-95"
             onClick={() => handleButtonClick('/register')}
             aria-label="前往注册"
           >

@@ -173,7 +173,7 @@ const Page = observer(() => {
 
   return (
     isLoading ? <div>加载中...</div> :
-      <div className="py-4 px-6 bg-[#F7F8FA] min-h-screen">
+      <div className="py-4 px-6 bg-page min-h-screen">
         <div className="mx-auto">
           {/* 用户头部卡片 */}
           <Card
@@ -193,12 +193,12 @@ const Page = observer(() => {
                 <div className="relative -mt-16">
                   <Avatar
                     size={80}
-                    className="border-4 border-white shadow-lg bg-cover bg-center "
-                    style={{
-                      backgroundImage: _userInfo?.avatar
-                        ? `url(${_userInfo.avatar})`
-                        : undefined,
-                    }}
+                    className="border-4 border-white shadow-lg bg-cover bg-center rounded-full"
+                    style={
+                      _userInfo?.avatar
+                        ? { backgroundImage: `url(${_userInfo.avatar})` }
+                        : undefined
+                    }
                   >
                     {!_userInfo?.avatar && _userInfo?.username?.charAt(0)}
                   </Avatar>

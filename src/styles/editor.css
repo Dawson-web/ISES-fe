@@ -73,10 +73,11 @@
 
   /* Blockquotes */
   blockquote {
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid #165dff;
     margin: 1.5rem 0;
-    padding: 0 1rem;
-    background-color: #dbeafe;
+    padding: 0.75rem 1rem;
+    background-color: #eff6ff;
+    border-radius: 0 8px 8px 0;
   }
 
   /* Horizontal Rule */
@@ -88,17 +89,17 @@
 
   /* Code and Preformatted Text */
   code {
-    background-color: #d8d8d8;
-    border-radius: 0.25rem;
-    color: #333;
+    background-color: #f2f3f5;
+    border-radius: 4px;
+    color: #1d2129;
     font-size: 0.9rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.15rem 0.4rem;
   }
 
   pre {
-    background-color: #2d2d2d;
-    border-radius: 0.5rem;
-    color: #fff;
+    background-color: #1e1e2e;
+    border-radius: 10px;
+    color: #cdd6f4;
     font-family: "Courier New", Courier, monospace;
     margin: 1.5rem 0;
     padding: 1rem;
@@ -121,11 +122,13 @@
 
   /* Links */
   a {
-    color: #007bff;
+    color: #165dff;
     text-decoration: none;
+    transition: opacity 0.2s ease;
   }
 
   a:hover {
+    opacity: 0.8;
     text-decoration: underline;
   }
 }

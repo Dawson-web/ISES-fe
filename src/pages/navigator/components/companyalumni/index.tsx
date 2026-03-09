@@ -16,7 +16,7 @@ const CompanyAlumni = () => {
 
 
 
-    return <div className="bg-white border border-gray-200 p-4 ">
+    return <div className="bg-white border border-gray-200 rounded-xl p-4 ">
         {/* 人脉列表 */}
         <div className="mb-4">
             <div className="flex items-center mb-4">
@@ -28,17 +28,13 @@ const CompanyAlumni = () => {
                     <>
                         <div
                             key={alumni.id}
-                            className=" flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                            style={{ border: '1px solid transparent' }}
+                            className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 border border-transparent transition-colors cursor-pointer"
                             onClick={() => {
                                 navigate(`/navigator/profile?id=${alumni.id}`)
                             }}
                         >
                             <div className="flex items-center space-x-3 w-full">
-                                <Avatar size={32} style={{
-                                    color: 'white',
-                                    fontWeight: 'bold'
-                                }}>
+                                <Avatar size={32} className="text-white font-bold">
                                     {alumni.avatar ? <img src={alumni.avatar} alt="avatar" /> : alumni.username.charAt(0)}
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
@@ -47,10 +43,7 @@ const CompanyAlumni = () => {
                                         <Tag
                                             size="small"
                                             color={alumni.online ? 'green' : 'gray'}
-                                            style={{
-                                                borderRadius: '12px',
-                                                fontSize: '10px'
-                                            }}
+                                            className="!rounded-xl !text-[10px]"
                                         >
                                             {alumni.online ? '在线' : '离线'}
                                         </Tag>
@@ -68,7 +61,7 @@ const CompanyAlumni = () => {
                         status='404'
                         subTitle='个人信息未完善，或暂未发现人脉'
                         extra={
-                            <Text className='text-blue-500 cursor-pointer' onClick={() => {
+                            <Text className='text-primary cursor-pointer' onClick={() => {
                                 navigate('/navigator/profile')
                             }}>
                                 前往填写

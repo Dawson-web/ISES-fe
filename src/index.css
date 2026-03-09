@@ -1,20 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ===== 全局基础样式 ===== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    color: #1d2129;
+    background-color: #f7f8fa;
+  }
+
+  ::selection {
+    background-color: rgba(22, 93, 255, 0.16);
+    color: #165dff;
+  }
+}
+
+/* ===== 滚动条（WebKit） ===== */
 ::-webkit-scrollbar {
-    height: 5px;
-    width: 0px;
-    background: #fff3;
-    -webkit-border-radius: 1ex;
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox 滚动条 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* ===== 通用交互过渡 ===== */
+@layer utilities {
+  .transition-default {
+    @apply transition-all duration-200 ease-in-out;
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #ececec;
-    -webkit-border-radius: 1ex;
-  }
-  
-  ::-webkit-scrollbar-corner {
-    background: #fff3;
-  }
-  
-  
+}

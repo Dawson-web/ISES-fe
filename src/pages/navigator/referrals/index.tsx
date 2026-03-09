@@ -52,13 +52,13 @@ const ReferralsPage = () => {
     const meta = item.metadata || {};
     return (
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-        <span className="rounded-full bg-[#f3f6fb] px-2 py-1">
+        <span className="rounded-full bg-gray-100 px-2 py-1">
           浏览 {meta.viewCount ?? 0}
         </span>
-        <span className="rounded-full bg-[#f3f6fb] px-2 py-1">
+        <span className="rounded-full bg-gray-100 px-2 py-1">
           点赞 {meta.likeCount ?? 0}
         </span>
-        <span className="rounded-full bg-[#f3f6fb] px-2 py-1">
+        <span className="rounded-full bg-gray-100 px-2 py-1">
           评论 {meta.commentCount ?? 0}
         </span>
         <span className="text-gray-400">
@@ -108,8 +108,8 @@ const ReferralsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f6fb]">
-      <div className="bg-gradient-to-r from-[#0f5fff] via-[#3c83ff] to-[#6aa5ff] text-white">
+    <div className="min-h-screen bg-page">
+      <div className="bg-gradient-to-r from-primary-700 via-primary to-primary-400 text-white">
         <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="space-y-1">
@@ -174,7 +174,7 @@ const ReferralsPage = () => {
               items.map((item) => (
                 <div
                   key={item.id}
-                  className="relative overflow-hidden rounded-xl border border-[#e8ecf3] bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#3c83ff] hover:shadow-[0_8px_20px_rgba(22,93,255,0.1)]"
+                  className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card transition hover:-translate-y-0.5 hover:border-primary hover:shadow-card-hover"
                   onClick={() => handleCardClick(item.id)}
                 >
                   <div className="relative flex items-center gap-3 p-3.5">
@@ -194,13 +194,13 @@ const ReferralsPage = () => {
                     </div>
                     <div className="flex flex-col items-end gap-2 text-right">
                       <div className="flex items-center gap-1 text-[11px] text-gray-500">
-                        <span className="rounded-full bg-[#f3f6fb] px-2 py-0.5">
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5">
                           浏览 {item.metadata?.viewCount ?? 0}
                         </span>
-                        <span className="rounded-full bg-[#f3f6fb] px-2 py-0.5">
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5">
                           赞 {item.metadata?.likeCount ?? 0}
                         </span>
-                        <span className="rounded-full bg-[#f3f6fb] px-2 py-0.5">
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5">
                           评 {item.metadata?.commentCount ?? 0}
                         </span>
                       </div>

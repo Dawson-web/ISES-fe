@@ -1,7 +1,7 @@
 import { Calendar, BookOpen, Users, Bell } from 'lucide-react';
 
 const UPCOMING_FEATURES = [
-  { icon: <Calendar size={24} className="text-blue-500" />, title: '校园日历', desc: '秋招/春招时间线、宣讲会日程一览' },
+  { icon: <Calendar size={24} className="text-primary" />, title: '校园日历', desc: '秋招/春招时间线、宣讲会日程一览' },
   { icon: <BookOpen size={24} className="text-green-500" />, title: '面经题库', desc: '热门公司面试经验、笔试真题汇总' },
   { icon: <Users size={24} className="text-purple-500" />, title: '学长学姐', desc: '找到同校校友，获取求职建议' },
   { icon: <Bell size={24} className="text-orange-500" />, title: '岗位提醒', desc: '订阅目标公司，新岗位实时推送' },
@@ -9,12 +9,12 @@ const UPCOMING_FEATURES = [
 
 const Campus = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-6">
+    <div className="min-h-screen bg-page py-8 px-6">
       <div className="max-w-3xl mx-auto">
         {/* 标题区域 */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 text-xs font-medium rounded-full mb-4">
-            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-50 text-primary text-xs font-medium rounded-full mb-4">
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
             功能开发中
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">校园频道</h1>

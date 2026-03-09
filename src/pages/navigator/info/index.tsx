@@ -107,7 +107,7 @@ const Info = () => {
       width: 80,
       minWidth: 0, // 始终显示
       render: (_: any, record: ICompany) => (
-        <div className="company-cell hover:cursor-pointer hover:text-blue-600" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
+        <div className="company-cell hover:cursor-pointer hover:text-primary" onClick={() => navigate(`/navigator/info/company?companyId=${record.id}`)}>
           <img src={apiConfig.baseUrl + record.logo || ''} alt={record.name} className="company-logo" />
           <span className=' line-clamp-1'>{record.name}</span>
         </div>
@@ -176,7 +176,7 @@ const Info = () => {
       dataIndex: 'metadata',
       minWidth: 1400, // 窗口宽度 >= 1400px 时显示
       render: (metadata: any) => (
-        <span className="schedule-cell line-clamp-1 hover:cursor-pointer text-blue-600" onClick={() => window.open(metadata.website, '_blank')}>
+        <span className="schedule-cell line-clamp-1 hover:cursor-pointer text-primary" onClick={() => window.open(metadata.website, '_blank')}>
           {metadata.website}
         </span>
       ),
@@ -224,7 +224,7 @@ const Info = () => {
                   <span className="search-tags-title mr-4 text-nowrap">{item.label}:</span>
                   {item.tags.map((tag, index) => (
                     <Tag key={index}
-                      className={`${filter[item.key].find((item: string) => item === tag) || searchValue === tag ? 'bg-blue-600 text-white' : ''} cursor-default ml-2`}
+                      className={`${filter[item.key].find((item: string) => item === tag) || searchValue === tag ? 'bg-primary text-white' : ''} cursor-default ml-2`}
                       onClick={() => {
                         if (item.key === 'companyName') {
                           if (searchValue === tag) {

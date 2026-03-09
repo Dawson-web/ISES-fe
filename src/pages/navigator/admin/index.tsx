@@ -577,7 +577,7 @@ const Page = observer(() => {
             width: 200,
             render: (metadata: any) =>
               metadata?.website ? (
-                <a href={metadata.website} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                <a href={metadata.website} target="_blank" rel="noopener noreferrer" className="text-primary">
                   {metadata.website}
                 </a>
               ) : (
@@ -689,7 +689,7 @@ const Page = observer(() => {
         width: 140,
         render: (file: string) =>
           file ? (
-            <a href={apiConfig.baseUrl + file} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+            <a href={apiConfig.baseUrl + file} target="_blank" rel="noopener noreferrer" className="text-primary">
               查看
             </a>
           ) : (
@@ -769,7 +769,7 @@ const Page = observer(() => {
   }
 
   return (
-    <div className="px-6 py-4 space-y-4 bg-[#f7f8fa]">
+    <div className="px-6 py-4 space-y-4 bg-page">
       <div className="flex items-center justify-between">
         <div>
           <Title heading={3} style={{ margin: 0 }}>

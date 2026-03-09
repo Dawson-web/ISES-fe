@@ -36,7 +36,7 @@ const SummaryCard = ({
   suffix?: string;
 }) => (
   <Card
-    className="h-full rounded-lg border border-[#e7ebf3] bg-white shadow-sm transition-transform duration-150 hover:-translate-y-0.5"
+    className="h-full rounded-xl border border-gray-200 bg-white shadow-card transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-card-hover"
     bodyStyle={{ padding: 14 }}
   >
     <Space direction="vertical" size={6} className="w-full">
@@ -99,7 +99,7 @@ const ChartCard = ({
   children: React.ReactNode;
 }) => (
   <Card
-    className="h-full rounded-lg border border-[#e7ebf3] bg-white shadow-sm"
+    className="h-full rounded-xl border border-gray-200 bg-white shadow-card"
     bodyStyle={{ padding: 14 }}
   >
     <div className="flex items-start justify-between gap-3 mb-2">
@@ -147,7 +147,7 @@ const StatsDashboard = observer(() => {
   );
 
   const trendBlocks: { title: string; key: TrendKey; color: string }[] = [
-    { title: "新增用户", key: "users", color: "#2563eb" },
+    { title: "新增用户", key: "users", color: "#165dff" },
     { title: "内容发布", key: "contents", color: "#0ea5e9" },
     { title: "评论", key: "comments", color: "#f97316" },
     { title: "私信消息", key: "messages", color: "#a855f7" },
@@ -208,7 +208,7 @@ const StatsDashboard = observer(() => {
   }, [data?.trends, trendBlocks]);
 
   const contentTypeOption: echarts.EChartsOption = useMemo(() => {
-    const pieColors = ["#2563eb", "#0ea5e9", "#22c55e", "#f59e0b", "#ec4899", "#a855f7"];
+    const pieColors = ["#165dff", "#0ea5e9", "#22c55e", "#f59e0b", "#ec4899", "#a855f7"];
     return {
       tooltip: { trigger: "item" },
       legend: { top: "2%", textStyle: { color: "#4b5563" } },
@@ -330,7 +330,7 @@ const StatsDashboard = observer(() => {
   }
 
   return (
-    <div className="px-6 py-5 space-y-4 bg-[#f4f6fb]">
+    <div className="px-6 py-5 space-y-4 bg-page">
       <div className="flex items-center justify-between">
         <div>
           <Title heading={3} style={{ margin: 0 }}>
@@ -357,7 +357,7 @@ const StatsDashboard = observer(() => {
 
       <Skeleton loading={isLoading} animation>
         <Card
-          className="rounded-xl border border-[#e7ebf3] bg-white shadow-sm"
+          className="rounded-xl border border-gray-200 bg-white shadow-card"
           bodyStyle={{ padding: 16 }}
         >
           <div className="flex items-center justify-between mb-3">

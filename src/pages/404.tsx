@@ -25,7 +25,7 @@ const Page = () => {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors active:scale-95"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-medium rounded-xl hover:bg-primary-600 transition-colors active:scale-95"
             onClick={() => navigate('/')}
             aria-label="返回首页"
           >
@@ -34,7 +34,7 @@ const Page = () => {
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-6 py-2.5 text-gray-600 font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors active:scale-95"
+            className="inline-flex items-center gap-2 px-6 py-2.5 text-gray-600 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors active:scale-95"
             onClick={() => navigate(-1)}
             aria-label="返回上一页"
           >

@@ -76,7 +76,7 @@ export default function Page() {
 
       <AppLogo size="18px" title="ISES" subtitle="找回" />
 
-      <div className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col items-center gap-2 overflow-hidden rounded-md dark:bg-theme_dark p-4 shadow-md mt-4">
+      <div className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col items-center gap-2 overflow-hidden rounded-xl dark:bg-theme_dark p-4 shadow-card mt-4">
         <form
           className="w-full"
           onSubmit={handleSubmit}
@@ -152,7 +152,7 @@ export default function Page() {
 
         {stage === "done" && (
           <div className="flex w-full flex-col items-center p-8">
-            <Check size={48} className="text-blue-500" />
+            <Check size={48} className="text-primary" />
             <div className="mt-2 font-light">密码重置成功</div>
             <Link to="/">
               <Button type="primary" className="mt-8">
@@ -162,7 +162,7 @@ export default function Page() {
           </div>
         )}
 
-        <div className="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-primary"></div>
       </div>
     </div>
   );

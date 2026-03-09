@@ -1,6 +1,6 @@
 .editor-container {
   min-height: 100vh;
-  background-color: #F7F8FA;
+  background-color: #f7f8fa;
 }
 
 /* 编辑器头部 */
@@ -13,6 +13,7 @@
   background: var(--color-bg-2);
   border-bottom: 1px solid var(--color-border-2);
   backdrop-filter: blur(8px);
+  border-radius: 12px 12px 0 0;
 }
 
 .header-content {
@@ -63,7 +64,7 @@
   font-size: 13px !important;
   padding: 0 12px !important;
   height: 28px !important;
-  border-radius: 4px !important;
+  border-radius: 6px !important;
 }
 
 /* 按钮样式 */
@@ -71,7 +72,7 @@
   width: 32px !important;
   height: 32px !important;
   padding: 0 !important;
-  border-radius: 4px !important;
+  border-radius: 6px !important;
 }
 
 /* 编辑器主体 */
@@ -79,6 +80,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  border-radius: 0 0 12px 12px;
 }
 
 /* 工具栏 */
@@ -86,7 +88,7 @@
   background: var(--color-bg-2);
   border: 1px solid var(--color-border-2);
   border-bottom: none;
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -126,7 +128,7 @@
   background: var(--color-bg-2);
   border: 1px solid var(--color-border-2);
   border-top: none;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 10px 10px;
   min-height: calc(100vh - 200px);
 }
 
@@ -160,6 +162,6 @@
   color: var(--color-text-3);
   background: var(--color-bg-2);
   padding: 4px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--color-border-2);
-} 
+}

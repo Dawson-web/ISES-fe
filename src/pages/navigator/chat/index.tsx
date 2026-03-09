@@ -87,8 +87,8 @@ const Page = observer(() => {
 
 
   return (
-    <div className="bg-[#f7f8fa] sm:px-6 sm:py-4 h-full">
-      <div className="w-full flex flex-row overflow-y-auto h-full  bg-white shadow-md ">
+    <div className="bg-page sm:px-6 sm:py-4 h-full">
+      <div className="w-full flex flex-row overflow-y-auto h-full bg-white shadow-card rounded-xl overflow-hidden">
         <div
           className={clsx(
             "flex flex-col h-full overflow-y-scroll border-r",

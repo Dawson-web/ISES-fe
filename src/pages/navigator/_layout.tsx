@@ -135,7 +135,7 @@ const _Layout = () => {
       <Layout>
         <Content>
           {isMobile() && !collapsed ? (
-            <div className="relative h-full w-full flex items-center justify-center bg-gray-50">
+            <div className="relative h-full w-full flex items-center justify-center bg-page">
               <div className="text-center text-gray-400 px-8">
                 <p className="text-lg font-medium mb-2">请收起侧边栏</p>
                 <p className="text-sm">点击左侧箭头收起菜单后查看内容</p>

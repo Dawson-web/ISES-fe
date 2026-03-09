@@ -71,7 +71,7 @@ export default function Page() {
 
       <form
         onSubmit={handleSubmit}
-        className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col gap-4 overflow-hidden rounded-md p-4 shadow-md mt-4"
+        className="relative flex w-[30vw] min-w-[320px] max-w-[400px] flex-col gap-4 overflow-hidden rounded-xl p-4 shadow-card mt-4"
       >
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-600">邮箱</label>
@@ -111,7 +111,7 @@ export default function Page() {
             登录
           </Button>
 
-        <div className="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
+        <div className="absolute inset-x-0 top-0 h-1 bg-primary"></div>
       </form>
     </div>
   );

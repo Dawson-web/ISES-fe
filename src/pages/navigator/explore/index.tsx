@@ -46,7 +46,7 @@ export default function ArticleList() {
 
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="min-h-screen bg-page">
       {/* 头部搜索区域 */}
       <div className="bg-white dark:bg-[#232324] border-b border-[#E5E6E8] dark:border-[#333335] sticky top-0 z-10">
         <div className=" mx-auto px-6 py-3">
@@ -105,7 +105,7 @@ export default function ArticleList() {
                   {articles.map((article: IArticle) => (
                     <Grid.Col key={article.id} span={24}>
                       <Card
-                        className="group hover:bg-[#F8FAFD] dark:hover:bg-[#2B2B2D] transition-colors cursor-pointer border-none rounded-none"
+                        className="group hover:bg-primary-50/50 dark:hover:bg-[#2B2B2D] transition-colors cursor-pointer border-none rounded-none"
                         onClick={() => handleArticleClick(article.id)}
                       >
                         <div className="flex gap-4">
@@ -140,18 +140,12 @@ export default function ArticleList() {
                             <div className="flex items-center gap-2 mb-2">
                               <Title
                                 heading={5}
-                                className="!m-0 !text-[16px] !font-medium group-hover:text-[#1e80ff] transition-colors line-clamp-1"
+                                className="!m-0 !text-[16px] !font-medium group-hover:text-primary transition-colors line-clamp-1"
                               >
                                 {article.title}
                               </Title>
                               <Tag
-                                style={{
-                                  border: 'none',
-                                  padding: '0 8px',
-                                  height: '20px',
-                                  fontSize: '12px',
-                                  borderRadius: '10px'
-                                }}
+                                className="!border-none !px-2 !h-5 !text-xs !rounded-full"
                                 color={LifeContentTypeColor[article.contentType as keyof typeof LifeContentTypeColor]}
                               >
                                 {article.contentType}
@@ -193,7 +187,7 @@ export default function ArticleList() {
                           subTitle={<>
                             换个关键词试试，或者
                             <Text
-                              className="text-[#1e80ff] hover:text-[#1e70ee] text-sm ml-1 cursor-pointer"
+                              className="text-primary hover:text-primary-600 text-sm ml-1 cursor-pointer"
                               onClick={() => navigate('/navigator/publish')}
                             >
                               发布相关内容

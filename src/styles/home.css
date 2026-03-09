@@ -3,7 +3,14 @@
 /* 搜索框样式 */
 .search-input .arco-input-wrapper {
   border-radius: 28px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(22, 93, 255, 0.08) !important;
+  border: 1px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+}
+
+.search-input .arco-input-wrapper:focus-within {
+  border-color: #165dff !important;
+  box-shadow: 0 4px 16px rgba(22, 93, 255, 0.15) !important;
 }
 
 .search-input .arco-input {
@@ -15,7 +22,7 @@
 
 .search-input .arco-input-search-button {
   border-radius: 0 28px 28px 0 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #165dff 0%, #3b82f6 100%) !important;
   border: none !important;
 }
 
@@ -24,24 +31,26 @@
   border-radius: 8px !important;
   margin: 0 4px !important;
   border: 1px solid #e5e7eb !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.2s ease !important;
 }
 
 .modern-pagination .arco-pagination-item:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px) !important;
+  border-color: #165dff !important;
+  color: #165dff !important;
+  box-shadow: 0 2px 8px rgba(22, 93, 255, 0.1) !important;
 }
 
 .modern-pagination .arco-pagination-item-active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: #165dff !important;
   border: none !important;
   color: white !important;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(22, 93, 255, 0.25) !important;
 }
 
 .modern-pagination .arco-pagination-item-active:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3) !important;
 }
 
 /* 文章卡片悬停动画 */
@@ -50,8 +59,8 @@
 }
 
 .article-card-hover:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 24px rgba(22, 93, 255, 0.08) !important;
 }
 
 /* 标签动画 */
@@ -60,8 +69,8 @@
 }
 
 .tag-hover:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* 背景动画 */
@@ -92,15 +101,15 @@
 
 /* 玻璃态效果 */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* 渐变文字 */
 .gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #165dff 0%, #60a5fa 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -134,8 +143,8 @@
   .search-input .arco-input-wrapper {
     border-radius: 16px !important;
   }
-  
+
   .search-input .arco-input-search-button {
     border-radius: 0 16px 16px 0 !important;
   }
-} 
+}

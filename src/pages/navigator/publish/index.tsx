@@ -264,7 +264,7 @@ export default function ArticleEditPage() {
           <main className="editor-main bg-white">
             <div>
               <div className="mb-6">
-                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-[#165DFF]">
+                <div className="text-base font-medium text-gray-800 mb-4 pl-3 border-l-4 border-primary">
                   文章信息
                 </div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
