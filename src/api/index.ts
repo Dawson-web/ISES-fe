@@ -1,54 +1,75 @@
-import axios from "axios";
-import { apiConfig } from "../config";
-import { getValidToken } from "./token";
+import axios from 'axios';
+import { apiConfig } from '../config';
+import { getValidToken } from './token';
+
+const ERROR_MESSAGES: Record<number, string> = {
+  400: '请求参数有误',
+  401: '登录已过期，请重新登录',
+  403: '暂无权限访问',
+  404: '请求的资源不存在',
+  405: '请求方法不被允许',
+  408: '请求超时',
+  415: '不支持的媒体类型',
+  429: '请求过于频繁，请稍后再试',
+  500: '服务器内部错误',
+  502: '网关错误',
+  503: '服务暂不可用',
+  504: '网关超时',
+};
 
 export const $axios = axios.create({
   baseURL: apiConfig.baseUrl,
-  timeout: 5000,
+  timeout: 15000,
 });
 
+// 请求拦截器
 $axios.interceptors.request.use(
   (config) => {
     const url = config.url;
 
     if (url && !apiConfig.unProtectedUrls.some((x) => url.startsWith(x))) {
-      config.headers.token = getValidToken();
+      const token = getValidToken();
+      if (token) {
+        config.headers.token = token;
+      }
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
+// 响应拦截器
 $axios.interceptors.response.use(
   (response) => {
-    const code = response.status; // 注意这里使用 response.status 获取 HTTP 状态码
-    
-    switch (true) {
-      case code >= 200 && code < 300: {
-        if (!response.data.status) {
-          return Promise.reject(new Error(`${response.data.message}`));
-        }
-        return response;
-      }
-      case code === 400: // Bad Request
-        return Promise.reject(new Error(`请求错误: ${code}`));
-      case code === 401: // Unauthorized
-        return Promise.reject(new Error(`未授权: ${code}`));
-      case code === 403: // Forbidden
-        return Promise.reject(new Error(`禁止访问: ${code}`));
-      case code === 404: // Not Found
-        return Promise.reject(new Error(`未找到资源: ${code}`));
-      case code === 405: // Method Not Allowed
-        return Promise.reject(new Error(`方法不允许: ${code}`));
-      case code === 415: // Unsupported Media Type
-        return Promise.reject(new Error(`不支持的媒体类型: ${code}`));
-      case code >= 400 && code < 500:
-        return Promise.reject(new Error(`客户端错误: ${code}`));
-      case code >= 500 && code < 600:
-        return Promise.reject(new Error(`服务器错误: ${code}`));
-      default:
-        return Promise.reject(new Error(`未知错误: ${code}`));
+    // 业务状态码检查
+    if (!response.data.status) {
+      return Promise.reject(new Error(response.data.message || '请求失败'));
     }
+    return response;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    if (error.response) {
+      const { status } = error.response;
+      const message = ERROR_MESSAGES[status] || `请求失败 (${status})`;
+
+      // 401 自动清除 token 并跳转登录页
+      if (status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('uid');
+        // 避免在登录页重复跳转
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+      }
+
+      return Promise.reject(new Error(message));
+    }
+
+    // 网络错误 / 超时
+    if (error.code === 'ECONNABORTED') {
+      return Promise.reject(new Error('请求超时，请检查网络后重试'));
+    }
+
+    return Promise.reject(new Error('网络异常，请检查网络连接'));
+  },
 );

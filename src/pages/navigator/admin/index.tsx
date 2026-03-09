@@ -163,7 +163,6 @@ const Page = observer(() => {
       }).then((res) => res.data),
     enabled: userStore.role === 2,
   });
-  console.log(123, certificationsData?.data);
   const { mutate: updateCompany, isPending: updatingCompany } = useMutation({
     mutationFn: (payload: { id: string; data: Partial<ICompany> }) =>
       updateAdminCompanyApi(payload.id, payload.data),

@@ -1,142 +1,129 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { Layout, Menu, Avatar } from '@arco-design/web-react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { Layout, Menu, Avatar, Spin } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BarChart3, CheckCircle, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness } from 'lucide-react';
+import { BarChart3, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import userStore from '@/store/User';
-
 
 const Sider = Layout.Sider;
 const Content = Layout.Content;
 const MenuItem = Menu.Item;
 
-type MenuItemConfig = { key: string; icon: ReactNode; label: string; adminOnly?: boolean };
+interface MenuItemConfig {
+  key: string;
+  icon: ReactNode;
+  label: string;
+  adminOnly?: boolean;
+}
 
 const DEFAULT_MENU_LIST: MenuItemConfig[] = [
-  {
-    key: '/navigator',
-    icon: <Compass size={16} />,
-    label: '首页',
-  },
-  {
-    key: '/navigator/publish',
-    icon: <SquarePlus size={16} />,
-    label: '发布',
-  },
-  {
-    key: '/navigator/explore',
-    icon: <House size={16} />,
-    label: '发现',
-  },
-  {
-    key: '/navigator/referrals',
-    icon: <BriefcaseBusiness size={16} />,
-    label: '岗位内推',
-  },
-  {
-    key: '/navigator/info',
-    icon: <Coffee size={16} />,
-    label: '爆料',
-  },
-  {
-    key: '/navigator/chat',
-    icon: <MessageSquareText size={16} />,
-    label: '消息',
-  },
-  {
-    key: '/navigator/admin',
-    icon: <ShieldCheck size={16} />,
-    label: '管理员',
-    adminOnly: true,
-  },
-  {
-    key: '/navigator/dashboard',
-    icon: <BarChart3 size={16} />,
-    label: '数据大盘',
-    adminOnly: true,
-  },
+  { key: '/navigator', icon: <Compass size={16} />, label: '首页' },
+  { key: '/navigator/publish', icon: <SquarePlus size={16} />, label: '发布' },
+  { key: '/navigator/explore', icon: <House size={16} />, label: '发现' },
+  { key: '/navigator/referrals', icon: <BriefcaseBusiness size={16} />, label: '岗位内推' },
+  { key: '/navigator/info', icon: <Coffee size={16} />, label: '爆料' },
+  { key: '/navigator/chat', icon: <MessageSquareText size={16} />, label: '消息' },
+  { key: '/navigator/admin', icon: <ShieldCheck size={16} />, label: '管理员', adminOnly: true },
+  { key: '/navigator/dashboard', icon: <BarChart3 size={16} />, label: '数据大盘', adminOnly: true },
 ];
 
 const _Layout = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 600);
   const navigate = useNavigate();
   const location = useLocation();
-  let menuList = DEFAULT_MENU_LIST;
 
-  const handleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
+  const handleCollapsed = useCallback(() => {
+    setCollapsed((prev) => !prev);
+  }, []);
 
-  const monitorResizeChange = () => {
-    if (window.innerWidth < 600) {
-      setCollapsed(true);
-    } else {
-      setCollapsed(false);
-    }
-  }
-
+  // 带防抖的 resize 监听
   useEffect(() => {
-    window.addEventListener('resize', monitorResizeChange);
+    let timer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setCollapsed(window.innerWidth < 600);
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener('resize', monitorResizeChange);
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  if (userStore.role !== 2) {
-    menuList = menuList.filter((item) => !item.adminOnly);
-  }
+  // 根据角色过滤菜单
+  const menuList = userStore.role === 2
+    ? DEFAULT_MENU_LIST
+    : DEFAULT_MENU_LIST.filter((item) => !item.adminOnly);
 
-
-  //获取信息
-  useQuery({
-    queryKey: ["initUserStore"],
-    queryFn: () => getUserInfoApi().then((res) => {
-      userStore.setUserInfo(res.data.data);
-      return res.data.data
-    })
-      .catch(() => {
-        navigate('/login');
-      })
+  // 获取用户信息
+  const { isLoading } = useQuery({
+    queryKey: ['initUserStore'],
+    queryFn: () =>
+      getUserInfoApi().then((res) => {
+        userStore.setUserInfo(res.data.data);
+        return res.data.data;
+      }),
+    retry: 1,
+    staleTime: 1000 * 60 * 5,
   });
 
+  // 计算当前激活菜单
+  const selectedKeys = (() => {
+    const sorted = [...menuList].sort((a, b) => b.key.length - a.key.length);
+    const found = sorted.find((item) => location.pathname.startsWith(item.key));
+    return found ? [found.key] : [];
+  })();
 
   return (
-    <Layout className='h-screen w-full'>
+    <Layout className="h-screen w-full">
       <Sider
         collapsed={collapsed}
         onCollapse={handleCollapsed}
         collapsible
         trigger={collapsed ? <IconCaretRight fontSize={20} /> : <IconCaretLeft fontSize={20} />}
-        breakpoint='xl'
+        breakpoint="xl"
       >
-        <div className='logo' />
-        <Menu
-          selectedKeys={(() => {
-            // 按路径长度降序排序，确保更具体的路径优先匹配
-            const sortedMenuList = [...menuList].sort((a, b) => b.key.length - a.key.length);
-            const foundItem = sortedMenuList.find((item) => location.pathname.startsWith(item.key));
-            return foundItem ? [foundItem.key] : [];
-          })()}
-        >
-          <div key='avatar' className='flex justify-center items-center my-4 cursor-pointer' onClick={() => {
-            navigate('/navigator/profile');
-          }}>
-            <Avatar size={collapsed ? 28 : 32}>
-              <img src={userStore.avatar} alt="avatar" />
-            </Avatar>
+        <div className="logo" />
+        <Menu selectedKeys={selectedKeys}>
+          {/* 头像区域 */}
+          <div
+            key="avatar"
+            className="flex justify-center items-center my-4 cursor-pointer"
+            onClick={() => navigate('/navigator/profile')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') navigate('/navigator/profile');
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label="查看个人资料"
+          >
+            {isLoading ? (
+              <Spin size={20} />
+            ) : (
+              <Avatar size={collapsed ? 28 : 32}>
+                {userStore.avatar ? (
+                  <img src={userStore.avatar} alt="头像" />
+                ) : (
+                  userStore.username?.charAt(0) || 'U'
+                )}
+              </Avatar>
+            )}
           </div>
+
           {menuList.map((item) => (
             <MenuItem
               key={item.key}
-              className='text-md flex items-center justify-between gap-2 h-10'
-              onClick={() => {
-                navigate(`${item.key}`);
-              }}>
-              <div className='flex items-center gap-4'>
+              className="text-md flex items-center justify-between gap-2 h-10"
+              onClick={() => navigate(item.key)}
+            >
+              <div className="flex items-center gap-4">
                 {item.icon}
                 {item.label}
               </div>
@@ -144,32 +131,23 @@ const _Layout = () => {
           ))}
         </Menu>
       </Sider>
-      <Layout>
-        <Layout>
-          <Content>
-            {isMobile() && !collapsed ? (
-              <div className='relative h-full w-full overflow-hidden '>
-                {/* 主要内容 */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-8">
 
-                  {/* 装饰性图片 */}
-                  <div className="absolute bottom-0 right-0 w-4/5 ">
-                    <img
-                      src="https://s1.aigei.com/prevfiles/e9376421f6f741c095c88c03a7bb4138.gif?e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:FYxLbRF0IxOn_oHJMnz2o0UWwsw="
-                      className='w-full h-auto object-contain'
-                      alt="ISES动画"
-                    />
-                  </div>
-                </div>
+      <Layout>
+        <Content>
+          {isMobile() && !collapsed ? (
+            <div className="relative h-full w-full flex items-center justify-center bg-gray-50">
+              <div className="text-center text-gray-400 px-8">
+                <p className="text-lg font-medium mb-2">请收起侧边栏</p>
+                <p className="text-sm">点击左侧箭头收起菜单后查看内容</p>
               </div>
-            ) : (
-              <Outlet />
-            )}
-          </Content>
-        </Layout>
+            </div>
+          ) : (
+            <Outlet />
+          )}
+        </Content>
       </Layout>
     </Layout>
   );
-}
+};
 
 export default _Layout;

@@ -82,7 +82,6 @@ export default function ArticleEditPage() {
       tags: string[];
     }>
   >([]);
-  console.log(tag)
   //调用钩子
   const { importDraft, deleteDraft, fetchAllDrafts, toSaveDraft, lastId } =
     useDraft({

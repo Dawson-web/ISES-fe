@@ -194,7 +194,7 @@ export default function ArticleList() {
                             换个关键词试试，或者
                             <Text
                               className="text-[#1e80ff] hover:text-[#1e70ee] text-sm ml-1 cursor-pointer"
-                              onClick={() => navigate('/articles/edit')}
+                              onClick={() => navigate('/navigator/publish')}
                             >
                               发布相关内容
                             </Text>

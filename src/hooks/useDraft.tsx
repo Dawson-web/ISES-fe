@@ -125,7 +125,6 @@ export function useDraft({
   const importDraft = useCallback(
     async (Id: number) => {
       const draft = await getDraftById(Id);
-      console.log(draft);
       const { id, content, ...otherFields } = draft as any;
       if (draft) {
         setEditorContent(content);
@@ -135,7 +134,6 @@ export function useDraft({
           ...otherFields,
         };
         lastId.current = id;
-        console.log(lastValues.current);
       }
     },
     [setEditorContent, setOtherFields]

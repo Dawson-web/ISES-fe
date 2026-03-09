@@ -1,45 +1,50 @@
-import { Button } from "@arco-design/web-react";
-import Text from "@arco-design/web-react/es/Typography/text";
-import { createChatCompletion } from "@/api/ai";
-import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Home, ArrowLeft } from 'lucide-react';
 
 const Page = () => {
+  const navigate = useNavigate();
 
-    async function demo() {
-        const data = await createChatCompletion({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: "前端技术栈有哪些？只需要回答三个" }],
-            temperature: 0.7,
-        });
-        console.log(data);
-    }
-    useEffect(() => { demo() }, [])
-    return (
-        <div className="flex items-center sm:flex-row flex-col justify-center h-screen ">
-            {/* 装饰性图片 */}
-            <div className="w-3/5">
-                <img
-                    src="https://s1.aigei.com/prevfiles/e9376421f6f741c095c88c03a7bb4138.gif?e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:FYxLbRF0IxOn_oHJMnz2o0UWwsw="
-                    className='w-full h-auto object-contain'
-                    alt="ISES动画"
-                />
-            </div>
-            <div className="w-2/5">
-                <div className="flex items-center gap-2 flex-col sm:flex-row">
-                    <Text className="text-4xl font-bold text-nowrap">
-                        404
-                    </Text>
-                    <Text className="text-3xl font-bold text-nowrap">
-                        Page Not Found
-                    </Text>
-                </div>
-                <p className="text-gray-500 sm:text-xl text-base mt-4">
-                    你迷失在了神秘的角落，让小黑带你回家吧
-                </p>
-                <Button className=" font-bold text-lg mt-4 cursor-pointer text-theme_blue" onClick={() => location.pathname = '/'}>前往异世界 -&gt; 🚪</Button>
-            </div>
+  return (
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex flex-col items-center text-center px-6 max-w-md">
+        {/* 404 大字 */}
+        <div className="relative mb-6">
+          <span className="text-[120px] sm:text-[160px] font-black text-gray-100 leading-none select-none">
+            404
+          </span>
+          <span className="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl font-bold text-gray-800">
+            页面走丢了
+          </span>
         </div>
-    )
-}
+
+        <p className="text-gray-500 text-base sm:text-lg mb-8 leading-relaxed">
+          你迷失在了神秘的角落，让我们带你回去吧
+        </p>
+
+        {/* 按钮组 */}
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors active:scale-95"
+            onClick={() => navigate('/')}
+            aria-label="返回首页"
+          >
+            <Home size={16} />
+            返回首页
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-6 py-2.5 text-gray-600 font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors active:scale-95"
+            onClick={() => navigate(-1)}
+            aria-label="返回上一页"
+          >
+            <ArrowLeft size={16} />
+            返回上页
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Page;
