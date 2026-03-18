@@ -1,53 +1,71 @@
-import { Calendar, BookOpen, Users, Bell } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Typography } from '@arco-design/web-react';
+import { BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import InterviewList from './components/InterviewList';
+import InterviewForm from './components/InterviewForm';
+import InterviewStats from './components/InterviewStats';
 
-const UPCOMING_FEATURES = [
-  { icon: <Calendar size={24} className="text-primary" />, title: '校园日历', desc: '秋招/春招时间线、宣讲会日程一览' },
-  { icon: <BookOpen size={24} className="text-green-500" />, title: '面经题库', desc: '热门公司面试经验、笔试真题汇总' },
-  { icon: <Users size={24} className="text-purple-500" />, title: '学长学姐', desc: '找到同校校友，获取求职建议' },
-  { icon: <Bell size={24} className="text-orange-500" />, title: '岗位提醒', desc: '订阅目标公司，新岗位实时推送' },
-];
+const { Title, Text } = Typography;
 
 const Campus = () => {
+  const navigate = useNavigate();
+  const [formVisible, setFormVisible] = useState(false);
+
+  const handleViewDetail = useCallback(
+    (id: string) => {
+      navigate(`/navigator/campus/detail?id=${id}`);
+    },
+    [navigate],
+  );
+
+  const handleOpenForm = useCallback(() => {
+    setFormVisible(true);
+  }, []);
+
+  const handleCloseForm = useCallback(() => {
+    setFormVisible(false);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-page py-8 px-6">
-      <div className="max-w-3xl mx-auto">
-        {/* 标题区域 */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-50 text-primary text-xs font-medium rounded-full mb-4">
-            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-            功能开发中
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">校园频道</h1>
-          <p className="text-gray-500 text-base">
-            校园专属求职资源中心，正在紧锣密鼓地开发中
-          </p>
-        </div>
-
-        {/* 功能预览卡片 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {UPCOMING_FEATURES.map((feature) => (
-            <div
-              key={feature.title}
-              className="flex items-start gap-4 p-5 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg">
-                {feature.icon}
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-1">{feature.title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{feature.desc}</p>
-              </div>
+    <div className="min-h-screen bg-page">
+      {/* 顶部 Banner */}
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white">
+        <div className="mx-auto max-w-6xl px-6 py-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+              <BookOpen size={20} />
             </div>
-          ))}
-        </div>
-
-        {/* 底部提示 */}
-        <div className="text-center mt-10">
-          <p className="text-sm text-gray-400">
-            如果你有好的建议，欢迎在消息页反馈给我们
-          </p>
+            <div>
+              <span className="text-xs uppercase tracking-widest text-white/80">
+                Navigator · Campus
+              </span>
+              <Title heading={4} style={{ margin: 0, color: 'white' }}>
+                面经题库
+              </Title>
+            </div>
+          </div>
+          <Text style={{ color: 'rgba(255,255,255,0.8)' }} className="mt-1 block">
+            来自校友的真实面试经验，助你拿下心仪 Offer
+          </Text>
         </div>
       </div>
+
+      {/* 主体内容 */}
+      <div className="mx-auto max-w-6xl px-6 py-5 flex gap-5 md:flex-nowrap flex-wrap">
+        {/* 左侧列表区 */}
+        <div className="flex-1 min-w-0">
+          <InterviewList onViewDetail={handleViewDetail} onOpenForm={handleOpenForm} />
+        </div>
+
+        {/* 右侧统计看板 */}
+        <div className="w-full md:w-[300px] flex-shrink-0">
+          <InterviewStats onViewDetail={handleViewDetail} />
+        </div>
+      </div>
+
+      {/* 发布面经 Modal */}
+      <InterviewForm visible={formVisible} onClose={handleCloseForm} />
     </div>
   );
 };

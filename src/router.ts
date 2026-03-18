@@ -9,6 +9,11 @@ export type Path =
   | `/navigator`
   | `/navigator/admin`
   | `/navigator/campus`
+  | `/navigator/campus/components/InterviewCard`
+  | `/navigator/campus/components/InterviewForm`
+  | `/navigator/campus/components/InterviewList`
+  | `/navigator/campus/components/InterviewStats`
+  | `/navigator/campus/detail`
   | `/navigator/chat`
   | `/navigator/chat/components/AddFriend`
   | `/navigator/components/campuscalander`
