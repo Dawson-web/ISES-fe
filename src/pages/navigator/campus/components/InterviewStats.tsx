@@ -37,10 +37,10 @@ const InterviewStats = ({ onViewDetail }: InterviewStatsProps) => {
   return (
     <div className="space-y-4">
       {/* 热门面经 */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-          <Flame size={16} className="text-orange-500" />
-          <span className="text-[14px] font-semibold text-gray-800">热门面经</span>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
+          <Flame size={14} className="text-orange-500" />
+          <span className="text-[13px] font-medium text-gray-700">热门面经</span>
         </div>
 
         <Skeleton loading={hotLoading} animation text={{ rows: 5 }}>
@@ -99,10 +99,10 @@ const InterviewStats = ({ onViewDetail }: InterviewStatsProps) => {
       </div>
 
       {/* 统计看板 */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-          <BarChart3 size={16} className="text-blue-500" />
-          <span className="text-[14px] font-semibold text-gray-800">面经统计</span>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
+          <BarChart3 size={14} className="text-blue-500" />
+          <span className="text-[13px] font-medium text-gray-700">面经统计</span>
         </div>
 
         <Skeleton loading={statsLoading} animation text={{ rows: 4 }}>

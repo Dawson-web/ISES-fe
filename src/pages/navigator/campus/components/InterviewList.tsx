@@ -86,7 +86,7 @@ const InterviewList = ({ onViewDetail, onOpenForm }: InterviewListProps) => {
   return (
     <div className="space-y-4">
       {/* 搜索和筛选区域 */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
         <div className="flex items-center gap-3 flex-wrap">
           <Input
             allowClear
@@ -157,7 +157,7 @@ const InterviewList = ({ onViewDetail, onOpenForm }: InterviewListProps) => {
       {/* 面经卡片列表 */}
       <Skeleton loading={isLoading} animation>
         {items.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 py-16">
+          <div className="bg-white rounded-lg border border-gray-200 py-16">
             <Empty
               description={
                 hasActiveFilter

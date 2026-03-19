@@ -8,6 +8,7 @@ export type Path =
   | `/login`
   | `/navigator`
   | `/navigator/admin`
+  | `/navigator/alumni-network`
   | `/navigator/campus`
   | `/navigator/campus/components/InterviewCard`
   | `/navigator/campus/components/InterviewForm`
@@ -25,6 +26,7 @@ export type Path =
   | `/navigator/explore/components/hotlist`
   | `/navigator/info`
   | `/navigator/info/company`
+  | `/navigator/notifications`
   | `/navigator/profile`
   | `/navigator/publish`
   | `/navigator/referrals`

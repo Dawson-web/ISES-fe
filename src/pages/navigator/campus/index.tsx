@@ -29,25 +29,24 @@ const Campus = () => {
 
   return (
     <div className="min-h-screen bg-page">
-      {/* 顶部 Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white">
-        <div className="mx-auto max-w-6xl px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-              <BookOpen size={20} />
-            </div>
-            <div>
-              <span className="text-xs uppercase tracking-widest text-white/80">
-                Navigator · Campus
-              </span>
-              <Title heading={4} style={{ margin: 0, color: 'white' }}>
-                面经题库
-              </Title>
+      {/* 顶部区域 */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <BookOpen size={18} className="text-emerald-600" />
+              </div>
+              <div>
+                <Title heading={5} style={{ margin: 0 }}>
+                  面经题库
+                </Title>
+                <Text className="text-xs text-gray-400 mt-0.5 block">
+                  来自校友的真实面试经验
+                </Text>
+              </div>
             </div>
           </div>
-          <Text style={{ color: 'rgba(255,255,255,0.8)' }} className="mt-1 block">
-            来自校友的真实面试经验，助你拿下心仪 Offer
-          </Text>
         </div>
       </div>
 

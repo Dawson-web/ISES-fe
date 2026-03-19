@@ -4,7 +4,22 @@ import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BarChart3, Bell, BookOpen, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness, Network } from 'lucide-react';
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  Coffee,
+  Compass,
+  House,
+  MessageSquareText,
+  ShieldCheck,
+  SquarePlus,
+  BriefcaseBusiness,
+  Network,
+  GraduationCap,
+  Megaphone,
+  Settings,
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
 import { getUnreadCountApi } from '@/service/notification';
@@ -15,26 +30,74 @@ import { observer } from 'mobx-react-lite';
 const Sider = Layout.Sider;
 const Content = Layout.Content;
 const MenuItem = Menu.Item;
+const SubMenu = Menu.SubMenu;
 
-interface MenuItemConfig {
+// 单项菜单配置
+interface FlatMenuItemConfig {
+  type: 'item';
   key: string;
   icon: ReactNode;
   label: string;
   adminOnly?: boolean;
 }
 
+// 分组菜单配置
+interface GroupMenuItemConfig {
+  type: 'group';
+  key: string;
+  icon: ReactNode;
+  label: string;
+  adminOnly?: boolean;
+  children: Omit<FlatMenuItemConfig, 'type'>[];
+}
+
+type MenuItemConfig = FlatMenuItemConfig | GroupMenuItemConfig;
+
 const DEFAULT_MENU_LIST: MenuItemConfig[] = [
-  { key: '/navigator', icon: <Compass size={16} />, label: '首页' },
-  { key: '/navigator/publish', icon: <SquarePlus size={16} />, label: '发布' },
-  { key: '/navigator/explore', icon: <House size={16} />, label: '发现' },
-  { key: '/navigator/referrals', icon: <BriefcaseBusiness size={16} />, label: '岗位内推' },
-  { key: '/navigator/info', icon: <Coffee size={16} />, label: '爆料' },
-  { key: '/navigator/campus', icon: <BookOpen size={16} />, label: '校园' },
-  { key: '/navigator/alumni-network', icon: <Network size={16} />, label: '校友图谱' },
-  { key: '/navigator/chat', icon: <MessageSquareText size={16} />, label: '消息' },
-  { key: '/navigator/notifications', icon: <Bell size={16} />, label: '通知' },
-  { key: '/navigator/admin', icon: <ShieldCheck size={16} />, label: '管理员', adminOnly: true },
-  { key: '/navigator/dashboard', icon: <BarChart3 size={16} />, label: '数据大盘', adminOnly: true },
+  { type: 'item', key: '/navigator', icon: <Compass size={16} />, label: '首页' },
+  { type: 'item', key: '/navigator/publish', icon: <SquarePlus size={16} />, label: '发布' },
+  {
+    type: 'group',
+    key: 'group-discover',
+    icon: <House size={16} />,
+    label: '发现',
+    children: [
+      { key: '/navigator/explore', icon: <House size={14} />, label: '发现广场' },
+      { key: '/navigator/info', icon: <Coffee size={14} />, label: '爆料' },
+    ],
+  },
+  { type: 'item', key: '/navigator/referrals', icon: <BriefcaseBusiness size={16} />, label: '内推' },
+  {
+    type: 'group',
+    key: 'group-campus',
+    icon: <GraduationCap size={16} />,
+    label: '校园',
+    children: [
+      { key: '/navigator/campus', icon: <BookOpen size={14} />, label: '面经题库' },
+      { key: '/navigator/alumni-network', icon: <Network size={14} />, label: '校友图谱' },
+    ],
+  },
+  {
+    type: 'group',
+    key: 'group-interact',
+    icon: <Megaphone size={16} />,
+    label: '互动',
+    children: [
+      { key: '/navigator/chat', icon: <MessageSquareText size={14} />, label: '消息' },
+      { key: '/navigator/notifications', icon: <Bell size={14} />, label: '通知' },
+    ],
+  },
+  {
+    type: 'group',
+    key: 'group-admin',
+    icon: <Settings size={16} />,
+    label: '管理',
+    adminOnly: true,
+    children: [
+      { key: '/navigator/admin', icon: <ShieldCheck size={14} />, label: '管理面板' },
+      { key: '/navigator/dashboard', icon: <BarChart3 size={14} />, label: '数据大盘' },
+    ],
+  },
 ];
 
 const _Layout = observer(() => {
@@ -100,11 +163,32 @@ const _Layout = observer(() => {
     staleTime: 1000 * 60 * 5,
   });
 
+  // 收集所有叶子菜单项用于匹配
+  const allLeafItems = menuList.flatMap((item) =>
+    item.type === 'group' ? item.children : [item],
+  );
+
   // 计算当前激活菜单
   const selectedKeys = (() => {
-    const sorted = [...menuList].sort((a, b) => b.key.length - a.key.length);
-    const found = sorted.find((item) => location.pathname.startsWith(item.key));
+    const sorted = [...allLeafItems].sort((a, b) => b.key.length - a.key.length);
+    const found = sorted.find((leaf) => location.pathname.startsWith(leaf.key));
     return found ? [found.key] : [];
+  })();
+
+  // 计算展开的子菜单
+  const openKeys = (() => {
+    const keys: string[] = [];
+    menuList.forEach((item) => {
+      if (item.type === 'group') {
+        const hasActive = item.children.some((child) =>
+          location.pathname.startsWith(child.key),
+        );
+        if (hasActive) {
+          keys.push(item.key);
+        }
+      }
+    });
+    return keys;
   })();
 
   return (
@@ -117,7 +201,7 @@ const _Layout = observer(() => {
         breakpoint="xl"
       >
         <div className="logo" />
-        <Menu selectedKeys={selectedKeys}>
+        <Menu selectedKeys={selectedKeys} defaultOpenKeys={openKeys}>
           {/* 头像区域 */}
           <div
             key="avatar"
@@ -143,24 +227,64 @@ const _Layout = observer(() => {
             )}
           </div>
 
-          {menuList.map((item) => (
-            <MenuItem
-              key={item.key}
-              className="text-md flex items-center justify-between gap-2 h-10"
-              onClick={() => navigate(item.key)}
-            >
-              <div className="flex items-center gap-4">
-                {item.key === '/navigator/notifications' ? (
-                  <Badge count={notificationStore.unreadCount} dot={collapsed} offset={[4, -2]}>
-                    {item.icon}
-                  </Badge>
-                ) : (
-                  item.icon
-                )}
-                {item.label}
-              </div>
-            </MenuItem>
-          ))}
+          {menuList.map((item) => {
+            if (item.type === 'group') {
+              // 检查互动分组是否含有未读通知
+              const hasUnread = item.children.some(
+                (child) => child.key === '/navigator/notifications',
+              );
+
+              return (
+                <SubMenu
+                  key={item.key}
+                  title={
+                    <div className="flex items-center gap-3">
+                      {hasUnread && notificationStore.unreadCount > 0 ? (
+                        <Badge count={notificationStore.unreadCount} dot={collapsed} offset={[4, -2]}>
+                          {item.icon}
+                        </Badge>
+                      ) : (
+                        item.icon
+                      )}
+                      <span>{item.label}</span>
+                    </div>
+                  }
+                >
+                  {item.children.map((child) => (
+                    <MenuItem
+                      key={child.key}
+                      className="text-md flex items-center gap-2"
+                      onClick={() => navigate(child.key)}
+                    >
+                      <div className="flex items-center gap-3">
+                        {child.key === '/navigator/notifications' ? (
+                          <Badge count={notificationStore.unreadCount} dot offset={[4, -2]}>
+                            {child.icon}
+                          </Badge>
+                        ) : (
+                          child.icon
+                        )}
+                        {child.label}
+                      </div>
+                    </MenuItem>
+                  ))}
+                </SubMenu>
+              );
+            }
+
+            return (
+              <MenuItem
+                key={item.key}
+                className="text-md flex items-center justify-between gap-2 h-10"
+                onClick={() => navigate(item.key)}
+              >
+                <div className="flex items-center gap-4">
+                  {item.icon}
+                  {item.label}
+                </div>
+              </MenuItem>
+            );
+          })}
         </Menu>
       </Sider>
 

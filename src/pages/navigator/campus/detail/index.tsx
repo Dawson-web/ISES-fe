@@ -99,7 +99,7 @@ const InterviewDetail = () => {
           ) : (
             <div className="space-y-6">
               {/* 标题区域 */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
                 <Title heading={3} className="!mb-3">
                   {post.title}
                 </Title>
@@ -175,7 +175,7 @@ const InterviewDetail = () => {
               </div>
 
               {/* 面试题目列表 */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
                 <Title heading={5} className="!mb-4 flex items-center gap-2">
                   <AlertCircle size={18} className="text-primary" />
                   面试题目（共 {post.content?.questions?.length || 0} 题）
@@ -237,7 +237,7 @@ const InterviewDetail = () => {
 
               {/* 总结和Tips */}
               {(post.content?.summary || post.content?.tips) && (
-                <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
                   {post.content.summary && (
                     <div>
                       <Title heading={6} className="!mb-2">

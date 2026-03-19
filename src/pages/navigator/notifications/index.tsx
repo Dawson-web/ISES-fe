@@ -233,13 +233,15 @@ const NotificationsPage = observer(() => {
     <div className="h-full overflow-y-auto bg-gray-50">
       <div className="max-w-2xl mx-auto">
         {/* 页面头部 */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Bell size={20} className="text-gray-700" />
-              <h1 className="text-lg font-semibold text-gray-800">通知中心</h1>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                <Bell size={16} className="text-gray-600" />
+              </div>
+              <h1 className="text-base font-semibold text-gray-800">通知</h1>
               {notificationStore.unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-full">
+                <span className="ml-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-medium bg-red-500 text-white rounded-full px-1">
                   {notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount}
                 </span>
               )}

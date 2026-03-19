@@ -28,7 +28,7 @@ const InterviewCard = ({ item, onClick }: InterviewCardProps) => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md cursor-pointer"
+      className="relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50/50 cursor-pointer"
       onClick={() => onClick(item.id)}
       onKeyDown={handleKeyDown}
       tabIndex={0}
