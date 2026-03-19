@@ -1,6 +1,6 @@
 import { $axios } from "../../api";
 import { ApiOk } from "../../api/types";
-import { IUpdateUserForm, IUserFormData, IUserInfo } from "../../types/user";
+import { IUpdateUserForm, IUserFormData, IUserInfo, IAlumniNetworkData, IAlumniNetworkParams } from "../../types/user";
 import { ICertificationApplyResponse } from "../../types/certification";
 
 export const getUserInfoApi = async (id?: string) => {
@@ -45,4 +45,10 @@ export const applyCertificationApi = async (formData: FormData) => {
     "/user/certification/apply",
     formData
   );
+};
+
+export const getAlumniNetwork = async (params?: IAlumniNetworkParams) => {
+  return await $axios.get<ApiOk<IAlumniNetworkData>>("/user/alumni-network", {
+    params,
+  });
 };

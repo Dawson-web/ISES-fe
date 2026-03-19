@@ -1,9 +1,10 @@
 import { getUserCompanyAlumni } from "@/service/user";
-import { Avatar, Result, Tag } from "@arco-design/web-react";
+import { Avatar, Divider, Result, Tag } from "@arco-design/web-react";
 import Text from "@arco-design/web-react/es/Typography/text";
 import { IconUser } from "@arco-design/web-react/icon";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { Network } from "lucide-react";
 
 const CompanyAlumni = () => {
 
@@ -70,6 +71,21 @@ const CompanyAlumni = () => {
                     ></Result>
                 )}
             </div>
+        </div>
+        {/* 查看完整图谱入口 */}
+        <Divider style={{ margin: '8px 0' }} />
+        <div
+            className="flex items-center justify-center gap-2 py-2 rounded-lg cursor-pointer text-gray-500 hover:text-green-600 hover:bg-green-50 transition-colors"
+            onClick={() => navigate('/navigator/alumni-network')}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') navigate('/navigator/alumni-network');
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label="查看完整校友图谱"
+        >
+            <Network size={14} />
+            <Text className="text-xs">查看完整校友图谱 →</Text>
         </div>
     </div>
 };

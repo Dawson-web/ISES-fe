@@ -75,3 +75,35 @@ export interface IFormContext {
   userFormData: IUserFormData;
   updateFormData: (key: string, data: unknown) => void;
 }
+
+// 校友图谱相关类型
+export interface IAlumniNode {
+  id: string;
+  username: string;
+  avatar: string | null;
+  department: string | null;
+  position: string | null;
+  grade: string | null;
+  major: string | null;
+  online: boolean;
+}
+
+export interface IAlumniCompanyGroup {
+  companyName: string;
+  companyId: string | null;
+  alumniCount: number;
+  alumni: IAlumniNode[];
+}
+
+export interface IAlumniNetworkData {
+  school: string;
+  totalAlumni: number;
+  companies: IAlumniCompanyGroup[];
+  grades: string[];
+}
+
+export interface IAlumniNetworkParams {
+  school?: string;
+  grade?: string;
+  search?: string;
+}
