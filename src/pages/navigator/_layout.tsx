@@ -1,13 +1,16 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { Layout, Menu, Avatar, Spin } from '@arco-design/web-react';
+import { Layout, Menu, Avatar, Spin, Badge } from '@arco-design/web-react';
 import { IconCaretRight, IconCaretLeft } from '@arco-design/web-react/icon';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { isMobile } from '@/utils';
 import '@/styles/home.css';
-import { BarChart3, BookOpen, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness } from 'lucide-react';
+import { BarChart3, Bell, BookOpen, Coffee, Compass, House, MessageSquareText, ShieldCheck, SquarePlus, BriefcaseBusiness } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfoApi } from '@/service/user';
+import { getUnreadCountApi } from '@/service/notification';
 import userStore from '@/store/User';
+import notificationStore from '@/store/notification';
+import { observer } from 'mobx-react-lite';
 
 const Sider = Layout.Sider;
 const Content = Layout.Content;
@@ -28,11 +31,12 @@ const DEFAULT_MENU_LIST: MenuItemConfig[] = [
   { key: '/navigator/info', icon: <Coffee size={16} />, label: '爆料' },
   { key: '/navigator/campus', icon: <BookOpen size={16} />, label: '校园' },
   { key: '/navigator/chat', icon: <MessageSquareText size={16} />, label: '消息' },
+  { key: '/navigator/notifications', icon: <Bell size={16} />, label: '通知' },
   { key: '/navigator/admin', icon: <ShieldCheck size={16} />, label: '管理员', adminOnly: true },
   { key: '/navigator/dashboard', icon: <BarChart3 size={16} />, label: '数据大盘', adminOnly: true },
 ];
 
-const _Layout = () => {
+const _Layout = observer(() => {
   const [collapsed, setCollapsed] = useState(() => window.innerWidth < 600);
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,6 +61,26 @@ const _Layout = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // 初始化通知 WebSocket 连接
+  useEffect(() => {
+    notificationStore.connectWebSocket();
+    return () => {
+      notificationStore.disconnectWebSocket();
+    };
+  }, []);
+
+  // 获取未读通知数量（定期轮询作为 WebSocket 的补充）
+  useQuery({
+    queryKey: ['notifications-unread-count'],
+    queryFn: () =>
+      getUnreadCountApi().then((res) => {
+        notificationStore.setUnreadCount(res.data.data.count);
+        return res.data.data;
+      }),
+    staleTime: 1000 * 60,
+    refetchInterval: 1000 * 60,
+  });
 
   // 根据角色过滤菜单
   const menuList = userStore.role === 2
@@ -125,7 +149,13 @@ const _Layout = () => {
               onClick={() => navigate(item.key)}
             >
               <div className="flex items-center gap-4">
-                {item.icon}
+                {item.key === '/navigator/notifications' ? (
+                  <Badge count={notificationStore.unreadCount} dot={collapsed} offset={[4, -2]}>
+                    {item.icon}
+                  </Badge>
+                ) : (
+                  item.icon
+                )}
                 {item.label}
               </div>
             </MenuItem>
@@ -149,6 +179,6 @@ const _Layout = () => {
       </Layout>
     </Layout>
   );
-};
+});
 
 export default _Layout;

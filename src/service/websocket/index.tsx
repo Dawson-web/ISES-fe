@@ -4,7 +4,7 @@ import { IWSMessage } from "@/types/websocket";
 let lockReconnect = false;
 
 function contectWebSocket(type: string) {
-  const url = new URL("ws://localhost:4000/ws");
+  const url = new URL("ws://localhost:3000/ws");
   url.searchParams.append("type", type);
   url.searchParams.append("token", localStorage.getItem("token") || "");
   console.log("url", url.toString());
