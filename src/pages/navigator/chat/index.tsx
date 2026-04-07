@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import clsx from "clsx";
 import { Button, Input, Badge, Text, Box } from "@mantine/core";
 import { Plus, Search } from "lucide-react";
@@ -7,11 +7,13 @@ import { useDisclosure } from "@mantine/hooks";
 import ChatRoom from "@/components/chat/chat-room";
 import { useQuery } from "@tanstack/react-query";
 import { getChatList } from "@/service/chat";
+import { getUserInfoApi } from "@/service/user";
 import { getValidUid } from "@/api/token";
 import chatStore from "@/store/chat";
 import { observer } from "mobx-react-lite";
 import { runInAction } from "mobx";
 import UserAvatar from "@/components/public/user_avatar";
+import { useSearchParams } from "react-router-dom";
 
 export interface IChatInfo {
   chatId: string;
@@ -20,7 +22,26 @@ export interface IChatInfo {
   online: boolean;
 }
 
+const getTextMessagePreview = (
+  content: string | Record<string, unknown>
+): string => {
+  if (typeof content === "string") {
+    try {
+      const parsed = JSON.parse(content) as { text?: unknown };
+      if (typeof parsed?.text === "string") {
+        return parsed.text;
+      }
+    } catch {
+      return content;
+    }
+    return content;
+  }
+
+  return typeof content.text === "string" ? content.text : "";
+};
+
 const Page = observer(() => {
+  const [searchParams] = useSearchParams();
   const [chatInfo, setChatInfo] = useState<IChatInfo>({
     chatId: "",
     chatUser: "",
@@ -30,6 +51,10 @@ const Page = observer(() => {
   const [search, setSearch] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [handledRouteUserId, setHandledRouteUserId] = useState("");
+
+  const routeUserId = (searchParams.get("userId") || "").trim();
+  const routeUsername = (searchParams.get("username") || "").trim();
 
   // 获取聊天列表
   const { data } = useQuery({
@@ -60,30 +85,150 @@ const Page = observer(() => {
   }, [data]);
 
   // 过滤聊天列表（根据搜索关键词）
-  const filteredChatList = useMemo(() => {
-    if (!search) return chatStore.chatlist;
-    const lowerSearch = search.toLowerCase();
-    return chatStore.chatlist.filter(
-      (chat) =>
-        chat.username.toLowerCase().includes(lowerSearch) ||
-        chat.userId.toLowerCase().includes(lowerSearch)
-    );
-  }, [chatStore.chatlist, search]);
+  const filteredChatList = !search
+    ? chatStore.chatlist
+    : chatStore.chatlist.filter((chat) => {
+        const lowerSearch = search.toLowerCase();
+        return (
+          chat.username.toLowerCase().includes(lowerSearch) ||
+          chat.userId.toLowerCase().includes(lowerSearch)
+        );
+      });
 
-  // 选择聊天
-  const handleSelectChat = (userId: string) => {
-    const chat = chatStore.chatlist.find((c) => c.userId === userId);
-    if (chat) {
+  const openOrCreateChat = useCallback(
+    (targetUser: {
+      id: string;
+      username?: string | null;
+      avatar?: string | null;
+      introduce?: string | null;
+      school?: string | null;
+      online?: boolean;
+    }) => {
+      if (!targetUser.id) {
+        return;
+      }
+
+      const existingChat = chatStore.chatlist.find(
+        (chat) => chat.userId === targetUser.id
+      );
+
+      if (!existingChat) {
+        chatStore.addTempChatItem({
+          userId: targetUser.id,
+          username: targetUser.username || "这个人很懒未留名",
+          avatar: targetUser.avatar || null,
+          introduce: targetUser.introduce || null,
+          school: targetUser.school || null,
+          online: targetUser.online || false,
+          lastMessage: null,
+          unreadCount: 0,
+          isTemp: true,
+        });
+      }
+
+      const selectedChat = chatStore.chatlist.find(
+        (chat) => chat.userId === targetUser.id
+      );
       setChatInfo({
-        chatId: chat.userId,
-        chatUser: chat.userId,
-        userName: chat.username,
-        online: chat.online,
+        chatId: targetUser.id,
+        chatUser: targetUser.id,
+        userName: selectedChat?.username || targetUser.username || "这个人很懒未留名",
+        online: selectedChat?.online ?? !!targetUser.online,
       });
       setChatOpen(true);
-    }
-  };
+    },
+    []
+  );
 
+  // 选择聊天
+  const handleSelectChat = useCallback(
+    (userId: string) => {
+      const chat = chatStore.chatlist.find((c) => c.userId === userId);
+      if (chat) {
+        setChatInfo({
+          chatId: chat.userId,
+          chatUser: chat.userId,
+          userName: chat.username,
+          online: chat.online,
+        });
+        setChatOpen(true);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!routeUserId || routeUserId === handledRouteUserId) {
+      return;
+    }
+
+    if (routeUserId === getValidUid()) {
+      setHandledRouteUserId(routeUserId);
+      return;
+    }
+
+    let cancelled = false;
+
+    const openChatFromRoute = async () => {
+      const existingChat = chatStore.chatlist.find(
+        (chat) => chat.userId === routeUserId
+      );
+
+      if (existingChat) {
+        handleSelectChat(routeUserId);
+        if (!cancelled) {
+          setHandledRouteUserId(routeUserId);
+        }
+        return;
+      }
+
+      if (routeUsername) {
+        openOrCreateChat({
+          id: routeUserId,
+          username: routeUsername,
+        });
+        if (!cancelled) {
+          setHandledRouteUserId(routeUserId);
+        }
+        return;
+      }
+
+      try {
+        const res = await getUserInfoApi(routeUserId);
+        if (cancelled) {
+          return;
+        }
+
+        const targetUser = res.data.data;
+        openOrCreateChat({
+          id: targetUser.id,
+          username: targetUser.username,
+          avatar: targetUser.avatar || null,
+          introduce: targetUser.introduce || null,
+          school: targetUser.school || null,
+          online: targetUser.online,
+        });
+      } catch (error) {
+        console.error("打开私信会话失败:", error);
+      } finally {
+        if (!cancelled) {
+          setHandledRouteUserId(routeUserId);
+        }
+      }
+    };
+
+    openChatFromRoute();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    handleSelectChat,
+    handledRouteUserId,
+    openOrCreateChat,
+    routeUserId,
+    routeUsername,
+  ]);
 
 
   return (
@@ -143,10 +288,7 @@ const Page = observer(() => {
                 if (chat.lastMessage) {
                   const message = chat.lastMessage;
                   if (message.messageType === "text") {
-                    const content =
-                      typeof message.content === "string"
-                        ? JSON.parse(message.content).text || message.content
-                        : (message.content as any).text || "";
+                    const content = getTextMessagePreview(message.content);
                     lastMessageText = content || "暂无消息";
                   } else if (message.messageType === "image") {
                     lastMessageText = "[图片]";

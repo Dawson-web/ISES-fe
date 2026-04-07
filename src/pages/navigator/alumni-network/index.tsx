@@ -17,6 +17,7 @@ import * as echarts from 'echarts';
 import { Building2, GraduationCap, Users, MessageSquareText, Maximize2, Minimize2 } from 'lucide-react';
 import { getAlumniNetwork } from '@/service/user';
 import userStore from '@/store/User';
+import { apiConfig } from '@/config';
 import type { IAlumniNetworkData, IAlumniNode } from '@/types/user';
 
 const { Text } = Typography;
@@ -37,6 +38,12 @@ const PALETTE = {
   dimOpacity: 0.1,
 };
 
+const getAvatarUrl = (avatar?: string | null) => {
+  if (!avatar) return '';
+  if (/^(https?:)?\/\//.test(avatar) || avatar.startsWith('data:')) return avatar;
+  return `${apiConfig.baseUrl}${avatar}`;
+};
+
 // 校友悬浮卡片
 const AlumniHoverCard = ({
   alumni,
@@ -48,39 +55,41 @@ const AlumniHoverCard = ({
   companyName: string;
   onChat: () => void;
   onProfile: () => void;
-}) => (
-  <div className="w-60">
-    <div className="p-3.5">
-      <div className="flex items-center gap-3 mb-3">
-        <Avatar size={38} className="text-white font-bold bg-amber-600 flex-shrink-0">
-          {alumni.avatar ? <img src={alumni.avatar} alt="avatar" /> : alumni.username.charAt(0)}
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="font-medium text-gray-900 text-[13px] truncate">{alumni.username}</span>
-            <span
-              className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                alumni.online ? 'bg-emerald-400' : 'bg-gray-300'
-              }`}
-            />
-          </div>
-          <Text className="text-[11px] text-gray-500 truncate block">
-            {companyName} · {alumni.department || '未知部门'}
-          </Text>
-        </div>
-      </div>
-      {(alumni.position || alumni.grade) && (
-        <div className="text-[11px] text-gray-500 mb-3 space-y-0.5">
-          {alumni.position && <div>职位: {alumni.position}</div>}
-          {alumni.grade && (
-            <div>
-              {alumni.grade}
-              {alumni.major ? ` · ${alumni.major}` : ''}
+}) => {
+  const avatarUrl = getAvatarUrl(alumni.avatar);
+
+  return (
+    <div className="w-60">
+      <div className="p-3.5">
+        <div className="flex items-center gap-3 mb-3">
+          <Avatar size={38} className="text-white font-bold bg-amber-600 flex-shrink-0 !cursor-pointer">
+            {avatarUrl ? <img src={avatarUrl} alt="avatar" /> : alumni.username.charAt(0)}
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="font-medium text-gray-900 text-[13px] truncate">{alumni.username}</span>
+              <span
+                className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${alumni.online ? 'bg-emerald-400' : 'bg-gray-300'
+                  }`}
+              />
             </div>
-          )}
+            <Text className="text-[11px] text-gray-500 truncate block">
+              {companyName} · {alumni.department || '未知部门'}
+            </Text>
+          </div>
         </div>
-      )}
-      <div className="flex gap-2">
+        {(alumni.position || alumni.grade) && (
+          <div className="text-[11px] text-gray-500 mb-3 space-y-0.5">
+            {alumni.position && <div>职位: {alumni.position}</div>}
+            {alumni.grade && (
+              <div>
+                {alumni.grade}
+                {alumni.major ? ` · ${alumni.major}` : ''}
+              </div>
+            )}
+          </div>
+        )}
+        {/* <div className="flex gap-2">
         <Button
           type="primary"
           size="mini"
@@ -97,10 +106,11 @@ const AlumniHoverCard = ({
         >
           主页
         </Button>
+      </div> */}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 构建力导向图配置
 const buildGraphOption = (
@@ -202,22 +212,34 @@ const buildGraphOption = (
       const alumniId = `alumni_${alumni.id}`;
       const alumniMatched = isMatch(alumni.username) || companyMatched;
       const aVisible = searchKeyword ? alumniMatched : true;
+      const avatarUrl = getAvatarUrl(alumni.avatar);
+      const alumniSize = searchKeyword && alumniMatched ? 30 : 22;
 
       nodes.push({
         id: alumniId,
         name: alumni.username,
-        symbolSize: searchKeyword && alumniMatched ? 24 : 15,
+        symbol: avatarUrl ? `image://${avatarUrl}` : 'circle',
+        symbolSize: alumniSize,
         category: 2,
         itemStyle: {
           color: cColor,
-          borderColor: alumni.online ? '#34d399' : '#6b7280',
-          borderWidth: 1.5,
-          opacity: aVisible ? 0.85 : PALETTE.dimOpacity,
+          borderColor: alumni.online ? '#34d399' : '#94a3b8',
+          borderWidth: 2,
+          shadowBlur: aVisible ? 8 : 0,
+          shadowColor: aVisible ? 'rgba(15,23,42,0.16)' : 'transparent',
+          opacity: aVisible ? 1 : PALETTE.dimOpacity,
         },
         label: {
           show: aVisible,
-          fontSize: 9,
-          color: '#475569',
+          position: 'bottom',
+          distance: 6,
+          fontSize: 10,
+          fontWeight: 500,
+          color: '#334155',
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          borderRadius: 4,
+          padding: [2, 4],
+          formatter: alumni.username.length > 8 ? `${alumni.username.slice(0, 8)}…` : alumni.username,
           textBorderColor: 'rgba(255,255,255,0.95)',
           textBorderWidth: 1,
           opacity: aVisible ? 0.9 : PALETTE.dimOpacity,
@@ -301,11 +323,12 @@ const AlumniNetworkPage = observer(() => {
       getAlumniNetwork({ grade: gradeFilter }).then((res) => res.data.data),
     staleTime: 1000 * 60 * 2,
   });
+  const totalAlumni = data?.totalAlumni ?? 0;
 
   const graphOption = useMemo(() => {
-    if (!data || data.totalAlumni === 0) return null;
+    if (!data || totalAlumni === 0) return null;
     return buildGraphOption(data, activeSearch);
-  }, [data, activeSearch]);
+  }, [data, totalAlumni, activeSearch]);
 
   // 统一窗口 resize，组件销毁时释放图表
   useEffect(() => {
@@ -320,11 +343,11 @@ const AlumniNetworkPage = observer(() => {
 
   // 无数据时释放图表实例
   useEffect(() => {
-    if (!data || data.totalAlumni === 0) {
+    if (totalAlumni === 0) {
       chartRef.current?.dispose();
       chartRef.current = undefined;
     }
-  }, [data?.totalAlumni]);
+  }, [totalAlumni]);
 
   // 图表实例与配置联动：等待容器尺寸稳定后再渲染，修复首屏偶发空白
   useEffect(() => {
@@ -343,16 +366,21 @@ const AlumniNetworkPage = observer(() => {
     };
 
     const frame = window.requestAnimationFrame(applyOption);
-    const timer = window.setTimeout(applyOption, 120);
-    const observer = new ResizeObserver(() => {
-      applyOption();
-    });
-    observer.observe(container);
+    const retryTimers = [120, 360].map((delay) =>
+      window.setTimeout(applyOption, delay),
+    );
+
+    const observer = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => {
+        applyOption();
+      })
+      : null;
+    observer?.observe(container);
 
     return () => {
       window.cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
-      observer.disconnect();
+      retryTimers.forEach((timer) => window.clearTimeout(timer));
+      observer?.disconnect();
     };
   }, [graphOption, isFullscreen]);
 
@@ -415,7 +443,6 @@ const AlumniNetworkPage = observer(() => {
   }, []);
 
   // 统计
-  const totalAlumni = data?.totalAlumni ?? 0;
   const companyCount = data?.companies?.length ?? 0;
   const topCompany = data?.companies?.[0]?.companyName || '-';
   const gradeCount = data?.grades?.length ?? 0;
@@ -527,8 +554,8 @@ const AlumniNetworkPage = observer(() => {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   backgroundImage: `
-                    linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)
+                    linear-gradient(rgba(15,23,42,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(15,23,42,0.025) 1px, transparent 1px)
                   `,
                   backgroundSize: '48px 48px',
                 }}
@@ -574,7 +601,11 @@ const AlumniNetworkPage = observer(() => {
                     alumni={hoveredAlumni.alumni}
                     companyName={hoveredAlumni.companyName}
                     onChat={() => {
-                      navigate(`/navigator/chat?userId=${hoveredAlumni.alumni.id}`);
+                      const query = new URLSearchParams({
+                        userId: hoveredAlumni.alumni.id,
+                        username: hoveredAlumni.alumni.username || "",
+                      });
+                      navigate(`/navigator/chat?${query.toString()}`);
                       setHoveredAlumni(null);
                     }}
                     onProfile={() => {

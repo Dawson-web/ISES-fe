@@ -87,7 +87,7 @@ const InterviewList = ({ onViewDetail, onOpenForm }: InterviewListProps) => {
     <div className="space-y-4">
       {/* 搜索和筛选区域 */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-nowrap">
           <Input
             allowClear
             style={{ width: 260 }}
@@ -138,8 +138,7 @@ const InterviewList = ({ onViewDetail, onOpenForm }: InterviewListProps) => {
 
           <Button
             type="primary"
-            icon={<PenLine size={14} />}
-            className="ml-auto"
+            className="ml-auto text-nowrap"
             onClick={onOpenForm}
           >
             分享面经

@@ -3,6 +3,7 @@ import {
   Avatar,
   Tag,
   Input,
+  Select,
   Pagination,
   Skeleton,
   Empty,
@@ -23,13 +24,16 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import {
   addCompanyReferralApi,
+  getCompanyListApi,
   getCompanyReferralsApi,
   getPendingReferralsApi,
   reviewCompanyReferralApi,
+  toggleCompanyReferralLikeApi,
 } from "@/service/company";
 import {
   IReferralContent,
   IReferralCreatePayload,
+  IReferralListResponse,
   IReferralReviewPayload,
   IReferralStatus,
 } from "@/types/company";
@@ -51,7 +55,14 @@ const STATUS_COLOR_MAP: Record<IReferralStatus, "orange" | "green" | "red"> = {
   rejected: "red",
 };
 
+const resolveAssetUrl = (assetPath?: string) => {
+  if (!assetPath) return "";
+  if (/^https?:\/\//.test(assetPath)) return assetPath;
+  return `${apiConfig.baseUrl}${assetPath}`;
+};
+
 const EMPTY_REFERRAL_FORM = {
+  companyId: "",
   title: "",
   position: "",
   location: "",
@@ -72,10 +83,12 @@ const ReferralsPage = observer(() => {
   const [pendingPagination, setPendingPagination] = useState({ page: 1, pageSize: 10 });
   const [createVisible, setCreateVisible] = useState(false);
   const [createForm, setCreateForm] = useState(EMPTY_REFERRAL_FORM);
+  const [companyKeyword, setCompanyKeyword] = useState<string>("");
   const [rejectVisible, setRejectVisible] = useState(false);
   const [rejectRemark, setRejectRemark] = useState("");
   const [rejectTarget, setRejectTarget] = useState<IReferralContent | null>(null);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [likingId, setLikingId] = useState<string | null>(null);
 
   const { data: publishedData, isLoading: publishedLoading } = useQuery({
     queryKey: ["referrals", "published", listPagination, keyword],
@@ -101,9 +114,21 @@ const ReferralsPage = observer(() => {
     placeholderData: (previousData) => previousData,
   });
 
+  const { data: companyListData, isLoading: companyListLoading } = useQuery({
+    queryKey: ["referral-company-options", companyKeyword],
+    queryFn: () =>
+      getCompanyListApi({
+        page: 1,
+        pageSize: 30,
+        keyword: companyKeyword || undefined,
+        status: "approved",
+      }).then((res) => res.data.companies || []),
+    staleTime: 1000 * 60,
+  });
+
   const addReferralMutation = useMutation({
     mutationFn: (payload: IReferralCreatePayload) => addCompanyReferralApi(payload),
-    onSuccess: (res: any) => {
+    onSuccess: (res) => {
       Message.success(res.message || "内推提交成功，等待管理员审核");
       setCreateVisible(false);
       setCreateForm(EMPTY_REFERRAL_FORM);
@@ -117,7 +142,7 @@ const ReferralsPage = observer(() => {
   const reviewReferralMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: IReferralReviewPayload }) =>
       reviewCompanyReferralApi(id, payload),
-    onSuccess: (res: any) => {
+    onSuccess: (res) => {
       Message.success(res.message || "审核成功");
       setRejectVisible(false);
       setRejectTarget(null);
@@ -129,6 +154,54 @@ const ReferralsPage = observer(() => {
     },
     onSettled: () => {
       setReviewingId(null);
+    },
+  });
+
+  const toggleLikeMutation = useMutation({
+    mutationFn: (referralId: string) => toggleCompanyReferralLikeApi(referralId),
+    onMutate: (referralId) => {
+      setLikingId(referralId);
+    },
+    onSuccess: (res, referralId) => {
+      const payload = res.data;
+      if (!payload) return;
+
+      queryClient.setQueriesData({ queryKey: ["referrals"] }, (prev: IReferralListResponse | undefined) => {
+        if (!prev?.items?.length) return prev;
+        return {
+          ...prev,
+          items: prev.items.map((item) =>
+            item.id === referralId
+              ? {
+                  ...item,
+                  isLiked: payload.isLiked,
+                  metadata: {
+                    ...(item.metadata || {}),
+                    likeCount: payload.likeCount,
+                  },
+                }
+              : item
+          ),
+        };
+      });
+
+      queryClient.setQueryData(["referral-detail", referralId], (prev: IReferralContent | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          isLiked: payload.isLiked,
+          metadata: {
+            ...(prev.metadata || {}),
+            likeCount: payload.likeCount,
+          },
+        };
+      });
+    },
+    onError: (err: unknown) => {
+      Message.error(err instanceof Error ? err.message : "点赞操作失败");
+    },
+    onSettled: () => {
+      setLikingId(null);
     },
   });
 
@@ -144,6 +217,17 @@ const ReferralsPage = observer(() => {
       pending: pendingData?.pagination?.total ?? 0,
     }),
     [publishedData?.pagination?.total, pendingData?.pagination?.total]
+  );
+
+  const companyOptions = useMemo(
+    () =>
+      (companyListData || [])
+        .filter((item) => item.id && item.name)
+        .map((item) => ({
+          label: item.name,
+          value: item.id as string,
+        })),
+    [companyListData]
   );
 
   const toOptional = (value: string) => {
@@ -210,12 +294,17 @@ const ReferralsPage = observer(() => {
   };
 
   const submitReferral = () => {
+    if (!createForm.companyId.trim()) {
+      Message.warning("请选择公司");
+      return;
+    }
     if (!createForm.position.trim()) {
       Message.warning("请填写岗位名称");
       return;
     }
 
     addReferralMutation.mutate({
+      companyId: createForm.companyId,
       title: toOptional(createForm.title),
       position: toOptional(createForm.position),
       location: toOptional(createForm.location),
@@ -251,7 +340,10 @@ const ReferralsPage = observer(() => {
       Message.warning("内推ID无效，无法打开详情");
       return;
     }
-    navigate(`detail?id=${safeId}`);
+    navigate({
+      pathname: "/navigator/referrals/detail",
+      search: `?id=${safeId}`,
+    });
   };
 
   return (
@@ -349,7 +441,7 @@ const ReferralsPage = observer(() => {
                   <div className="relative flex items-center gap-3 p-3.5">
                     <Avatar size={40} className="shadow-sm">
                       {item.creator?.avatar ? (
-                        <img src={apiConfig.baseUrl + item.creator.avatar} alt="" />
+                        <img src={resolveAssetUrl(item.creator.avatar)} alt="" />
                       ) : (
                         item.creator?.username?.[0] || "U"
                       )}
@@ -361,6 +453,29 @@ const ReferralsPage = observer(() => {
                         {dayjs(item.createdAt).format("YYYY/MM/DD")}
                       </Text>
                       {renderMetadata(item)}
+                      <div className="mt-1 flex items-center gap-2">
+                        <Button
+                          size="mini"
+                          type={item.isLiked ? "primary" : "secondary"}
+                          loading={likingId === item.id && toggleLikeMutation.isPending}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLikeMutation.mutate(item.id);
+                          }}
+                        >
+                          {item.isLiked ? "已点赞" : "点赞"} ({item.metadata?.likeCount ?? 0})
+                        </Button>
+                        <Button
+                          size="mini"
+                          type="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCardClick(item.id);
+                          }}
+                        >
+                          评论 ({item.metadata?.commentCount ?? 0})
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex flex-col items-end gap-2 text-right min-w-[110px]">
                       <span className="text-[11px] text-gray-400">
@@ -440,6 +555,21 @@ const ReferralsPage = observer(() => {
         confirmLoading={addReferralMutation.isPending}
       >
         <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <Select
+              showSearch
+              allowClear
+              filterOption={false}
+              loading={companyListLoading}
+              options={companyOptions}
+              placeholder="选择公司（已收录，可搜索）"
+              value={createForm.companyId || undefined}
+              onSearch={(value) => setCompanyKeyword(value)}
+              onChange={(value) =>
+                setCreateForm((prev) => ({ ...prev, companyId: (value as string) || "" }))
+              }
+            />
+          </div>
           <Input
             placeholder="内推标题（可选）"
             value={createForm.title}

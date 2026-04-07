@@ -4,10 +4,10 @@ import { Card, Tooltip, Button, Avatar, Tag, Space, Typography } from "@arco-des
 import { Undo2, ThumbsUp, Eye, MessageCircle, Sparkles, BookOpenText } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getArticleDetailApi, postCommentApi } from "@/service/article";
+import { getArticleDetailApi, postCommentApi, toggleArticleLikeApi } from "@/service/article";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiConfig } from "@/config";
-import { ICommentForm } from "@/types/article";
+import { IArticle, ICommentForm } from "@/types/article";
 import { toastMessage } from "@/components/toast";
 import { createChatCompletion } from "@/api/ai";
 
@@ -17,11 +17,8 @@ export default function Page() {
   const articleId = searchParams.get("id") ?? "";
 
   const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const [aiSummary, setAiSummary] = useState("");
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
 
   const { data } = useQuery({
     queryKey: ["article", articleId],
@@ -57,7 +54,51 @@ export default function Page() {
 
   useEffect(() => {
     setAiSummary(article?.metadata?.excerpt ?? "");
-  }, [article?.id]);
+  }, [article?.id, article?.metadata?.excerpt]);
+
+  useEffect(() => {
+    setIsLiked(Boolean(article?.isLiked));
+    setLikeCount(Number(article?.metadata?.likeCount || 0));
+  }, [article?.id, article?.isLiked, article?.metadata?.likeCount]);
+
+  const { mutateAsync: toggleLike, isPending: isTogglingLike } = useMutation({
+    mutationFn: async () => {
+      const targetId = String(article?.id || articleId || "").trim();
+      if (!targetId) {
+        throw new Error("文章ID缺失");
+      }
+      const res = await toggleArticleLikeApi(targetId);
+      return res.data;
+    },
+    onSuccess: (res) => {
+      const nextState = res.data;
+      if (!nextState) return;
+
+      setIsLiked(nextState.isLiked);
+      setLikeCount(nextState.likeCount);
+      toastMessage.success(res.message || (nextState.isLiked ? "已点赞" : "已取消点赞"));
+
+      queryClient.setQueryData(["article", articleId], (prev: IArticle | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          isLiked: nextState.isLiked,
+          metadata: {
+            ...(prev.metadata || {}),
+            likeCount: nextState.likeCount,
+          },
+        };
+      });
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "点赞操作失败";
+      toastMessage.error(message);
+    },
+  });
+
+  const handleLike = async () => {
+    await toggleLike();
+  };
 
   const { mutateAsync: generateSummary, isPending: isGeneratingSummary } = useMutation({
     mutationFn: async () => {
@@ -253,8 +294,12 @@ export default function Page() {
 
         <div className="sticky top-0 z-10 px-4 sm:px-6 py-3 border-y border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#151518]/70 backdrop-blur supports-[backdrop-filter]:backdrop-blur">
           <div className="flex flex-wrap items-center gap-4">
-            <Button type={isLiked ? "primary" : "secondary"} onClick={handleLike}>
-              <span className="flex items-center gap-2"><ThumbsUp size={18} />{(article?.metadata.likeCount ?? 0) + (isLiked ? 1 : 0)}</span>
+            <Button
+              type={isLiked ? "primary" : "secondary"}
+              loading={isTogglingLike}
+              onClick={handleLike}
+            >
+              <span className="flex items-center gap-2"><ThumbsUp size={18} />{likeCount}</span>
             </Button>
             <Space size={4} align="center">
               <Eye size={18} className="text-gray-500" />

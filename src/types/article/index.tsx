@@ -53,6 +53,7 @@ export interface IArticle {
   title: string;
   content: string;
   contentType: string;
+  isLiked?: boolean;
   metadata: {
     tags: string[];
     excerpt: string;

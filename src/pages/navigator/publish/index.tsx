@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Input,
   Button,
@@ -10,6 +10,7 @@ import {
   Tabs,
 } from "@arco-design/web-react";
 import { IconSave, IconSend } from "@arco-design/web-react/icon";
+import { useQuery } from "@tanstack/react-query";
 // import { useSearchParams } from 'react-router-dom';
 
 import "./style.css";
@@ -19,7 +20,7 @@ import { createArticleApi } from "@/service/article";
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import MenuBar from "@/components/editor/MenuBar";
 import { useDraft } from "@/hooks/useDraft";
-import { addCompanyReferralApi } from "@/service/company";
+import { addCompanyReferralApi, getCompanyListApi } from "@/service/company";
 
 const CATEGORY = [
   {
@@ -61,7 +62,9 @@ export default function ArticleEditPage() {
   const [draftModalVisible, setDraftModalVisible] = useState(false);
   const [tag, setTag] = useState(1);
   const [referralLoading, setReferralLoading] = useState(false);
+  const [companyKeyword, setCompanyKeyword] = useState("");
   const [referralForm, setReferralForm] = useState({
+    companyId: "",
     title: "",
     position: "",
     location: "",
@@ -180,12 +183,21 @@ export default function ArticleEditPage() {
 
   const handleReferralPublish = async () => {
     if (referralLoading) return;
+    if (!referralForm.companyId) {
+      Message.warning("请选择公司");
+      return;
+    }
+    if (!referralForm.position.trim()) {
+      Message.warning("请填写岗位名称");
+      return;
+    }
     setReferralLoading(true);
     try {
       const res = await addCompanyReferralApi(referralForm);
       if (res.status) {
         Message.success(res.message || "发布内推成功");
         setReferralForm({
+          companyId: "",
           title: "",
           position: "",
           location: "",
@@ -203,6 +215,29 @@ export default function ArticleEditPage() {
       setReferralLoading(false);
     }
   };
+
+  const { data: companyList, isLoading: companyListLoading } = useQuery({
+    queryKey: ["publish-referral-companies", companyKeyword],
+    queryFn: () =>
+      getCompanyListApi({
+        page: 1,
+        pageSize: 30,
+        keyword: companyKeyword || undefined,
+        status: "approved",
+      }).then((res) => res.data.companies || []),
+    staleTime: 1000 * 60,
+  });
+
+  const companyOptions = useMemo(
+    () =>
+      (companyList || [])
+        .filter((item) => item.id && item.name)
+        .map((item) => ({
+          label: item.name,
+          value: item.id as string,
+        })),
+    [companyList]
+  );
 
   return (
     <div className="editor-container px-6 py-4 ">
@@ -347,9 +382,25 @@ export default function ArticleEditPage() {
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="text-base font-medium text-gray-800 mb-1">岗位内推</div>
             <div className="text-xs text-gray-500 mb-4">
-              需企业认证通过，自动使用你当前在职公司
+              需企业认证通过，请先选择已收录公司
             </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <div className="text-sm text-gray-600 mb-2">公司（已收录）</div>
+                <Select
+                  showSearch
+                  allowClear
+                  filterOption={false}
+                  loading={companyListLoading}
+                  options={companyOptions}
+                  placeholder="搜索并选择公司（必选）"
+                  value={referralForm.companyId || undefined}
+                  onSearch={(value) => setCompanyKeyword(value)}
+                  onChange={(value) =>
+                    setReferralForm((prev) => ({ ...prev, companyId: (value as string) || "" }))
+                  }
+                />
+              </div>
               <div className="flex-1">
                 <div className="text-sm text-gray-600 mb-2">内推标题</div>
                 <Input

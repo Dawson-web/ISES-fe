@@ -7,6 +7,8 @@ import {
     ICompanyListRequest,
     ICompanyStatus,
     IReferralContent,
+    IReferralCommentListResponse,
+    IReferralComment,
     IReferralCreatePayload,
     IReferralListRequest,
     IReferralListResponse,
@@ -99,6 +101,31 @@ export const getCompanyReferralsApi = async (data: IReferralListRequest) => {
 // 获取岗位内推详情
 export const getCompanyReferralDetailApi = async (id: string) => {
     const res = await $axios.get<ApiOk<IReferralContent>>(`/companies/referrals/${id}`);
+    return res.data;
+};
+
+// 点赞/取消点赞岗位内推
+export const toggleCompanyReferralLikeApi = async (id: string) => {
+    const res = await $axios.post<ApiOk<{ isLiked: boolean; likeCount: number }>>(`/companies/referrals/${id}/like/toggle`);
+    return res.data;
+};
+
+// 获取岗位内推评论
+export const getCompanyReferralCommentsApi = async (
+    id: string,
+    params?: { page?: number; pageSize?: number }
+) => {
+    const res = await $axios.get<ApiOk<IReferralCommentListResponse>>(`/companies/referrals/${id}/comments`, {
+        params,
+    });
+    return res.data;
+};
+
+// 发布岗位内推评论
+export const addCompanyReferralCommentApi = async (id: string, content: string) => {
+    const res = await $axios.post<ApiOk<{ comment: IReferralComment; commentCount: number }>>(`/companies/referrals/${id}/comments`, {
+        content,
+    });
     return res.data;
 };
 

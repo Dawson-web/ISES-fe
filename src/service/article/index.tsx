@@ -9,7 +9,7 @@ import {
 } from "@/types/article";
 
 export const createArticleApi = async (data: IArticleForm) => {
-  return await $axios.post<ApiOk<any>>("/articles", {
+  return await $axios.post<ApiOk<unknown>>("/articles", {
       title: data.title,
       content: data.content,
       contentType: data.contentType,
@@ -33,6 +33,12 @@ export const getArticleList = async (searchTerm:string,page?:number,pageSize?:nu
 export const getArticleDetailApi = async (id: string) => {
   return await $axios.get<ApiOk<IArticle>>(`/articles/detail/${id}`);
 }
+
+export const toggleArticleLikeApi = async (targetId: string) => {
+  return await $axios.post<ApiOk<{ isLiked: boolean; likeCount: number }>>('/articles/like/toggle', {
+    targetId,
+  });
+};
 
 export const getHotArticlesApi = () => {
   return $axios.get<ApiOk<IArticle[]>>('/articles/hot-list');

@@ -58,6 +58,7 @@ export interface ICompanyEmployeeList {
 export type IReferralStatus = "pending" | "published" | "rejected";
 
 export interface IReferralCreatePayload {
+    companyId: string;
     title?: string;
     position?: string;
     location?: string;
@@ -71,6 +72,7 @@ export interface IReferralContent {
     id: string;
     title: string;
     contentType: string;
+    isLiked?: boolean;
     content: {
         companyId: string;
         companyName: string;
@@ -101,6 +103,21 @@ export interface IReferralContent {
     updatedAt: string;
 }
 
+export interface IReferralComment {
+    id: string;
+    content: string;
+    userInfoId: string;
+    targetType: "content";
+    targetId: string;
+    createdAt: string;
+    updatedAt: string;
+    author?: {
+        id: string;
+        username: string;
+        avatar?: string;
+    };
+}
+
 export interface IReferralListRequest {
     page?: number;
     pageSize?: number;
@@ -121,4 +138,13 @@ export interface IReferralListResponse {
 export interface IReferralReviewPayload {
     status: "published" | "rejected";
     remark?: string;
+}
+
+export interface IReferralCommentListResponse {
+    items: IReferralComment[];
+    pagination: {
+        currentPage: number;
+        pageSize: number;
+        total: number;
+    };
 }

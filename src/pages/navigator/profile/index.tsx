@@ -26,7 +26,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import userStore from "@/store/User";
 import homeBG from "@/assets/home-bg.png";
 import { observer } from "mobx-react-lite";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { apiConfig } from "@/config";
 
@@ -50,6 +50,7 @@ const certificationStatusMap = {
 const Page = observer(() => {
   const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate();
   const [viewRole, setViewRole] = useState(0) // 0 非自己 1 自己
   const [certificationModalVisible, setCertificationModalVisible] = useState(false);
   const [certificationFile, setCertificationFile] = useState<File | null>(null);
@@ -169,6 +170,20 @@ const Page = observer(() => {
     applyCertification(formData);
   };
 
+  const handleSendPrivateMessage = () => {
+    const targetUserId = _userInfo?.id;
+    if (!targetUserId) {
+      toast.error("用户信息加载中，请稍后重试");
+      return;
+    }
+
+    const query = new URLSearchParams({
+      userId: targetUserId,
+      username: _userInfo?.username || "",
+    });
+    navigate(`/navigator/chat?${query.toString()}`);
+  };
+
 
 
   return (
@@ -236,7 +251,12 @@ const Page = observer(() => {
                           <Button type="primary" size="small">
                             <IconUser /> 关注
                           </Button>
-                          <Button type="outline" size="small">
+                          <Button
+                            type="outline"
+                            size="small"
+                            onClick={handleSendPrivateMessage}
+                            disabled={!_userInfo?.id}
+                          >
                             发送私信
                           </Button>
                         </>

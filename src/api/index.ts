@@ -50,7 +50,7 @@ $axios.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status } = error.response;
-      const message = ERROR_MESSAGES[status] || `请求失败 (${status})`;
+      const message = `${ERROR_MESSAGES[status]}: ${error.response.data.message}` || `请求失败 (${status})`;
 
       // 401 自动清除 token 并跳转登录页
       if (status === 401) {
