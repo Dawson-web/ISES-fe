@@ -30,11 +30,15 @@ export type Path =
   | `/navigator/profile`
   | `/navigator/publish`
   | `/navigator/referrals`
+  | `/navigator/referrals/:id`
+  | `/navigator/referrals/detail`
+  | `/navigator/referrals/detail/:id`
   | `/register`
   | `/seekback`
 
 export type Params = {
-  
+  '/navigator/referrals/:id': { id: string }
+  '/navigator/referrals/detail/:id': { id: string }
 }
 
 export type ModalPath = never

@@ -21,7 +21,7 @@ import type { IAlumniNetworkData, IAlumniNode } from '@/types/user';
 
 const { Text } = Typography;
 
-// 色板 - 偏自然的低饱和色系，避免纯亮色的 AI 感
+// 色板 - 白底场景下的低饱和配色
 const PALETTE = {
   // 节点颜色
   school: '#059669',
@@ -30,11 +30,11 @@ const PALETTE = {
   // 公司节点渐变色 - 取自自然色
   companySet: ['#2563eb', '#0891b2', '#7c3aed', '#c026d3', '#e11d48', '#ea580c'],
   // 连线
-  edgeSchool: 'rgba(5, 150, 105, 0.2)',
-  edgeAlumni: 'rgba(37, 99, 235, 0.12)',
+  edgeSchool: 'rgba(5, 150, 105, 0.24)',
+  edgeAlumni: 'rgba(37, 99, 235, 0.16)',
   // 高亮
-  focusEdge: 'rgba(37, 99, 235, 0.75)',
-  dimOpacity: 0.06,
+  focusEdge: 'rgba(37, 99, 235, 0.55)',
+  dimOpacity: 0.1,
 };
 
 // 校友悬浮卡片
@@ -133,15 +133,15 @@ const buildGraphOption = (
       shadowBlur: 25,
       shadowColor: `${PALETTE.school}55`,
       opacity: searchKeyword && !schoolMatched ? PALETTE.dimOpacity : 1,
-      borderColor: 'rgba(255,255,255,0.3)',
+      borderColor: 'rgba(15,23,42,0.15)',
       borderWidth: 2,
     },
     label: {
       show: true,
       fontSize: 13,
       fontWeight: 600,
-      color: '#f0fdf4',
-      textBorderColor: 'rgba(0,0,0,0.5)',
+      color: '#064e3b',
+      textBorderColor: 'rgba(255,255,255,0.95)',
       textBorderWidth: 2,
       opacity: searchKeyword && !schoolMatched ? PALETTE.dimOpacity : 1,
     },
@@ -172,14 +172,14 @@ const buildGraphOption = (
         shadowBlur: visible ? 8 : 0,
         shadowColor: visible ? `${cColor}35` : 'transparent',
         opacity: visible ? 1 : PALETTE.dimOpacity,
-        borderColor: 'rgba(255,255,255,0.15)',
+        borderColor: 'rgba(15,23,42,0.12)',
         borderWidth: 1,
       },
       label: {
         show: company.alumniCount >= 2 || visible,
         fontSize: 10,
-        color: '#e5e7eb',
-        textBorderColor: 'rgba(0,0,0,0.45)',
+        color: '#334155',
+        textBorderColor: 'rgba(255,255,255,0.95)',
         textBorderWidth: 1.5,
         opacity: visible ? 1 : PALETTE.dimOpacity,
       },
@@ -217,8 +217,8 @@ const buildGraphOption = (
         label: {
           show: aVisible,
           fontSize: 9,
-          color: '#d1d5db',
-          textBorderColor: 'rgba(0,0,0,0.4)',
+          color: '#475569',
+          textBorderColor: 'rgba(255,255,255,0.95)',
           textBorderWidth: 1,
           opacity: aVisible ? 0.9 : PALETTE.dimOpacity,
         },
@@ -240,6 +240,7 @@ const buildGraphOption = (
   });
 
   return {
+    backgroundColor: '#ffffff',
     tooltip: { show: false },
     legend: {
       data: categories.map((c) => c.name),
@@ -247,7 +248,7 @@ const buildGraphOption = (
       left: 'center',
       itemWidth: 10,
       itemHeight: 10,
-      textStyle: { color: '#9ca3af', fontSize: 11 },
+      textStyle: { color: '#6b7280', fontSize: 11 },
       itemGap: 20,
     },
     animationDuration: 1200,
@@ -306,12 +307,8 @@ const AlumniNetworkPage = observer(() => {
     return buildGraphOption(data, activeSearch);
   }, [data, activeSearch]);
 
-  // 初始化 ECharts
+  // 统一窗口 resize，组件销毁时释放图表
   useEffect(() => {
-    if (!chartContainerRef.current) return;
-    if (!chartRef.current) {
-      chartRef.current = echarts.init(chartContainerRef.current, 'dark');
-    }
     const handleResize = () => chartRef.current?.resize();
     window.addEventListener('resize', handleResize);
     return () => {
@@ -321,11 +318,43 @@ const AlumniNetworkPage = observer(() => {
     };
   }, []);
 
-  // 更新图表
+  // 无数据时释放图表实例
   useEffect(() => {
-    if (!chartRef.current || !graphOption) return;
-    chartRef.current.setOption(graphOption, true);
-  }, [graphOption]);
+    if (!data || data.totalAlumni === 0) {
+      chartRef.current?.dispose();
+      chartRef.current = undefined;
+    }
+  }, [data?.totalAlumni]);
+
+  // 图表实例与配置联动：等待容器尺寸稳定后再渲染，修复首屏偶发空白
+  useEffect(() => {
+    if (!graphOption || !chartContainerRef.current) return;
+
+    const container = chartContainerRef.current;
+    if (!chartRef.current || chartRef.current.isDisposed()) {
+      chartRef.current = echarts.init(container);
+    }
+
+    const applyOption = () => {
+      if (!chartRef.current || chartRef.current.isDisposed()) return;
+      if (container.clientWidth === 0 || container.clientHeight === 0) return;
+      chartRef.current.setOption(graphOption, true);
+      chartRef.current.resize();
+    };
+
+    const frame = window.requestAnimationFrame(applyOption);
+    const timer = window.setTimeout(applyOption, 120);
+    const observer = new ResizeObserver(() => {
+      applyOption();
+    });
+    observer.observe(container);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [graphOption, isFullscreen]);
 
   // 全屏切换时 resize
   useEffect(() => {
@@ -375,7 +404,7 @@ const AlumniNetworkPage = observer(() => {
       chart.off('mouseover', handleMouseOver);
       chart.off('mouseout', handleMouseOut);
     };
-  }, [navigate]);
+  }, [navigate, data?.totalAlumni]);
 
   const handleSearch = useCallback((value: string) => {
     setActiveSearch(value.trim());
@@ -393,18 +422,18 @@ const AlumniNetworkPage = observer(() => {
 
   // 全屏容器样式
   const containerClass = isFullscreen
-    ? 'fixed inset-0 z-50 bg-[#0f1117] flex flex-col'
-    : 'h-full flex flex-col bg-[#0f1117]';
+    ? 'fixed inset-0 z-50 bg-white flex flex-col'
+    : 'h-full flex flex-col bg-white';
 
   return (
     <div className={containerClass}>
-      {/* 顶部工具条 - 深色调，贴合图谱 */}
-      <div className="flex-shrink-0 border-b border-gray-800/60">
+      {/* 顶部工具条 */}
+      <div className="flex-shrink-0 border-b border-gray-200 bg-white/90">
         <div className="px-5 py-3 flex items-center justify-between gap-4 flex-wrap">
           {/* 左侧 - 标题 + 统计数字 */}
           <div className="flex items-center gap-5">
             <div>
-              <h1 className="text-[15px] font-semibold text-gray-100 leading-none mb-1">
+              <h1 className="text-[15px] font-semibold text-gray-900 leading-none mb-1">
                 校友图谱
               </h1>
               {data?.school && (
@@ -415,27 +444,27 @@ const AlumniNetworkPage = observer(() => {
             {/* 内联数据指标 */}
             {!isLoading && data && (
               <div className="hidden sm:flex items-center gap-4 text-[11px]">
-                <span className="flex items-center gap-1.5 text-emerald-400">
+                <span className="flex items-center gap-1.5 text-emerald-600">
                   <Users size={12} />
-                  <span className="text-gray-400">{totalAlumni}</span>
-                  <span className="text-gray-600">人</span>
+                  <span className="text-gray-700">{totalAlumni}</span>
+                  <span className="text-gray-500">人</span>
                 </span>
-                <span className="w-px h-3 bg-gray-700" />
-                <span className="flex items-center gap-1.5 text-blue-400">
+                <span className="w-px h-3 bg-gray-300" />
+                <span className="flex items-center gap-1.5 text-blue-600">
                   <Building2 size={12} />
-                  <span className="text-gray-400">{companyCount}</span>
-                  <span className="text-gray-600">家</span>
+                  <span className="text-gray-700">{companyCount}</span>
+                  <span className="text-gray-500">家</span>
                 </span>
-                <span className="w-px h-3 bg-gray-700" />
-                <span className="flex items-center gap-1.5 text-purple-400">
+                <span className="w-px h-3 bg-gray-300" />
+                <span className="flex items-center gap-1.5 text-violet-600">
                   <GraduationCap size={12} />
-                  <span className="text-gray-400">{gradeCount}</span>
-                  <span className="text-gray-600">届</span>
+                  <span className="text-gray-700">{gradeCount}</span>
+                  <span className="text-gray-500">届</span>
                 </span>
                 {topCompany !== '-' && (
                   <>
-                    <span className="w-px h-3 bg-gray-700" />
-                    <Tag size="small" className="!bg-gray-800 !border-gray-700 !text-gray-400 !text-[10px]">
+                    <span className="w-px h-3 bg-gray-300" />
+                    <Tag size="small" className="!bg-gray-100 !border-gray-200 !text-gray-600 !text-[10px]">
                       Top: {topCompany}
                     </Tag>
                   </>
@@ -471,7 +500,7 @@ const AlumniNetworkPage = observer(() => {
             />
             <button
               type="button"
-              className="p-1.5 rounded-md text-gray-500 hover:text-gray-300 hover:bg-gray-800 transition-colors"
+              className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
               onClick={handleToggleFullscreen}
               aria-label={isFullscreen ? '退出全屏' : '全屏'}
             >
@@ -490,16 +519,16 @@ const AlumniNetworkPage = observer(() => {
               <div
                 ref={chartContainerRef}
                 className="absolute inset-0"
-                style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1d2e 0%, #0f1117 70%)' }}
+                style={{ background: '#ffffff' }}
               />
 
               {/* 网格底纹 */}
               <div
-                className="absolute inset-0 pointer-events-none opacity-[0.03]"
+                className="absolute inset-0 pointer-events-none"
                 style={{
                   backgroundImage: `
-                    linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                    linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)
                   `,
                   backgroundSize: '48px 48px',
                 }}
@@ -507,12 +536,12 @@ const AlumniNetworkPage = observer(() => {
 
               {/* 搜索状态标签 */}
               {activeSearch && (
-                <div className="absolute top-3 left-4 z-10 flex items-center gap-2 bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 text-gray-300 text-[11px] px-3 py-1.5 rounded-md">
-                  <IconSearch style={{ fontSize: 12 }} className="text-gray-500" />
+                <div className="absolute top-3 left-4 z-10 flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-700 text-[11px] px-3 py-1.5 rounded-md shadow-sm">
+                  <IconSearch style={{ fontSize: 12 }} className="text-gray-400" />
                   <span>{activeSearch}</span>
                   <button
                     type="button"
-                    className="text-gray-500 hover:text-gray-300 ml-1"
+                    className="text-gray-400 hover:text-gray-700 ml-1"
                     onClick={() => { setSearchValue(''); setActiveSearch(''); }}
                     aria-label="清除搜索"
                   >
@@ -522,7 +551,7 @@ const AlumniNetworkPage = observer(() => {
               )}
 
               {/* 底部操作提示 */}
-              <div className="absolute bottom-3 left-4 z-10 text-[10px] text-gray-600 flex items-center gap-3">
+              <div className="absolute bottom-3 left-4 z-10 text-[10px] text-gray-500 flex items-center gap-3">
                 <span>滚轮缩放</span>
                 <span>·</span>
                 <span>拖拽平移</span>

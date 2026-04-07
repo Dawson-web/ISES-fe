@@ -1,10 +1,13 @@
 import { IMessage } from "@/types/chat";
 import { IWSMessage } from "@/types/websocket";
+import { apiConfig } from "@/config";
 
 let lockReconnect = false;
 
 function contectWebSocket(type: string) {
-  const url = new URL("ws://localhost:3000/ws");
+  const apiUrl = new URL(apiConfig.baseUrl);
+  const protocol = apiUrl.protocol === "https:" ? "wss:" : "ws:";
+  const url = new URL(`${protocol}//${apiUrl.host}/ws`);
   url.searchParams.append("type", type);
   url.searchParams.append("token", localStorage.getItem("token") || "");
   console.log("url", url.toString());

@@ -55,6 +55,8 @@ export interface ICompanyEmployeeList {
 }
 
 // 岗位内推（referral）
+export type IReferralStatus = "pending" | "published" | "rejected";
+
 export interface IReferralCreatePayload {
     title?: string;
     position?: string;
@@ -83,7 +85,11 @@ export interface IReferralContent {
         viewCount: number;
         likeCount: number;
         commentCount: number;
-        status: string;
+        status: IReferralStatus;
+        reviewRemark?: string;
+        reviewedAt?: string;
+        reviewerId?: string;
+        publishedAt?: string;
     };
     creatorId: string;
     creator?: {
@@ -100,6 +106,7 @@ export interface IReferralListRequest {
     pageSize?: number;
     companyId?: string;
     keyword?: string;
+    status?: IReferralStatus;
 }
 
 export interface IReferralListResponse {
@@ -109,4 +116,9 @@ export interface IReferralListResponse {
         pageSize: number;
         total: number;
     };
+}
+
+export interface IReferralReviewPayload {
+    status: "published" | "rejected";
+    remark?: string;
 }

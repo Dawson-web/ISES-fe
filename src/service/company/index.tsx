@@ -1,6 +1,17 @@
 import { $axios } from "@/api";
 import { ApiOk } from "@/api/types";
-import { ICompany, ICompanyEmployeeList, ICompanyList, ICompanyListRequest, ICompanyStatus, IReferralContent, IReferralCreatePayload, IReferralListRequest, IReferralListResponse } from "@/types/company";
+import {
+    ICompany,
+    ICompanyEmployeeList,
+    ICompanyList,
+    ICompanyListRequest,
+    ICompanyStatus,
+    IReferralContent,
+    IReferralCreatePayload,
+    IReferralListRequest,
+    IReferralListResponse,
+    IReferralReviewPayload,
+} from "@/types/company";
 import { ISalaryReportForm, ISalaryReportList } from "@/types/salary";
 
 
@@ -88,5 +99,24 @@ export const getCompanyReferralsApi = async (data: IReferralListRequest) => {
 // 获取岗位内推详情
 export const getCompanyReferralDetailApi = async (id: string) => {
     const res = await $axios.get<ApiOk<IReferralContent>>(`/companies/referrals/${id}`);
+    return res.data;
+};
+
+// 管理员：获取待审核岗位内推
+export const getPendingReferralsApi = async (params?: {
+    page?: number;
+    pageSize?: number;
+    companyId?: string;
+    keyword?: string;
+}) => {
+    const res = await $axios.get<ApiOk<IReferralListResponse>>(`/companies/referrals/pending`, {
+        params,
+    });
+    return res.data;
+};
+
+// 管理员：审核岗位内推
+export const reviewCompanyReferralApi = async (id: string, data: IReferralReviewPayload) => {
+    const res = await $axios.post<ApiOk<IReferralContent>>(`/companies/referrals/${id}/review`, data);
     return res.data;
 };

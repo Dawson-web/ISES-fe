@@ -1,10 +1,18 @@
 import { makeAutoObservable } from 'mobx';
-import { INotification, IWSNotificationMessage, IUnreadCountResponse } from '../types/notification';
+import { IWSNotificationMessage, IUnreadCountResponse } from '../types/notification';
+import { apiConfig } from '@/config';
+
+const createWsUrl = (): URL => {
+  const apiUrl = new URL(apiConfig.baseUrl);
+  const protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+  return new URL(`${protocol}//${apiUrl.host}/ws`);
+};
 
 class NotificationStore {
   unreadCount: number = 0;
   socket: WebSocket | null = null;
   isConnected: boolean = false;
+  heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -39,7 +47,7 @@ class NotificationStore {
       return;
     }
 
-    const wsUrl = new URL('ws://localhost:3000/ws');
+    const wsUrl = createWsUrl();
     wsUrl.searchParams.append('type', 'notification');
     wsUrl.searchParams.append('token', token);
 
@@ -50,11 +58,12 @@ class NotificationStore {
       console.log('通知 WebSocket 已连接');
 
       // 心跳保活
-      const heartbeat = setInterval(() => {
+      if (this.heartbeatTimer) {
+        clearInterval(this.heartbeatTimer);
+      }
+      this.heartbeatTimer = setInterval(() => {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
           this.socket.send(JSON.stringify({ type: 'ping', content: 'ping 通讯测试' }));
-        } else {
-          clearInterval(heartbeat);
         }
       }, 30000);
     };
@@ -79,6 +88,10 @@ class NotificationStore {
     this.socket.onclose = () => {
       this.isConnected = false;
       console.log('通知 WebSocket 已断开');
+      if (this.heartbeatTimer) {
+        clearInterval(this.heartbeatTimer);
+        this.heartbeatTimer = null;
+      }
 
       // 5 秒后尝试重连
       setTimeout(() => {
@@ -92,6 +105,10 @@ class NotificationStore {
     this.socket.onerror = (error) => {
       console.error('通知 WebSocket 错误:', error);
       this.isConnected = false;
+      if (this.heartbeatTimer) {
+        clearInterval(this.heartbeatTimer);
+        this.heartbeatTimer = null;
+      }
     };
   };
 
@@ -101,6 +118,10 @@ class NotificationStore {
       this.socket.close();
       this.socket = null;
       this.isConnected = false;
+    }
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
   };
 }
