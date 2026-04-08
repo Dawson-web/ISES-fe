@@ -17,9 +17,12 @@ export default function Page() {
   });
   const [errors, setErrors] = useState<Partial<ILoginFileds>>({});
 
-  const code = useRef("");
-  const getCaptchaCode = (value: string) => {
-    code.current = value;
+  const captchaState = useRef({
+    code: "",
+    captchaId: "",
+  });
+  const getCaptchaCode = (value: { code: string; captchaId: string }) => {
+    captchaState.current = value;
   };
 
   const validateForm = () => {
@@ -34,6 +37,14 @@ export default function Page() {
     if (!formData.password) {
       newErrors.password = "请输入密码";
     }
+    if (!captchaState.current.code.trim()) {
+      toast.error("请输入图形验证码");
+      return false;
+    }
+    if (!captchaState.current.captchaId.trim()) {
+      toast.error("验证码已失效，请点击图片刷新");
+      return false;
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -45,7 +56,7 @@ export default function Page() {
     if (!validateForm()) return;
     
     try {
-      const res = await login(formData, code.current);
+      const res = await login(formData, captchaState.current);
       setToken(res.data.data.token);
       setUid(res.data.data.userInfoId);
       navigate("/navigator");

@@ -18,7 +18,6 @@ import { observer } from "mobx-react-lite";
 import userStore from "@/store/User";
 import { getAdminStatsApi } from "@/service/admin";
 import {
-  IAdminStats,
   IStatsTrends,
 } from "@/types/admin/stats";
 import * as echarts from "echarts";
@@ -127,7 +126,7 @@ const StatsDashboard = observer(() => {
     queryFn: () => getAdminStatsApi(range).then((res) => res.data.data),
     enabled: userStore.role === 2,
     staleTime: 1000 * 60,
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 
   const summaryCards = useMemo(
@@ -429,10 +428,8 @@ const StatsDashboard = observer(() => {
             pagination={false}
             size="small"
             scroll={{ x: 820 }}
-            tableLayout="fixed"
-            bordered
+            border
             rowKey="id"
-            locale={{ emptyText: <Empty description="暂无数据" /> }}
           />
         </ChartCard>
       </Skeleton>

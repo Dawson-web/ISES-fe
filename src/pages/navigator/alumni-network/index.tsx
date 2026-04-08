@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import * as echarts from 'echarts';
-import { Building2, GraduationCap, Users, MessageSquareText, Maximize2, Minimize2 } from 'lucide-react';
+import { Building2, GraduationCap, Users, Maximize2, Minimize2 } from 'lucide-react';
 import { getAlumniNetwork } from '@/service/user';
 import userStore from '@/store/User';
 import { apiConfig } from '@/config';
@@ -53,9 +53,11 @@ const AlumniHoverCard = ({
 }: {
   alumni: IAlumniNode;
   companyName: string;
-  onChat: () => void;
-  onProfile: () => void;
+  onChat?: () => void;
+  onProfile?: () => void;
 }) => {
+  void onChat;
+  void onProfile;
   const avatarUrl = getAvatarUrl(alumni.avatar);
 
   return (

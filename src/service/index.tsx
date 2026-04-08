@@ -1,23 +1,36 @@
 import { $axios } from "../api";
 import { ApiOk } from "../api/types";
-import { apiConfig } from "../config";
 import {
   ILoginFileds,
   ILoginResponse,
   IRegisterFileds,
   ISeekBackFileds,
 } from "../types";
-import { getCookie } from "../utils/cookie";
 
-export const getCaptcha = () => {
-  return `${apiConfig.baseUrl}/captcha?nonce=${new Date().getTime()}`;
+export const getCaptcha = async () => {
+  return await $axios.get<ApiOk<{
+    captchaId: string;
+    svg: string;
+    expiresIn: number;
+  }>>("/captcha", {
+    params: {
+      nonce: new Date().getTime(),
+    },
+  });
 };
 
-export const login = async (form: ILoginFileds, code: string) => {
-  getCookie("captcha");
+export const login = async (
+  form: ILoginFileds,
+  captcha: {
+    code: string;
+    captchaId: string;
+  }
+) => {
   return await $axios.post<ApiOk<ILoginResponse>>("/login", {
     email: form.email,
     password: form.password,
+    code: captcha.code,
+    captchaId: captcha.captchaId,
   });
 };
 

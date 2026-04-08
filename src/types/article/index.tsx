@@ -41,6 +41,7 @@ export interface IComment {
   targetId: string,
   createdAt: string,
   updatedAt: string,
+  replies?: IComment[],
   author: {
     id: string,
     username: string,
@@ -54,6 +55,7 @@ export interface IArticle {
   content: string;
   contentType: string;
   isLiked?: boolean;
+  isFavorited?: boolean;
   metadata: {
     tags: string[];
     excerpt: string;
@@ -80,6 +82,25 @@ export interface IArticleList {
     currentPage: number;
     pageSize: number;
     total: number;
+  };
+}
+
+export interface IArticleFavorite {
+  id: string;
+  targetId: string;
+  targetType: string;
+  createdAt: string;
+  updatedAt: string;
+  content?: IArticle | null;
+}
+
+export interface IArticleFavoriteList {
+  favorites: IArticleFavorite[];
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
   };
 }
 

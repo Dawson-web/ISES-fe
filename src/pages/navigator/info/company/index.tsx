@@ -182,7 +182,7 @@ const CompanyDetailPage = observer(() => {
     const [searchParams] = useSearchParams();
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const companyId = searchParams.get('companyId') || '';
-    const isAdmin = userStore.role === 1;
+    const isAdmin = userStore.role === 2;
 
     const { data: company, isLoading, refetch } = useQuery({
         queryKey: ['getCompanyDetailApi', companyId],

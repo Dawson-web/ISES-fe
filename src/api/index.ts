@@ -20,6 +20,7 @@ const ERROR_MESSAGES: Record<number, string> = {
 export const $axios = axios.create({
   baseURL: apiConfig.baseUrl,
   timeout: 15000,
+  withCredentials: true,
 });
 
 // 请求拦截器

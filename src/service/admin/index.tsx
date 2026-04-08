@@ -14,8 +14,16 @@ import {
 } from "@/types/admin/management";
 import { ICompany } from "@/types/company";
 
-export const sendAnnouncements = async () => {
-  return await $axios.post<ApiOk<null>>("/admin/email");
+export const sendAnnouncements = async (data: {
+  title: string;
+  content: string;
+  recipients?: string[];
+  sendToAll?: boolean;
+}) => {
+  return await $axios.post<ApiOk<{
+    recipientCount: number;
+    sendToAll: boolean;
+  }>>("/admin/announcement", data);
 };
 
 export const getCertificationsApi = async (params?: IGetCertificationsParams) => {

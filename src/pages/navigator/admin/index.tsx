@@ -10,7 +10,6 @@ import {
   Typography,
   Select,
   Skeleton,
-  Empty,
   Modal,
   Form,
   Input,
@@ -40,6 +39,7 @@ import {
   getCertificationsApi,
   rejectCertificationApi,
   approveCertificationApi,
+  sendAnnouncements,
 } from "@/service/admin";
 import {
   getCompanyApproveListApi,
@@ -76,6 +76,7 @@ const Page = observer(() => {
   const [companyModalVisible, setCompanyModalVisible] = useState(false);
   const [editingCompany, setEditingCompany] = useState<ICompany | null>(null);
   const [companyForm] = Form.useForm();
+  const [announcementForm] = Form.useForm();
   const [isCompact, setIsCompact] = useState(() => window.innerWidth < 768);
   const [certPagination, setCertPagination] = useState({ current: 1, pageSize: 10 });
   const [certStatus, setCertStatus] = useState<CertificationStatus>("pending");
@@ -233,6 +234,23 @@ const Page = observer(() => {
     },
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : "删除失败";
+      toast.error(msg);
+    },
+  });
+
+  const { mutate: publishAnnouncement, isPending: sendingAnnouncement } = useMutation({
+    mutationFn: (payload: {
+      title: string;
+      content: string;
+      recipients?: string[];
+      sendToAll?: boolean;
+    }) => sendAnnouncements(payload),
+    onSuccess: (res) => {
+      toast.success(res.data.message || "公告发送成功");
+      announcementForm.resetFields();
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "公告发送失败";
       toast.error(msg);
     },
   });
@@ -456,7 +474,11 @@ const Page = observer(() => {
               okText="删除"
               cancelText="取消"
               okButtonProps={{ status: "danger" }}
-              onOk={() => record.id && deleteCompany(record.id || "")}
+              onOk={() => {
+                if (record.id) {
+                  deleteCompany(record.id);
+                }
+              }}
               disabled={deletingCompany}
             >
               <Button size="small" status="danger" icon={<IconDelete />}>
@@ -973,6 +995,91 @@ const Page = observer(() => {
                 border
               />
             </Skeleton>
+          </Card>
+        </TabPane>
+
+        <TabPane key="announcement" title="公告发布">
+          <Card>
+            <div className="mb-4">
+              <Title heading={5} style={{ margin: 0 }}>
+                系统公告
+              </Title>
+              <Text type="secondary">
+                支持全员站内公告，也可通过邮箱或用户 ID 进行定向发送。
+              </Text>
+            </div>
+            <Form
+              form={announcementForm}
+              layout="vertical"
+              initialValues={{
+                sendToAll: true,
+              }}
+            >
+              <Form.Item
+                label="公告标题"
+                field="title"
+                rules={[{ required: true, message: "请输入公告标题" }]}
+              >
+                <Input placeholder="如：系统升级通知" />
+              </Form.Item>
+              <Form.Item
+                label="公告内容"
+                field="content"
+                rules={[{ required: true, message: "请输入公告内容" }]}
+              >
+                <Input.TextArea
+                  placeholder="请输入公告内容"
+                  autoSize={{ minRows: 5, maxRows: 10 }}
+                />
+              </Form.Item>
+              <Form.Item label="发送范围" field="sendToAll" triggerPropName="checked">
+                <Checkbox>发送给全部用户</Checkbox>
+              </Form.Item>
+              <Form.Item
+                noStyle
+                shouldUpdate={(prevValues, nextValues) => prevValues.sendToAll !== nextValues.sendToAll}
+              >
+                {(values) =>
+                  values?.sendToAll ? null : (
+                    <Form.Item label="定向接收人" field="recipientsRaw">
+                      <Input.TextArea
+                        placeholder="按逗号或换行填写用户邮箱 / 用户 ID"
+                        autoSize={{ minRows: 3, maxRows: 6 }}
+                      />
+                    </Form.Item>
+                  )
+                }
+              </Form.Item>
+              <div className="flex items-center gap-3">
+                <Button
+                  type="primary"
+                  loading={sendingAnnouncement}
+                  onClick={() => {
+                    announcementForm.validate().then((values) => {
+                      const recipients = String(values.recipientsRaw || "")
+                        .split(/[\n,，]+/)
+                        .map((item) => item.trim())
+                        .filter(Boolean);
+
+                      publishAnnouncement({
+                        title: values.title,
+                        content: values.content,
+                        sendToAll: !!values.sendToAll,
+                        recipients,
+                      });
+                    });
+                  }}
+                >
+                  发布公告
+                </Button>
+                <Button
+                  onClick={() => announcementForm.resetFields()}
+                  disabled={sendingAnnouncement}
+                >
+                  重置
+                </Button>
+              </div>
+            </Form>
           </Card>
         </TabPane>
       </Tabs>

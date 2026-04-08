@@ -1,5 +1,3 @@
-
-
 import { Button, Card, Input } from "@mantine/core";
 import CommentCard from "./comment-card";
 import { FC, useState } from "react";
@@ -9,11 +7,22 @@ import { IComment, ICommentForm } from "@/types/article";
 interface IProps {
   articleId: string;
   comments: IComment[];
+  currentUserId?: string;
   className?: string;
   onSubmitComment: (data: ICommentForm) => Promise<any>;
+  onEditComment: (commentId: string, content: string) => Promise<any>;
+  onDeleteComment: (commentId: string) => Promise<any>;
 }
 
-const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitComment }) => {
+const CommentBox: FC<IProps> = ({
+  articleId,
+  comments,
+  currentUserId,
+  className,
+  onSubmitComment,
+  onEditComment,
+  onDeleteComment,
+}) => {
   const [newComment, setNewComment] = useState<string>("");
   
   const handlePostComment = async() => {
@@ -25,7 +34,16 @@ const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitCommen
     };
     await onSubmitComment(data)
     setNewComment("");
-  }
+  };
+
+  const handleReplyComment = async (commentId: string, content: string) => {
+    await onSubmitComment({
+      targetId: commentId,
+      targetType: "comment",
+      content,
+    });
+  };
+
   return (
     <Card className={clsx(className, "mt-8 rounded-xl shadow-sm bg-white dark:bg-gray-800 border-0")}>
       <div className="flex gap-3">
@@ -55,9 +73,12 @@ const CommentBox: FC<IProps> = ({ articleId, comments, className, onSubmitCommen
             return (
               <CommentCard
                 comment={comment}
-                key={comment.userInfoId}
-                createdAt={comment.createdAt}
-                className="w-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 p-2 rounded-lg border-b-1 border-gray-200"
+                key={comment.id}
+                currentUserId={currentUserId}
+                onReply={handleReplyComment}
+                onEdit={onEditComment}
+                onDelete={onDeleteComment}
+                className="w-full"
               />
             );
           }):

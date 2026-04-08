@@ -4,12 +4,14 @@ import { IconSearch } from '@arco-design/web-react/icon';
 
 import CampusCalander from './components/campuscalander';
 import CompanyAlumni from './components/companyalumni';
+import FavoriteArticles from './components/favoritearticles';
 import userStore from '@/store/User';
 import { observer } from 'mobx-react-lite';
-import { getSelfArticleListApi } from '@/service/article';
+import { deleteArticleApi, getSelfArticleListApi } from '@/service/article';
 // import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // import { LifeContentTypeColor } from '@/types/article';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const { Text } = Typography;
 
@@ -72,6 +74,26 @@ const Home: React.FC = observer(() => {
 
   const handleArticleClick = (articleId: number) => {
     navigate(`/navigator/explore/channel?id=${articleId}`);
+  };
+
+  const handleEditArticle = (event: any, articleId: string | number) => {
+    event.stopPropagation();
+    navigate(`/navigator/publish?id=${articleId}`);
+  };
+
+  const handleDeleteArticle = async (event: any, articleId: string | number) => {
+    event.stopPropagation();
+    if (!window.confirm('确认删除这篇内容？删除后无法恢复。')) {
+      return;
+    }
+
+    try {
+      await deleteArticleApi(String(articleId));
+      toast.success('删除成功');
+      fetchArticles();
+    } catch (error) {
+      toast.error('删除失败，请稍后重试');
+    }
   };
 
   // 按年份分组文章（时间轴）
@@ -158,10 +180,26 @@ const Home: React.FC = observer(() => {
                               onClick={() => handleArticleClick(article.id)}
                             >
                               <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-gray-300 group-hover:bg-primary" />
-                              <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3  px-2 cursor-pointer">
+                              <div className="grid grid-cols-[64px_1fr_auto_auto] items-center gap-3 px-2 cursor-pointer">
                                 <div className="text-xs text-gray-500 tabular-nums">{dateLabel}</div>
                                 <div className="truncate text-gray-900 hover:text-primary hover:translate-x-2 transition-all text-sm font-medium py-2">{article.title}</div>
                                 <div className="text-xs text-gray-400">#{article.contentType}</div>
+                                <div className="flex items-center gap-2 opacity-0 transition group-hover:opacity-100">
+                                  <Button
+                                    size="mini"
+                                    type="outline"
+                                    onClick={(event) => handleEditArticle(event, article.id)}
+                                  >
+                                    编辑
+                                  </Button>
+                                  <Button
+                                    size="mini"
+                                    status="danger"
+                                    onClick={(event) => handleDeleteArticle(event, article.id)}
+                                  >
+                                    删除
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           );
@@ -178,6 +216,7 @@ const Home: React.FC = observer(() => {
           {/* 右侧时间轴 */}
           <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-4">
             <CampusCalander />
+            <FavoriteArticles />
             <CompanyAlumni />
           </div>
         </div>

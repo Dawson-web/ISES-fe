@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Modal,
   Form,
@@ -14,12 +14,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
   IInterviewQuestion,
+  IInterviewPost,
   IInterviewPostRequest,
   ROUND_LABELS,
   DIFFICULTY_LABELS,
   CATEGORY_LABELS,
 } from '@/types/interview';
-import { createInterviewPostApi } from '@/service/interview';
+import { createInterviewPostApi, updateInterviewPostApi } from '@/service/interview';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -28,6 +29,10 @@ const FormItem = Form.Item;
 interface InterviewFormProps {
   visible: boolean;
   onClose: () => void;
+  mode?: 'create' | 'edit';
+  postId?: string;
+  initialValues?: IInterviewPost | null;
+  afterSuccess?: () => void;
 }
 
 const ROUND_OPTIONS = Object.entries(ROUND_LABELS).map(([value, label]) => ({
@@ -52,7 +57,14 @@ const createEmptyQuestion = (): IInterviewQuestion => ({
   type: '',
 });
 
-const InterviewForm = ({ visible, onClose }: InterviewFormProps) => {
+const InterviewForm = ({
+  visible,
+  onClose,
+  mode = 'create',
+  postId,
+  initialValues,
+  afterSuccess,
+}: InterviewFormProps) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   const [questions, setQuestions] = useState<IInterviewQuestion[]>([createEmptyQuestion()]);
@@ -106,19 +118,68 @@ const InterviewForm = ({ visible, onClose }: InterviewFormProps) => {
     setTags((prev) => prev.filter((t) => t !== tag));
   }, []);
 
+  const handleReset = useCallback(() => {
+    form.resetFields();
+    setQuestions([createEmptyQuestion()]);
+    setTags([]);
+    setTagInput('');
+  }, [form]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    if (mode === 'edit' && initialValues) {
+      form.setFieldsValue({
+        title: initialValues.title,
+        companyName: initialValues.companyName,
+        position: initialValues.position,
+        round: initialValues.round,
+        difficulty: initialValues.difficulty,
+        category: initialValues.category,
+        summary: initialValues.content?.summary || '',
+        tips: initialValues.content?.tips || '',
+      });
+      setQuestions(
+        initialValues.content?.questions?.length
+          ? initialValues.content.questions.map((item) => ({
+            question: item.question || '',
+            answer: item.answer || '',
+            type: item.type || '',
+          }))
+          : [createEmptyQuestion()]
+      );
+      setTags(Array.isArray(initialValues.tags) ? initialValues.tags : []);
+      setTagInput('');
+      return;
+    }
+
+    handleReset();
+  }, [visible, mode, initialValues, form, handleReset]);
+
   // 提交
   const { mutateAsync: submitPost, isPending } = useMutation({
-    mutationFn: (data: IInterviewPostRequest) => createInterviewPostApi(data),
+    mutationFn: (data: IInterviewPostRequest) =>
+      mode === 'edit' && postId
+        ? updateInterviewPostApi(postId, data)
+        : createInterviewPostApi(data),
     onSuccess: () => {
-      toast.success('面经发布成功！');
+      toast.success(mode === 'edit' ? '面经更新成功！' : '面经发布成功！');
       queryClient.invalidateQueries({ queryKey: ['interviewList'] });
       queryClient.invalidateQueries({ queryKey: ['interviewStats'] });
       queryClient.invalidateQueries({ queryKey: ['hotInterviews'] });
-      handleReset();
+      if (postId) {
+        queryClient.invalidateQueries({ queryKey: ['interviewDetail', postId] });
+      }
+      if (mode === 'create') {
+        handleReset();
+      }
+      afterSuccess?.();
       onClose();
     },
     onError: () => {
-      toast.error('发布失败，请重试');
+      toast.error(mode === 'edit' ? '更新失败，请重试' : '发布失败，请重试');
     },
   });
 
@@ -153,17 +214,9 @@ const InterviewForm = ({ visible, onClose }: InterviewFormProps) => {
       // 表单验证失败，Arco Form 会自动显示错误
     }
   }, [form, questions, tags, submitPost]);
-
-  const handleReset = useCallback(() => {
-    form.resetFields();
-    setQuestions([createEmptyQuestion()]);
-    setTags([]);
-    setTagInput('');
-  }, [form]);
-
   return (
     <Modal
-      title="分享面经"
+      title={mode === 'edit' ? '编辑面经' : '分享面经'}
       visible={visible}
       onCancel={onClose}
       autoFocus={false}
@@ -173,7 +226,7 @@ const InterviewForm = ({ visible, onClose }: InterviewFormProps) => {
         <div className="flex justify-end gap-2">
           <Button onClick={onClose}>取消</Button>
           <Button type="primary" loading={isPending} onClick={handleSubmit}>
-            发布面经
+            {mode === 'edit' ? '保存修改' : '发布面经'}
           </Button>
         </div>
       }

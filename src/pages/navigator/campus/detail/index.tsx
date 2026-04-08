@@ -20,8 +20,14 @@ import {
   CATEGORY_LABELS,
   DIFFICULTY_COLORS,
 } from '@/types/interview';
-import { getInterviewDetailApi, toggleInterviewLikeApi } from '@/service/interview';
+import {
+  deleteInterviewPostApi,
+  getInterviewDetailApi,
+  toggleInterviewLikeApi,
+} from '@/service/interview';
 import { apiConfig } from '@/config';
+import { getValidUid } from '@/api/token';
+import InterviewForm from '../components/InterviewForm';
 
 const { Title, Text } = Typography;
 
@@ -31,6 +37,8 @@ const InterviewDetail = () => {
   const id = searchParams.get('id') || '';
   const queryClient = useQueryClient();
   const [showAnswers, setShowAnswers] = useState<Record<number, boolean>>({});
+  const [editVisible, setEditVisible] = useState(false);
+  const currentUserId = getValidUid() || '';
 
   const { data: post, isLoading } = useQuery({
     queryKey: ['interviewDetail', id],
@@ -47,6 +55,20 @@ const InterviewDetail = () => {
     },
   });
 
+  const { mutateAsync: deleteInterviewPost, isPending: isDeleting } = useMutation({
+    mutationFn: () => deleteInterviewPostApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['interviewList'] });
+      queryClient.invalidateQueries({ queryKey: ['interviewStats'] });
+      queryClient.invalidateQueries({ queryKey: ['hotInterviews'] });
+      Message.success('面经已删除');
+      navigate('/navigator/campus');
+    },
+    onError: (err: any) => {
+      Message.error(err?.message || '删除失败');
+    },
+  });
+
   const handleToggleAnswer = useCallback((index: number) => {
     setShowAnswers((prev) => ({ ...prev, [index]: !prev[index] }));
   }, []);
@@ -54,6 +76,15 @@ const InterviewDetail = () => {
   const handleBack = useCallback(() => {
     navigate('/navigator/campus');
   }, [navigate]);
+
+  const handleDelete = useCallback(async () => {
+    if (!window.confirm('确认删除这篇面经？删除后无法恢复。')) {
+      return;
+    }
+    await deleteInterviewPost();
+  }, [deleteInterviewPost]);
+
+  const isOwner = post?.creatorId === currentUserId;
 
   if (!id) {
     return (
@@ -78,6 +109,25 @@ const InterviewDetail = () => {
           </Button>
           {post && (
             <div className="flex items-center gap-3">
+              {isOwner && (
+                <>
+                  <Button
+                    type="outline"
+                    size="small"
+                    onClick={() => setEditVisible(true)}
+                  >
+                    编辑
+                  </Button>
+                  <Button
+                    status="danger"
+                    size="small"
+                    loading={isDeleting}
+                    onClick={handleDelete}
+                  >
+                    删除
+                  </Button>
+                </>
+              )}
               <Button
                 type={post.isLiked ? 'primary' : 'outline'}
                 size="small"
@@ -278,6 +328,15 @@ const InterviewDetail = () => {
           )}
         </Skeleton>
       </div>
+
+      <InterviewForm
+        visible={editVisible}
+        onClose={() => setEditVisible(false)}
+        mode="edit"
+        postId={id}
+        initialValues={post || null}
+        afterSuccess={() => setEditVisible(false)}
+      />
     </div>
   );
 };

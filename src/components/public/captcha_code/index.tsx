@@ -4,23 +4,44 @@ import { Tooltip } from "@mantine/core";
 import { getCaptcha } from "@/service";
 
 interface CaptchaCodeProps {
-  getCaptchaCode: (code: string) => void;
+  getCaptchaCode: (payload: { code: string; captchaId: string }) => void;
 }
 
 const CaptchaCode: FC<CaptchaCodeProps> = ({ getCaptchaCode }) => {
   const [captcha, setCaptcha] = useState<string>("");
+  const [captchaId, setCaptchaId] = useState<string>("");
+  const [code, setCode] = useState<string>("");
 
   useEffect(() => {
-    setCaptcha(getCaptcha());
+    void refreshCaptcha();
   }, []);
+
+  const refreshCaptcha = async () => {
+    const res = await getCaptcha();
+    const payload = res.data.data;
+    const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(payload.svg)}`;
+    setCaptcha(svgUrl);
+    setCaptchaId(payload.captchaId);
+    setCode("");
+    getCaptchaCode({
+      code: "",
+      captchaId: payload.captchaId,
+    });
+  };
 
   return (
     <div className="flex gap-2 items-end">
       <TextInput
-        label="验证码(当前还未开启，可跳过)"
+        label="验证码"
         className="flex-1 theme_gray"
+        value={code}
         onChange={(e) => {
-          getCaptchaCode(e.target.value);
+          const nextCode = e.target.value;
+          setCode(nextCode);
+          getCaptchaCode({
+            code: nextCode,
+            captchaId,
+          });
         }}
       />
       <Tooltip label="点击更换" position="bottom" withArrow>
@@ -28,7 +49,7 @@ const CaptchaCode: FC<CaptchaCodeProps> = ({ getCaptchaCode }) => {
           src={captcha}
           alt="captcha"
           onClick={() => {
-            setCaptcha(getCaptcha());
+            void refreshCaptcha();
           }}
         />
       </Tooltip>

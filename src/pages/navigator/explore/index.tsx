@@ -1,4 +1,4 @@
-import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result, Pagination } from '@arco-design/web-react';
+import { Input, Button, Typography, Space, Avatar, Card, Tag, Grid, Result, Pagination, Select } from '@arco-design/web-react';
 import { IconPlus, IconHeart, IconEye, IconMessage } from '@arco-design/web-react/icon';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -13,11 +13,19 @@ import { tiptapToText } from '@/utils';
 
 const { Title, Text } = Typography;
 
-
+const CONTENT_TYPE_OPTIONS = [
+  { label: '动态', value: '动态' },
+  { label: '技术', value: '技术' },
+  { label: '分享', value: '分享' },
+  { label: '文章', value: 'article' },
+  { label: '企业爆料', value: 'companyinfo' },
+  { label: '内推', value: 'referral' },
+];
 
 export default function ArticleList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [contentType, setContentType] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -28,16 +36,16 @@ export default function ArticleList() {
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getArticleList", currentPage, pageSize],
-    queryFn: () => getArticleList(searchTerm, currentPage, pageSize).then(res => res.data.data),
+    queryKey: ["getArticleList", currentPage, pageSize, searchTerm, contentType],
+    queryFn: () => getArticleList(searchTerm, currentPage, pageSize, contentType).then(res => res.data.data),
   });
 
 
   const { mutateAsync: searchArticle } = useMutation({
-    mutationFn: () => getArticleList(searchTerm, currentPage, pageSize),
+    mutationFn: () => getArticleList(searchTerm, currentPage, pageSize, contentType),
     onSuccess: () => {
       // 刷新文章详情数据
-      queryClient.invalidateQueries({ queryKey: ["getArticleList", currentPage, pageSize] });
+      queryClient.invalidateQueries({ queryKey: ["getArticleList"] });
     },
   });
 
@@ -56,28 +64,27 @@ export default function ArticleList() {
               style={{ width: 320 }}
               value={searchTerm}
               onChange={(value) => setSearchTerm(value)}
-              onSearch={() => searchArticle()}
+              onSearch={() => {
+                setCurrentPage(1);
+                searchArticle();
+              }}
               allowClear
               size="large"
               className="shadow-sm"
             />
-            {/* <Select
-              placeholder="选择文章类型"
-              value={type}
-              onChange={val => setType(val || '')}
+            <Select
+              placeholder="选择内容类型"
+              value={contentType}
+              onChange={(value) => {
+                setContentType((value as string) || undefined);
+                setCurrentPage(1);
+              }}
               style={{ width: 200 }}
               allowClear
               size="large"
               className="shadow-sm"
-              defaultValue="全部"
-              mode='multiple'
-            >
-              {CONTENT_TYPE_LIFE.map(option => (
-                <Select.Option key={option} value={option}>
-                  {option}
-                </Select.Option>
-              ))}
-            </Select> */}
+              options={CONTENT_TYPE_OPTIONS}
+            />
             <Button
               type="primary"
               icon={<IconPlus />}
@@ -169,7 +176,7 @@ export default function ArticleList() {
                               </Space>
                               <Space className="text-xs">
                                 <IconMessage />
-                                <span>{article.comments.length}</span>
+                                <span>{article.comments?.length ?? article.metadata.commentCount ?? 0}</span>
                               </Space>
                             </Space>
                           </div>

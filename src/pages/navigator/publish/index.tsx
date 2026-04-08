@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Input,
   Button,
@@ -11,12 +11,12 @@ import {
 } from "@arco-design/web-react";
 import { IconSave, IconSend } from "@arco-design/web-react/icon";
 import { useQuery } from "@tanstack/react-query";
-// import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "./style.css";
 // import { createArticle } from '@/service/article';
 import { IArticleForm } from "@/types/article";
-import { createArticleApi } from "@/service/article";
+import { createArticleApi, getArticleDetailApi, updateArticleApi } from "@/service/article";
 import IeseEditor, { useAritcleEditor } from "@/components/editor";
 import MenuBar from "@/components/editor/MenuBar";
 import { useDraft } from "@/hooks/useDraft";
@@ -46,6 +46,10 @@ export const CONTENT_TYPE = {
 const TabPane = Tabs.TabPane;
 
 export default function ArticleEditPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const articleId = searchParams.get("id") || "";
+  const isEditMode = Boolean(articleId);
   const [form, setForm] = useState<IArticleForm>({
     title: "",
     content: "",
@@ -60,7 +64,6 @@ export default function ArticleEditPage() {
   const [isDraft] = useState(true);
   const editor = useAritcleEditor("");
   const [draftModalVisible, setDraftModalVisible] = useState(false);
-  const [tag, setTag] = useState(1);
   const [referralLoading, setReferralLoading] = useState(false);
   const [companyKeyword, setCompanyKeyword] = useState("");
   const [referralForm, setReferralForm] = useState({
@@ -159,26 +162,44 @@ export default function ArticleEditPage() {
       Message.error("请选择内容类型");
       return;
     }
-    await createArticleApi({ ...form, content: editor.getHTML() }).then(
-      (res) => {
+
+    if (isEditMode) {
+      await updateArticleApi({
+        articleId,
+        title: form.title,
+        content: editor.getHTML(),
+        contentType: form.contentType,
+        category: form.category,
+        tags: form.tags,
+      }).then((res) => {
         if (res.data.status) {
-          Message.success("发布成功");
-          setForm({
-            title: "",
-            content: "",
-            type: "技术",
-            cover: "",
-            category: undefined,
-            contentType: undefined,
-            tags: [],
-            excerpt: "",
-          })
+          Message.success("更新成功");
+          navigate(`/navigator/explore/channel?id=${articleId}`);
         } else {
-          Message.error("发布失败");
+          Message.error("更新失败");
         }
+      });
+      return;
+    }
+
+    await createArticleApi({ ...form, content: editor.getHTML() }).then((res) => {
+      if (res.data.status) {
+        Message.success("发布成功");
+        setForm({
+          title: "",
+          content: "",
+          type: "技术",
+          cover: "",
+          category: undefined,
+          contentType: undefined,
+          tags: [],
+          excerpt: "",
+        });
+        editor.commands.setContent("");
+      } else {
+        Message.error("发布失败");
       }
-    );
-    // TODO: 实现保存逻辑
+    });
   };
 
   const handleReferralPublish = async () => {
@@ -228,6 +249,31 @@ export default function ArticleEditPage() {
     staleTime: 1000 * 60,
   });
 
+  const { data: editingArticle } = useQuery({
+    queryKey: ["editing-article", articleId],
+    enabled: isEditMode,
+    queryFn: () => getArticleDetailApi(articleId).then((res) => res.data.data),
+  });
+
+  useEffect(() => {
+    if (!editingArticle || !editor) {
+      return;
+    }
+
+    setForm({
+      title: editingArticle.title || "",
+      content: String(editingArticle.content || ""),
+      type: editingArticle.contentType || "技术",
+      cover: "",
+      category: editingArticle.metadata?.category,
+      contentType: editingArticle.contentType,
+      tags: Array.isArray(editingArticle.metadata?.tags) ? editingArticle.metadata.tags : [],
+      excerpt: editingArticle.metadata?.excerpt || "",
+    });
+    editor.commands.setContent(String(editingArticle.content || ""));
+    setActiveTab("article");
+  }, [editingArticle, editor]);
+
   const companyOptions = useMemo(
     () =>
       (companyList || [])
@@ -242,7 +288,7 @@ export default function ArticleEditPage() {
   return (
     <div className="editor-container px-6 py-4 ">
       <Tabs activeTab={activeTab} onChange={(key) => setActiveTab(key as any)} type="capsule">
-        <TabPane key="article" title="发布文章">
+        <TabPane key="article" title={isEditMode ? "编辑文章" : "发布文章"}>
           <header className="editor-header">
             <div className="header-content flex justify-between flex-wrap gap-4">
               <div className="header-left">
@@ -255,7 +301,7 @@ export default function ArticleEditPage() {
                   className="title-input"
                 />
                 <Tag color={isDraft ? "gray" : "arcoblue"} className="status-tag">
-                  {isDraft ? "草稿" : "已发布"}
+                  {isEditMode ? "编辑中" : isDraft ? "草稿" : "已发布"}
                 </Tag>
               </div>
               <div className="header-right">
@@ -271,7 +317,6 @@ export default function ArticleEditPage() {
                   icon={<IconSave />}
                   onClick={() => {
                     toSaveDraft();
-                    setTag(0);
                   }}
                 >
                   保存草稿
@@ -281,7 +326,7 @@ export default function ArticleEditPage() {
                   icon={<IconSend />}
                   onClick={() => {
                     handleSave();
-                    if (lastId.current) {
+                    if (!isEditMode && lastId.current) {
                       deleteDraft(lastId.current);
                       setDrafts(
                         drafts.filter((draft) => draft.id !== lastId.current)
@@ -290,7 +335,7 @@ export default function ArticleEditPage() {
                     }
                   }}
                 >
-                  发布文章
+                  {isEditMode ? "更新文章" : "发布文章"}
                 </Button>
               </div>
             </div>

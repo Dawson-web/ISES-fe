@@ -1,7 +1,6 @@
 import { Typography, Tag, Skeleton, Empty, Divider } from '@arco-design/web-react';
 import { Flame, BarChart3, Building2, TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import dayjs from 'dayjs';
 import {
   IInterviewPost,
   DIFFICULTY_LABELS,
