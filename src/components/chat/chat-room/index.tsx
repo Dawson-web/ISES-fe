@@ -4,11 +4,8 @@ import {
   Undo2,
   Loader2,
   Send,
-  Paperclip,
   Smile,
-  MoreVertical,
   Clock,
-  Video,
 } from "lucide-react";
 import React, { FC, useEffect, useState, useRef } from "react";
 import MessageList from "./MessageList";
@@ -25,7 +22,6 @@ import { IChatInfo } from "@/pages/navigator/chat";
 import { toastMessage } from "@/components/toast";
 import chatStore from "@/store/chat";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import RecorderButton from "../recorder";
 import { Button } from "@arco-design/web-react";
 
 interface IProps {
@@ -48,7 +44,6 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
 
   // 检查是否是临时聊天项
   useEffect(() => {
@@ -225,7 +220,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
 
   // 是否禁用发送消息
   function isDisabledSend() {
-    return content === "" || content === "\n" || isUploading || isRecording;
+    return content === "" || content === "\n" || isUploading;
   }
 
   // 添加点击外部关闭emoji picker的处理
@@ -303,15 +298,7 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
               {chatInfo.online ? "在线" : "离线"}
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
-                <Video className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              </div>
-            </div>
-            <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
-              <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            </div>
+          <div className="flex items-center">
             <div className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all hover:scale-105">
               <Undo2
                 className="w-5 h-5 text-gray-600 dark:text-gray-300"
@@ -383,9 +370,6 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
               >
                 <Image className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
               </div>
-              <div className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
-                <Paperclip className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors" />
-              </div>
               <div className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all relative">
                 <Smile
                   className="w-5 h-5 text-gray-600 hover:text-blue-500 transition-colors"
@@ -414,13 +398,6 @@ const ChatRoom: FC<IProps> = ({ className, setOpen, chatInfo }) => {
                   </div>
                 )}
               </div>
-              <RecorderButton
-                isRecording={isRecording}
-                setIsRecording={setIsRecording}
-                chatInfo={chatInfo}
-                socket={socket}
-                setMessages={setMessages}
-              />
             </div>
           )}
         </div>

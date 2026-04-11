@@ -5,7 +5,8 @@ import { Button, Card, Input, Modal, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
   opened: boolean;
@@ -14,8 +15,19 @@ interface IProps {
 }
 
 const AddFriend: FC<IProps> = observer(({ opened, close, onSelectChat }) => {
+  const navigate = useNavigate();
   const [searchKey, setSearchKey] = useState("");
   const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearchKey(searchValue.trim());
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [searchValue]);
 
   const { isSuccess, data } = useQuery({
     queryKey: ["searchUser", searchKey],
@@ -63,6 +75,17 @@ const AddFriend: FC<IProps> = observer(({ opened, close, onSelectChat }) => {
     close();
   }
 
+  function handleViewProfile(userId: string) {
+    if (!userId) {
+      return;
+    }
+
+    close();
+    setSearchValue("");
+    setSearchKey("");
+    navigate(`/navigator/profile?id=${userId}`);
+  }
+
   return (
     <Modal
       opened={opened}
@@ -74,17 +97,12 @@ const AddFriend: FC<IProps> = observer(({ opened, close, onSelectChat }) => {
       <Input
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            setSearchKey(searchValue);
-          }
-        }}
         rightSectionPointerEvents="all"
         rightSection={
           <Button
             className="p-1"
             onClick={() => {
-              setSearchKey(searchValue);
+              setSearchKey(searchValue.trim());
             }}
           >
             <SearchIcon />
@@ -96,7 +114,7 @@ const AddFriend: FC<IProps> = observer(({ opened, close, onSelectChat }) => {
         <div className="flex flex-col gap-2 mt-2 max-h-[400px] overflow-y-auto">
           {data.data.data.map((userInfo) => {
             return (
-              <Card className="p-2 relative" key={userInfo.id}>
+              <Card className="p-3 relative" key={userInfo.id}>
                 <div className="flex items-center gap-4">
                   <UserAvatar
                     src={userInfo.avatar}
@@ -107,20 +125,34 @@ const AddFriend: FC<IProps> = observer(({ opened, close, onSelectChat }) => {
                     <div className="text-lg font-bold">
                       {userInfo.username || "这个人很懒未留名"}
                     </div>
+                    {userInfo.school && (
+                      <div className="text-xs text-gray-400 mt-1">
+                        {userInfo.school}
+                      </div>
+                    )}
                     {userInfo.introduce && (
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm text-gray-500 line-clamp-2 mt-1">
                         {userInfo.introduce}
                       </div>
                     )}
                   </div>
-                  <div
-                    className="text-theme_blue cursor-pointer hover:text-theme_blue/80 font-medium"
+                </div>
+                <div className="mt-3 flex items-center justify-end gap-2">
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      handleViewProfile(userInfo.id);
+                    }}
+                  >
+                    查看信息
+                  </Button>
+                  <Button
                     onClick={() => {
                       handleCreateRoom(userInfo);
                     }}
                   >
-                    私信
-                  </div>
+                    发起私信
+                  </Button>
                 </div>
               </Card>
             );

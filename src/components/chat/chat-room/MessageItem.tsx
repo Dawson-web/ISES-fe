@@ -2,13 +2,16 @@ import { getValidUid } from "@/api/token";
 import { IMessage } from "@/types/chat";
 import clsx from "clsx";
 import { FC, useRef, useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import { apiConfig } from "@/config";
 
 interface Props {
   message: IMessage & { isUploading?: boolean };
   className?: string;
   avatarSrc?: string;
+  avatarName?: string;
+  avatarUserId?: string;
+  onAvatarClick?: (userId: string) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
 }
 
@@ -39,6 +42,9 @@ const MessageItem: FC<Props> = ({
   message,
   className,
   avatarSrc,
+  avatarName,
+  avatarUserId,
+  onAvatarClick,
   onContextMenu,
 }) => {
   const [isHover, setIsHover] = useState(false);
@@ -55,6 +61,8 @@ const MessageItem: FC<Props> = ({
       }
     };
   }, []);
+
+  const avatarInitial = (avatarName || "").trim().charAt(0).toUpperCase();
 
   const renderContent = () => {
     if (isImageUrl(message) && !imageError) {
@@ -113,7 +121,18 @@ const MessageItem: FC<Props> = ({
 
   return (
     <div className={clsx("flex gap-2", className)}>
-      <div className={clsx("relative w-[40px] h-[40px]")} onClick={() => {}}>
+      <button
+        type="button"
+        className={clsx(
+          "relative w-[40px] h-[40px] bg-transparent border-0 p-0",
+          avatarUserId ? "cursor-pointer" : "cursor-default"
+        )}
+        onClick={() => {
+          if (avatarUserId) {
+            onAvatarClick?.(avatarUserId);
+          }
+        }}
+      >
         {isHover && (
           <div
             className={clsx(
@@ -127,12 +146,22 @@ const MessageItem: FC<Props> = ({
             {new Date(message.createdAt).toLocaleString()}
           </div>
         )}
-        <img
-          src={avatarSrc || "https://q.qlogo.cn/g?b=qq&nk=369060891&s=160"}
-          alt="avatar"
-          className={clsx("relative w-[40px] h-[40px] rounded-full")}
-        />
-      </div>
+        {avatarSrc ? (
+          <img
+            src={avatarSrc}
+            alt="avatar"
+            className={clsx("relative w-[40px] h-[40px] rounded-full object-cover")}
+          />
+        ) : (
+          <div className="relative w-[40px] h-[40px] rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center overflow-hidden">
+            {avatarInitial ? (
+              <span className="text-sm font-semibold">{avatarInitial}</span>
+            ) : (
+              <User className="w-4 h-4" />
+            )}
+          </div>
+        )}
+      </button>
       <div className="flex flex-col gap-1">
         <span
           onMouseEnter={() => setIsHover(true)}

@@ -6,6 +6,7 @@ import { IMessage } from "@/types/chat";
 import { getValidUid } from "@/api/token";
 import { apiConfig } from "@/config";
 import { Card } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   messages: (IMessage & { isUploading?: boolean })[];
@@ -19,6 +20,7 @@ interface ContextMenuState {
 }
 
 const MessageList: FC<Props> = ({ messages, className }) => {
+  const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLElement>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
@@ -72,6 +74,17 @@ const MessageList: FC<Props> = ({ messages, className }) => {
     return () => document.removeEventListener("click", handleGlobalClick);
   }, [contextMenu]);
 
+  const handleViewProfile = useCallback(
+    (userId: string) => {
+      if (!userId) {
+        return;
+      }
+
+      navigate(`/navigator/profile?id=${userId}`);
+    },
+    [navigate]
+  );
+
   return (
     <Card
       ref={messagesEndRef as any}
@@ -100,8 +113,11 @@ const MessageList: FC<Props> = ({ messages, className }) => {
               avatarSrc={
                 avatarInfo?.avatar 
                   ? `${apiConfig.baseUrl}${avatarInfo.avatar}`
-                  : `https://q.qlogo.cn/g?b=qq&nk=369060891&s=160`
+                  : undefined
               }
+              avatarName={avatarInfo?.username}
+              avatarUserId={avatarInfo?.id || message.fromUserId}
+              onAvatarClick={handleViewProfile}
               onContextMenu={(e) => handleContextMenu(e, message)}
             />
           );

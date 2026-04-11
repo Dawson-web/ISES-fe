@@ -13,7 +13,7 @@ import chatStore from "@/store/chat";
 import { observer } from "mobx-react-lite";
 import { runInAction } from "mobx";
 import UserAvatar from "@/components/public/user_avatar";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export interface IChatInfo {
   chatId: string;
@@ -41,6 +41,7 @@ const getTextMessagePreview = (
 };
 
 const Page = observer(() => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [chatInfo, setChatInfo] = useState<IChatInfo>({
     chatId: "",
@@ -138,6 +139,17 @@ const Page = observer(() => {
       setChatOpen(true);
     },
     []
+  );
+
+  const handleViewProfile = useCallback(
+    (userId: string) => {
+      if (!userId) {
+        return;
+      }
+
+      navigate(`/navigator/profile?id=${userId}`);
+    },
+    [navigate]
   );
 
   // 选择聊天
@@ -252,11 +264,10 @@ const Page = observer(() => {
               <Input
                 placeholder="搜索好友..."
                 className="flex-1"
+                value={search}
                 rightSection={<Search size={16} />}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setSearch((e.target as HTMLInputElement).value);
-                  }
+                onChange={(e) => {
+                  setSearch(e.currentTarget.value);
                 }}
               />
             </div>
@@ -315,13 +326,20 @@ const Page = observer(() => {
                     )}
                     onClick={() => handleSelectChat(chat.userId)}
                   >
-                    <div className="relative">
+                    <button
+                      type="button"
+                      className="relative shrink-0 bg-transparent border-0 p-0 cursor-pointer"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleViewProfile(chat.userId);
+                      }}
+                    >
                       <UserAvatar
                         src={chat.avatar || undefined}
                         size="small"
                         disabled={true}
                       />
-                    </div>
+                    </button>
 
                     <div className="min-w-0">
                       <Box className="space-y-1">

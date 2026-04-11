@@ -7,6 +7,7 @@ import { uploadAvatar } from "../../../service/user";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toastMessage } from "@/components/toast";
 import { useState } from "react";
+import { User } from "lucide-react";
 
 interface Props {
   src?: string;
@@ -56,19 +57,36 @@ const UserAvatar: FC<Props> = ({ src, size, className, disabled = false }) => {
           if (!disabled) avatarUpload();
         }}
       >
-        <img
-          src={
-            preview
-              ? apiConfig.baseUrl + preview
-              : "https://www.betula.space/images/avatar.png"
-          }
-          alt="avatar"
-          className={clsx("relative w-[60px] h-[60px] rounded-full ", {
-            "w-[40px] h-[40px]": size === "small",
-            "w-[60px] h-[60px]": size === "medium",
-            "w-[80px] h-[80px]": size === "large",
-          })}
-        />
+        {preview ? (
+          <img
+            src={apiConfig.baseUrl + preview}
+            alt="avatar"
+            className={clsx("relative w-[60px] h-[60px] rounded-full object-cover ", {
+              "w-[40px] h-[40px]": size === "small",
+              "w-[60px] h-[60px]": size === "medium",
+              "w-[80px] h-[80px]": size === "large",
+            })}
+          />
+        ) : (
+          <div
+            className={clsx(
+              "relative w-[60px] h-[60px] rounded-full bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center",
+              {
+                "w-[40px] h-[40px]": size === "small",
+                "w-[60px] h-[60px]": size === "medium",
+                "w-[80px] h-[80px]": size === "large",
+              }
+            )}
+          >
+            <User
+              className={clsx({
+                "w-4 h-4": size === "small",
+                "w-6 h-6": size === "medium",
+                "w-8 h-8": size === "large",
+              })}
+            />
+          </div>
+        )}
         <div
           className={clsx(
             "bg-green-500 border-white border-4 rounded-full w-[20px] h-[20px] absolute bottom-[0px] right-[0px]",
