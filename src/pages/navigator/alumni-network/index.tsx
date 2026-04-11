@@ -31,11 +31,22 @@ const PALETTE = {
   // 公司节点渐变色 - 取自自然色
   companySet: ['#2563eb', '#0891b2', '#7c3aed', '#c026d3', '#e11d48', '#ea580c'],
   // 连线
-  edgeSchool: 'rgba(5, 150, 105, 0.24)',
-  edgeAlumni: 'rgba(37, 99, 235, 0.16)',
+  edgeSchool: 'rgba(5, 150, 105, 0.3)',
   // 高亮
-  focusEdge: 'rgba(37, 99, 235, 0.55)',
+  focusEdge: 'rgba(37, 99, 235, 0.72)',
   dimOpacity: 0.1,
+};
+
+const hexToRgba = (hex: string, alpha: number) => {
+  const normalized = hex.replace('#', '');
+  const full = normalized.length === 3
+    ? normalized.split('').map((char) => `${char}${char}`).join('')
+    : normalized;
+  const num = parseInt(full, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 const getAvatarUrl = (avatar?: string | null) => {
@@ -142,8 +153,8 @@ const buildGraphOption = (
     category: 0,
     itemStyle: {
       color: PALETTE.school,
-      shadowBlur: 25,
-      shadowColor: `${PALETTE.school}55`,
+      shadowBlur: 30,
+      shadowColor: `${PALETTE.school}66`,
       opacity: searchKeyword && !schoolMatched ? PALETTE.dimOpacity : 1,
       borderColor: 'rgba(15,23,42,0.15)',
       borderWidth: 2,
@@ -153,6 +164,9 @@ const buildGraphOption = (
       fontSize: 13,
       fontWeight: 600,
       color: '#064e3b',
+      backgroundColor: 'rgba(255,255,255,0.92)',
+      borderRadius: 999,
+      padding: [5, 10],
       textBorderColor: 'rgba(255,255,255,0.95)',
       textBorderWidth: 2,
       opacity: searchKeyword && !schoolMatched ? PALETTE.dimOpacity : 1,
@@ -168,6 +182,7 @@ const buildGraphOption = (
     const maxAlumni = Math.max(...data.companies.map((c) => c.alumniCount), 1);
     const ratio = company.alumniCount / maxAlumni;
     const companySize = 28 + ratio * 24;
+    const companyLogoUrl = getAvatarUrl(company.companyLogo);
 
     const hasMatchedAlumni = company.alumni.some(
       (a) => isMatch(a.username) || isMatch(company.companyName),
@@ -176,28 +191,39 @@ const buildGraphOption = (
 
     nodes.push({
       id: companyId,
-      name: `${company.companyName} (${company.alumniCount})`,
+      name: company.companyName,
+      symbol: companyLogoUrl ? `image://${companyLogoUrl}` : 'circle',
+      symbolKeepAspect: true,
       symbolSize: companySize,
       category: 1,
       itemStyle: {
         color: cColor,
-        shadowBlur: visible ? 8 : 0,
-        shadowColor: visible ? `${cColor}35` : 'transparent',
+        shadowBlur: visible ? 18 : 0,
+        shadowColor: visible ? hexToRgba(cColor, 0.28) : 'transparent',
         opacity: visible ? 1 : PALETTE.dimOpacity,
-        borderColor: 'rgba(15,23,42,0.12)',
-        borderWidth: 1,
+        borderColor: hexToRgba(cColor, companyLogoUrl ? 0.65 : 0.35),
+        borderWidth: companyLogoUrl ? 3 : 1.5,
       },
       label: {
-        show: company.alumniCount >= 2 || visible,
-        fontSize: 10,
+        show: visible,
+        position: 'bottom',
+        distance: 8,
+        fontSize: company.alumniCount >= 6 ? 12 : 11,
+        fontWeight: 600,
         color: '#334155',
+        backgroundColor: 'rgba(255,255,255,0.94)',
+        borderRadius: 999,
+        padding: [4, 8],
+        formatter: `${company.companyName}\n${company.alumniCount} 人`,
+        lineHeight: 16,
         textBorderColor: 'rgba(255,255,255,0.95)',
-        textBorderWidth: 1.5,
+        textBorderWidth: 1,
         opacity: visible ? 1 : PALETTE.dimOpacity,
       },
       nodeType: 'company',
       companyId: company.companyId,
       companyName: company.companyName,
+      companyLogo: company.companyLogo,
     });
 
     links.push({
@@ -205,8 +231,8 @@ const buildGraphOption = (
       target: companyId,
       lineStyle: {
         color: PALETTE.edgeSchool,
-        width: 1.2 + ratio * 2,
-        opacity: visible ? 0.5 : PALETTE.dimOpacity,
+        width: 1.6 + ratio * 2.8,
+        opacity: visible ? 0.62 : PALETTE.dimOpacity,
       },
     });
 
@@ -255,9 +281,9 @@ const buildGraphOption = (
         source: companyId,
         target: alumniId,
         lineStyle: {
-          color: PALETTE.edgeAlumni,
-          width: 0.8,
-          opacity: aVisible ? 0.3 : PALETTE.dimOpacity,
+          color: hexToRgba(cColor, aVisible ? 0.34 : PALETTE.dimOpacity),
+          width: searchKeyword && alumniMatched ? 1.9 : 1.35,
+          opacity: aVisible ? 0.82 : PALETTE.dimOpacity,
         },
       });
     });
@@ -287,17 +313,20 @@ const buildGraphOption = (
         roam: true,
         draggable: true,
         force: {
-          repulsion: 550,
-          gravity: 0.07,
-          edgeLength: [50, 200],
-          friction: 0.55,
+          repulsion: 700,
+          gravity: 0.05,
+          edgeLength: [80, 240],
+          friction: 0.5,
         },
         emphasis: {
           focus: 'adjacency',
-          lineStyle: { color: PALETTE.focusEdge, width: 2.5 },
-          itemStyle: { shadowBlur: 15 },
+          lineStyle: { color: PALETTE.focusEdge, width: 3.2, opacity: 1 },
+          itemStyle: { shadowBlur: 20 },
         },
         lineStyle: { curveness: 0.15 },
+        labelLayout: {
+          hideOverlap: true,
+        },
         scaleLimit: { min: 0.3, max: 3 },
       },
     ],
@@ -400,7 +429,7 @@ const AlumniNetworkPage = observer(() => {
       const nd = params.data;
       if (!nd?.nodeType) return;
       if (nd.nodeType === 'company' && nd.companyId) {
-        navigate(`/navigator/info/company?id=${nd.companyId}`);
+        navigate(`/navigator/info/company?companyId=${nd.companyId}`);
       }
       if (nd.nodeType === 'alumni' && nd.alumniData) {
         navigate(`/navigator/profile?id=${nd.alumniData.id}`);
@@ -448,6 +477,10 @@ const AlumniNetworkPage = observer(() => {
   const companyCount = data?.companies?.length ?? 0;
   const topCompany = data?.companies?.[0]?.companyName || '-';
   const gradeCount = data?.grades?.length ?? 0;
+  const companyRanking = useMemo(
+    () => (data?.companies || []).slice().sort((a, b) => b.alumniCount - a.alumniCount).slice(0, 5),
+    [data?.companies],
+  );
 
   // 全屏容器样式
   const containerClass = isFullscreen
@@ -548,7 +581,14 @@ const AlumniNetworkPage = observer(() => {
               <div
                 ref={chartContainerRef}
                 className="absolute inset-0"
-                style={{ background: '#ffffff' }}
+                style={{
+                  background: `
+                    radial-gradient(circle at 50% 50%, rgba(5,150,105,0.06), transparent 24%),
+                    radial-gradient(circle at 82% 78%, rgba(37,99,235,0.06), transparent 20%),
+                    radial-gradient(circle at 18% 22%, rgba(217,119,6,0.04), transparent 18%),
+                    #ffffff
+                  `,
+                }}
               />
 
               {/* 网格底纹 */}
@@ -579,8 +619,51 @@ const AlumniNetworkPage = observer(() => {
                 </div>
               )}
 
+              {companyRanking.length > 0 && (
+                <div className="absolute top-4 right-4 z-10 hidden xl:block w-64 rounded-2xl border border-gray-200/90 bg-white/88 backdrop-blur-md shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <div className="text-[12px] font-semibold text-gray-900">热门去向</div>
+                    <div className="text-[10px] text-gray-500 mt-1">按当前图谱中的校友人数排序</div>
+                  </div>
+                  <div className="p-3 space-y-2.5">
+                    {companyRanking.map((company, index) => {
+                      const color = PALETTE.companySet[index % PALETTE.companySet.length];
+                      const companyLogoUrl = getAvatarUrl(company.companyLogo);
+                      return (
+                        <button
+                          key={company.companyId || company.companyName}
+                          type="button"
+                          className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-left transition-colors hover:bg-gray-50"
+                          onClick={() => navigate(`/navigator/info/company?companyId=${company.companyId}`)}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Avatar
+                              size={28}
+                              className="flex-shrink-0 border border-white shadow-sm"
+                              style={{
+                                backgroundColor: hexToRgba(color, 0.14),
+                                color,
+                                boxShadow: `0 0 0 4px ${hexToRgba(color, 0.12)}`,
+                              }}
+                            >
+                              {companyLogoUrl ? <img src={companyLogoUrl} alt={company.companyName} /> : company.companyName.charAt(0)}
+                            </Avatar>
+                            <span className="truncate text-[12px] font-medium text-gray-700">
+                              {company.companyName}
+                            </span>
+                          </div>
+                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600">
+                            {company.alumniCount} 人
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* 底部操作提示 */}
-              <div className="absolute bottom-3 left-4 z-10 text-[10px] text-gray-500 flex items-center gap-3">
+              <div className="absolute bottom-3 left-4 z-10 rounded-full border border-gray-200/80 bg-white/88 px-3 py-1.5 text-[10px] text-gray-500 flex items-center gap-3 shadow-sm backdrop-blur-sm">
                 <span>滚轮缩放</span>
                 <span>·</span>
                 <span>拖拽平移</span>

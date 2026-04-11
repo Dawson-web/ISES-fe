@@ -91,6 +91,7 @@ export interface IAlumniNode {
 export interface IAlumniCompanyGroup {
   companyName: string;
   companyId: string | null;
+  companyLogo: string | null;
   alumniCount: number;
   alumni: IAlumniNode[];
 }

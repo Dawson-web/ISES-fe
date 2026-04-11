@@ -82,7 +82,7 @@ const CompanyAlumni = () => {
             }}
             tabIndex={0}
             role="button"
-            aria-label="查看完整校友图谱"
+            aria-label="查看完整"
         >
             <Network size={14} />
             <Text className="text-xs">查看完整校友图谱 →</Text>
